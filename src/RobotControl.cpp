@@ -26,9 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "RobotControl.h"
 
-RobotControl::RobotControl(const string& name){
+RobotControl::RobotControl(const NodeHandle& handle, const Scheduler& scheduler){
 
-    
 	RUN_TYPE = getRunType();
 
     commandChannel = CommandChannel::instance();

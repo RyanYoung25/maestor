@@ -29,6 +29,10 @@ void Scheduler::sleep(){
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &nextShot, NULL);
 }
 
+double Scheduler::getPeriod(){
+    return period / NSEC_PER_SECOND;
+}
+
 timespec& Scheduler::getCurrentTime(){
     return currTime;
 }
