@@ -1,0 +1,16 @@
+<package>
+  <description brief="maestor">
+
+     maestor
+
+  </description>
+  <author>Ryan</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/maestor</url>
+  <depend package="roscpp"></depend>
+
+
+</package>
+
+
