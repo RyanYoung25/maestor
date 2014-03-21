@@ -32,10 +32,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HARDWARE true
 #define SIMULATION false
 
+#include "ros/ros.h"
 
 #include <vector>
 #include <queue>
 #include <map>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <sys/time.h>
+#include <string>
+#include <stdio.h>
+
+#include "Scheduler.h"
 #include "HuboState.h"
 #include "HuboMotor.h"
 #include "MotorBoard.h"
@@ -50,13 +59,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SimChannels.h"
 #include "Trajectory.h"
 #include "TrajHandler.h"
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <sys/time.h>
-#include <string>
-#include <stdio.h>
 
+using ros::NodeHandle;
 using std::queue;
 using std::vector;
 using std::map;
@@ -79,7 +83,7 @@ private:
     typedef Trajectory::Header Header;
 
 public:
-    RobotControl(const string&);
+    RobotControl(const NodeHandle& handle, const Scheduler& scheduler);
     ~RobotControl();
 
     void updateHook();

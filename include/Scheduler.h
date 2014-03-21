@@ -43,6 +43,8 @@ public:
     timespec& getCurrentTime();
     timespec& getNextShot();
 
+    double getPeriod();
+
 private:
 
     void normalizeTimespec(timespec* t);

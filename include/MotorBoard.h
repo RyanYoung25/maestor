@@ -40,24 +40,24 @@ using std::queue;
 
 class MotorBoard {
 
-    private:
-        int channels;
-        vector<HuboMotor*> motors;
- 
-    public:
-        
-        MotorBoard();
-        MotorBoard(int channels);
-        MotorBoard(const MotorBoard& rhs);
+private:
+    int channels;
+    vector<HuboMotor*> motors;
 
-        void addMotor(HuboMotor* motor, int channel);
-        void removeMotor(HuboMotor* motor);
-        void removeMotor(int channel);
-        void setTicksPosition(vector<long> ticks);
-        HuboMotor* getMotorByChannel(int channel);
-        int getNumChannels();
-        bool requiresMotion();
-        bool requiresMotion(int channel);
+public:
+
+    MotorBoard();
+    MotorBoard(int channels);
+    MotorBoard(const MotorBoard& rhs);
+
+    void addMotor(HuboMotor* motor, int channel);
+    void removeMotor(HuboMotor* motor);
+    void removeMotor(int channel);
+    void setTicksPosition(vector<long> ticks);
+    HuboMotor* getMotorByChannel(int channel);
+    int getNumChannels();
+    bool requiresMotion();
+    bool requiresMotion(int channel);
 
 };
 
