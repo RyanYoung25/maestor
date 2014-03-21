@@ -27,15 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IMUBOARD_H
 #define IMUBOARD_H
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
-#include <std_msgs/Float64.h>
-#include <std_msgs/String.h>
-#include <rtt/Component.hpp>
 #include <hubomsg/typekit/HuboState.h>
 #include <string>
 
-using namespace RTT;
 using std::string;
 
 class IMUBoard {

@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "RobotControl.h"
 
-RobotControl::RobotControl(const string& name) : TaskContext(name) {
+RobotControl::RobotControl(const string& name){
 
     this->messageDownPort = new OutputPort<MaestroMessage>("Maestro/Message");   
 
@@ -94,8 +94,10 @@ RobotControl::RobotControl(const string& name) : TaskContext(name) {
     this->addOperation("setDelay", &RobotControl::setDelay, this, RTT::OwnThread)
             .arg("Microseconds", "Delay amount in microseconds.");
 
+    /*
     this->addOperation("runGesture", &RobotControl::runGesture, this, RTT::OwnThread)
             .arg("Name", "The name of the gesture to load.");
+            */
 
     this->addOperation("loadTrajectory", &RobotControl::loadTrajectory, this, RTT::OwnThread)
             .arg("Name", "The name of the trajectory to load.")
@@ -157,10 +159,12 @@ RobotControl::RobotControl(const string& name) : TaskContext(name) {
     logfile << LOG_PATH << "RobotControl.log";
     tempOutput.open(logfile.str().c_str());
     vector<string> paths = getGestureScripts(CONFIG_PATH);
+    /*
     for (int i = 0; i < paths.size(); i++){
         //cout << "Adding gestures from path: " << paths[i] << endl;
         this->getProvider<Scripting>("scripting")->loadPrograms(paths[i]);
     }
+    */
     power = new PowerControlBoard();
 
     frames = 0;
@@ -865,6 +869,7 @@ bool RobotControl::requiresMotion(string name){
     return motors[name]->requiresMotion();
 }
 
+/*
 void RobotControl::runGesture(string name){
     boost::shared_ptr<Scripting> scripting = this->getProvider<Scripting>("scripting");
     scripting->startProgram(name);
@@ -873,6 +878,5 @@ void RobotControl::runGesture(string name){
     if (scripting->inProgramError(name))
         cout << "Error. Program has encountered an error. " << endl;
 }
+*/
 
-ORO_CREATE_COMPONENT_LIBRARY()
-ORO_LIST_COMPONENT_TYPE(RobotControl)

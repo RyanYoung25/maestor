@@ -29,12 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define LOOKUP_TABLE_PATH "/opt/ros/fuerte/stacks/maestro/maestro/config/power"
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
-#include <std_msgs/Float64.h>
-#include <std_msgs/String.h>
-#include <rtt/Component.hpp>
-#include <hubomsg/typekit/HuboState.h>
 #include <fstream>
 #include <iostream>
 #include <map>

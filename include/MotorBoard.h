@@ -28,15 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MOTORBOARD_H
 
 #include "HuboMotor.h"
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
-#include <std_msgs/Float64.h>
-#include <std_msgs/String.h>
-#include <rtt/Component.hpp>
-#include <hubomsg/typekit/HuboJointState.h>
-#include <hubomsg/typekit/HuboState.h>
-#include <hubomsg/typekit/HuboCommand.h>
-#include <hubomsg/typekit/HuboJointCommand.h>
 #include <string>
 #include "ros/ros.h"
 #include <vector>
@@ -44,7 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fstream>
 
 #define DEFAULT_CHANNELS 2
-using namespace RTT;
 using std::vector;
 using std::queue;
 

@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *      Author: maestro
  */
 
-#include <iostream>
 #include "CommHandler.h"
 
 using namespace std;

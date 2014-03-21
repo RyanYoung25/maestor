@@ -33,14 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "pugixml.hpp"
 #include "IMUBoard.h"
 #include "Names.h"
-#include <rtt/Port.hpp>
 #include <map>
 #include <string>
 #include <queue>
 #include <iostream>
 
-
-using namespace RTT;
 using std::map;
 using std::string;
 using std::queue;

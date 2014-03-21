@@ -32,14 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HARDWARE true
 #define SIMULATION false
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
-#include <std_msgs/Float64.h>
-#include <std_msgs/String.h>
-#include <rtt/Component.hpp>
-#include <rtt/scripting/Scripting.hpp>
-#include <rtt/scripting/ProgramInterface.hpp>
-#include <rtt/scripting/ScriptingService.hpp>
 #include <hubomsg/typekit/HuboState.h>
 #include <hubomsg/typekit/HuboJointState.h>
 #include <hubomsg/typekit/HuboCommand.h>
@@ -88,9 +80,7 @@ using hubomsg::MaestroCommand;
 using hubomsg::MaestroMessage;
 using hubomsg::AchCommand;
 
-using RTT::TaskContext;
-
-class RobotControl : public TaskContext{
+class RobotControl {
 
 private:
     typedef HuboState::Motors Motors;
@@ -114,7 +104,7 @@ public:
     // Control Commands
     void debugControl(int board, int operation);
     void setDelay(int us);
-    void runGesture(string name);
+    //void runGesture(string name);
     void command(string name, string target);
     void handleMessage(MaestroCommand message);
 

@@ -34,7 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMHANDLER_H_
 #define COMMHANDLER_H_
 
-#include <rtt/Port.hpp>
 #include <hubomsg/typekit/HuboState.h>
 #include <hubomsg/typekit/MaestroCommand.h>
 #include "HuboState.h"
