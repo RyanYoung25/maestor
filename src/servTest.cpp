@@ -4,7 +4,7 @@
 
 using std::vector;
 
-bool fib(ServiceTest::fib::Request &req, ServiceTest::fib::Response &res){
+bool fib(maestor::fib::Request &req, maestor::fib::Response &res){
     res.res = fibn(req.num);
     return true;
 }

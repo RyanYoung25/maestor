@@ -26,5 +26,8 @@ rosbuild_gensrv()
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(${PROJECT_NAME} src/loop.cpp src/servTest.cpp)
+rosbuild_add_executable(${PROJECT_NAME} 
+    src/Scheduler.cpp 
+    src/loop.cpp 
+    src/servTest.cpp)
 #target_link_libraries(example ${PROJECT_NAME})

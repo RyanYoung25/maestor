@@ -5,9 +5,9 @@
 #include <fstream>
 #include <string>
 
-#include "ServiceTest/fib.h"
+#include "maestor/fib.h"
 
 int fibn(int n);
 int memoize(int n, int value);
 
-bool fib(ServiceTest::fib::Request &req, ServiceTest::fib::Response &res);
+bool fib(maestor::fib::Request &req, maestor::fib::Response &res);
