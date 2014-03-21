@@ -29,5 +29,22 @@ rosbuild_gensrv()
 rosbuild_add_executable(${PROJECT_NAME} 
     src/Scheduler.cpp 
     src/loop.cpp 
-    src/servTest.cpp)
+    src/servTest.cpp
+    src/RobotControl.cpp 
+    src/CommHandler.cpp 
+    src/HuboMotor.cpp 
+    src/MotorBoard.cpp 
+    src/IMUBoard.cpp 
+    src/FTSensorBoard.cpp 
+    src/PowerControlBoard.cpp 
+    src/HuboState.cpp 
+    src/pugixml.cpp 
+    src/TrajHandler.cpp
+    src/Trajectory.cpp 
+    src/WSVFile.cpp 
+    src/CommandChannel.cpp 
+    src/ReferenceChannel.cpp 
+    src/StateChannel.cpp 
+    src/SimChannels.cpp
+    include/Singleton.h)
 #target_link_libraries(example ${PROJECT_NAME})
