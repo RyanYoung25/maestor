@@ -32,19 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HARDWARE true
 #define SIMULATION false
 
-#include <hubomsg/typekit/HuboState.h>
-#include <hubomsg/typekit/HuboJointState.h>
-#include <hubomsg/typekit/HuboCommand.h>
-#include <hubomsg/typekit/HuboJointCommand.h>
-#include <hubomsg/typekit/AchCommand.h>
-#include <hubomsg/typekit/HuboIMU.h>
-#include <hubomsg/typekit/HuboFT.h>
-#include <hubomsg/typekit/MaestroCommand.h>
-#include <hubomsg/typekit/MaestroMessage.h>
+
 #include <vector>
 #include <queue>
 #include <map>
-#include "CommHandler.h"
 #include "HuboState.h"
 #include "HuboMotor.h"
 #include "MotorBoard.h"
@@ -76,9 +67,6 @@ using std::ostringstream;
 using std::istringstream;
 using std::cout;
 using std::endl;
-using hubomsg::MaestroCommand;
-using hubomsg::MaestroMessage;
-using hubomsg::AchCommand;
 
 class RobotControl {
 
@@ -104,9 +92,8 @@ public:
     // Control Commands
     void debugControl(int board, int operation);
     void setDelay(int us);
-    //void runGesture(string name);
     void command(string name, string target);
-    void handleMessage(MaestroCommand message);
+    //void handleMessage(MaestroCommand message);
 
     // Feedback Commands
     bool requiresMotion(string name);
@@ -131,20 +118,13 @@ public:
     // Configuration Commands
     bool getRunType();
     bool setAlias(string name, string alias);
-    vector<string> getGestureScripts(string path);
     vector<string> splitFields(string input);
     string getDefaultInitPath(string path);
 
 
 private:
 
-    //SUBSCRIBE
-    InputPort<MaestroCommand> *commandPort;
-    CommHandler *commHandler;
-
-    //PUBLISH
-    OutputPort<MaestroMessage> *messageDownPort;
-
+    
     HuboState *state;
     PowerControlBoard *power;
 
@@ -167,7 +147,7 @@ private:
     bool interpolation, override;
     bool RUN_TYPE;
 
-	ros::NodeHandle nh;
+    ros::NodeHandle nh;
 	bool maestro_run_type;
 };
 

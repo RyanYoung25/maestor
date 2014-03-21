@@ -3,7 +3,6 @@
  *
  *  Created on: Oct 15, 2013
  *      Author: Solis Knight
- *      Author: Ryan Young
  */
 
 #include "CommandChannel.h"

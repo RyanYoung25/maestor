@@ -27,7 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IMUBOARD_H
 #define IMUBOARD_H
 
-#include <hubomsg/typekit/HuboState.h>
 #include <string>
 
 using std::string;

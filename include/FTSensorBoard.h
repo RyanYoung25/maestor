@@ -27,10 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FTSENSORBOARD_H
 #define FTSENSORBOARD_H
 
-#include <hubomsg/typekit/HuboState.h>
 #include <string>
 
-using namespace RTT;
 using std::string;
 
 class FTSensorBoard {

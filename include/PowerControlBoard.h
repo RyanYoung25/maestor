@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <map>
 #include <string>
+#include <cstring>
 
-using namespace RTT;
 using std::map;
 using std::string;
 using std::ifstream;

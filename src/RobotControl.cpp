@@ -28,11 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 RobotControl::RobotControl(const string& name){
 
-    this->messageDownPort = new OutputPort<MaestroMessage>("Maestro/Message");   
-
-    this->commandPort = new InputPort<MaestroCommand>("Maestro/Control");
-    
-    this->commHandler = new CommHandler(commandPort);
     
 	RUN_TYPE = getRunType();
 
@@ -43,9 +38,8 @@ RobotControl::RobotControl(const string& name){
         simChannels = SimChannels::instance();
     }
 
-    //COMM PORTS
-    this->addEventPort(*commandPort);
-    this->addPort(*messageDownPort);
+    //ALL OF THESE NEED TO BE IMPLEMENTED AS SERVICES 
+    /*
 
     this->addOperation("initRobot", & RobotControl::initRobot, this, RTT::OwnThread)
             .doc("Initialize a robot")
@@ -94,11 +88,6 @@ RobotControl::RobotControl(const string& name){
     this->addOperation("setDelay", &RobotControl::setDelay, this, RTT::OwnThread)
             .arg("Microseconds", "Delay amount in microseconds.");
 
-    /*
-    this->addOperation("runGesture", &RobotControl::runGesture, this, RTT::OwnThread)
-            .arg("Name", "The name of the gesture to load.");
-            */
-
     this->addOperation("loadTrajectory", &RobotControl::loadTrajectory, this, RTT::OwnThread)
             .arg("Name", "The name of the trajectory to load.")
             .arg("path", "Path to the trajectory to load.")
@@ -133,6 +122,7 @@ RobotControl::RobotControl(const string& name){
     this->addOperation("stopTrajectory", &RobotControl::stopTrajectory, this, RTT::OwnThread)
             .arg("Name", "The name of the trajectory to stop.");
 
+    */
 
     this->written = 0;
     this->printNow = false;
@@ -158,7 +148,7 @@ RobotControl::RobotControl(const string& name){
     ostringstream logfile;
     logfile << LOG_PATH << "RobotControl.log";
     tempOutput.open(logfile.str().c_str());
-    vector<string> paths = getGestureScripts(CONFIG_PATH);
+   //vector<string> paths = getGestureScripts(CONFIG_PATH);
     /*
     for (int i = 0; i < paths.size(); i++){
         //cout << "Adding gestures from path: " << paths[i] << endl;
@@ -172,15 +162,12 @@ RobotControl::RobotControl(const string& name){
 }
   
 RobotControl::~RobotControl(){
-    delete commandPort;
-    delete commHandler;
-    delete messageDownPort;
     delete state;
     delete power;
 }
 
 void RobotControl::updateHook(){
-    commHandler->update();
+   /* commHandler->update();
 
     if (commHandler->isNew(1)){
         MaestroCommand message = commHandler->getPyMessage();
@@ -190,7 +177,7 @@ void RobotControl::updateHook(){
         if (state == NULL)
             return;
         this->handleMessage(message);
-    }
+    }*/
 
     if (state == NULL)
         return;
@@ -240,7 +227,7 @@ void RobotControl::updateHook(){
                         pos = motor->interpolate();
                     else
                         pos = motor->getGoalPosition();
-                    power->addMotionPower(motor->getName(), this->getPeriod());
+                    power->addMotionPower(motor->getName(), (1/200));  //TODO: Get the period
                     motor->setMode(HUBO_REF_MODE_REF_FILTER);
                 } else {
                     pos = motor->getGoalPosition();
@@ -269,7 +256,7 @@ void RobotControl::updateHook(){
             trajectories.advanceFrame();
     }
 
-    power->addMotionPower("IDLE", this->getPeriod());
+    power->addMotionPower("IDLE", (1/200)); //TODO: get the period
 
     //Write out a message if we have one
     referenceChannel->update();
@@ -278,7 +265,7 @@ void RobotControl::updateHook(){
 }
 
 //TODO: Scan directory for gestures, directory defined by config
-vector<string> RobotControl::getGestureScripts(string path){
+/*vector<string> RobotControl::getGestureScripts(string path){
     vector<string> files;
 
     ifstream is;
@@ -297,7 +284,7 @@ vector<string> RobotControl::getGestureScripts(string path){
         cout << "Error. Config file nonexistent. Aborting." << endl;
 
     return files;
-}
+}*/
 
 bool RobotControl::getRunType(){
     if(nh.hasParam("MaestroRunType")){
@@ -409,9 +396,11 @@ void RobotControl::initRobot(string path){
         path = getDefaultInitPath(CONFIG_PATH);
 
     //@TODO: Check for file existence before initializing.
-    this->state->initHuboWithDefaults(path, 1/this->getPeriod());
+    this->state->initHuboWithDefaults(path, 200);  //TODO: get the period
 }
 
+//GET RID OF BECAUSE EVERYTHING WILL BE A SERVICES
+/*
 void RobotControl::handleMessage(MaestroCommand message) {
 
 	string joint = message.joint;
@@ -460,6 +449,7 @@ void RobotControl::handleMessage(MaestroCommand message) {
 	} else
 		setProperties(joint, command, value);
 }
+*/
 
 void RobotControl::set(string name, string property, double value){
     Motors motors = state->getMotorMap();
@@ -604,7 +594,6 @@ string RobotControl::getProperties(string name, string properties) {
 
 void RobotControl::command(string name, string target){
     Motors motors = state->getMotorMap();
-    AchCommand output;
 
     HuboMotor* motor;
 

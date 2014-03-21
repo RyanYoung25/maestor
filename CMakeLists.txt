@@ -31,7 +31,6 @@ rosbuild_add_executable(${PROJECT_NAME}
     src/loop.cpp 
     src/servTest.cpp
     src/RobotControl.cpp 
-    src/CommHandler.cpp 
     src/HuboMotor.cpp 
     src/MotorBoard.cpp 
     src/IMUBoard.cpp 
@@ -47,4 +46,5 @@ rosbuild_add_executable(${PROJECT_NAME}
     src/StateChannel.cpp 
     src/SimChannels.cpp
     include/Singleton.h)
+target_link_libraries(${PROJECT_NAME} ach)
 #target_link_libraries(example ${PROJECT_NAME})
