@@ -12,6 +12,7 @@
 
 #include "Scheduler.h"
 #include "servTest.h"
+#include "RobotControl.h"
 
 using ros::NodeHandle;
 using ros::ServiceServer;
