@@ -26,9 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "RobotControl.h"
 
-RobotControl::RobotControl(const NodeHandle& handle, const Scheduler& scheduler){
+RobotControl::RobotControl(){
 
-	RUN_TYPE = getRunType();
+	RUN_TYPE = SIMULATION;// getRunType();
 
     commandChannel = CommandChannel::instance();
     referenceChannel = ReferenceChannel::instance();
@@ -285,7 +285,7 @@ void RobotControl::updateHook(){
     return files;
 }*/
 
-bool RobotControl::getRunType(){
+/*bool RobotControl::getRunType(){
     if(nh.hasParam("MaestroRunType")){
 		nh.getParam("MaestroRunType",maestro_run_type);
 		// Run type parameter no longer needed. Delete to save ros bandwith
@@ -295,7 +295,7 @@ bool RobotControl::getRunType(){
 
     cout << endl << "Could not determine run type. Defaulting to hardware" << endl;
 	return true;
-}
+}*/
 
 bool RobotControl::loadTrajectory(string name, string path, bool read){
     return trajectories.loadTrajectory(name, path, read);

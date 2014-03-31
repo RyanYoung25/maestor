@@ -83,7 +83,7 @@ private:
     typedef Trajectory::Header Header;
 
 public:
-    RobotControl(const NodeHandle& handle, const Scheduler& scheduler);
+    RobotControl();
     ~RobotControl();
 
     void updateHook();
@@ -151,7 +151,7 @@ private:
     bool interpolation, override;
     bool RUN_TYPE;
 
-    ros::NodeHandle nh;
+    //ros::NodeHandle nh;
 	bool maestro_run_type;
 };
 
