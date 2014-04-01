@@ -13,6 +13,7 @@
 #include "Scheduler.h"
 #include "servTest.h"
 #include "RobotControl.h"
+#include "maestor/initRobot.h"
 #include "maestor/setProperties.h"
 #include "maestor/command.h"
 #include "maestor/requiresMotion.h"
@@ -35,6 +36,8 @@ void setRealtime();
 
 using std::cout;
 using std::endl;
+
+bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &res);
 
 bool setProperties(maestor::setProperties::Request &req, maestor::setProperties::Response &res);
 

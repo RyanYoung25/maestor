@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
     NodeHandle n; //Fully initializes the node
     Scheduler timer(FREQ_200HZ);
     ServiceServer srv = n.advertiseService("fib", &fib);
+    ServiceServer Initsrv = n.advertiseService("initRobot", &initRobot);
     ServiceServer SPsrv = n.advertiseService("setProperties", &setProperties);
     ServiceServer Comsrv = n.advertiseService("command", &command);
     ServiceServer RMsrv = n.advertiseService("requiresMotion", &requiresMotion);
@@ -71,6 +72,12 @@ void setRealtime(){
         perror("sched_setscheduler failed");
         exit(-1);
     }
+}
+
+bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &res)
+{
+    robot.initRobot(req.path);
+    return true;
 }
 
 bool setProperties(maestor::setProperties::Request &req, maestor::setProperties::Response &res)
