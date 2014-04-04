@@ -124,7 +124,7 @@ RobotControl::RobotControl(){
     */
 
     this->written = 0;
-    this->printNow = false;
+    this->printNow = true;
     this->enableControl = false;
     this->delay = 0;
     this->state = NULL;
@@ -258,6 +258,7 @@ void RobotControl::updateHook(){
     power->addMotionPower("IDLE", (1/200)); //TODO: get the period
 
     //Write out a message if we have one
+    std::cout << "About to update the reference channel. maybe update hook isn't happening" << std::endl;
     referenceChannel->update();
 
     usleep(delay);

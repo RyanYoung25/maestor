@@ -50,8 +50,9 @@ int main(int argc, char **argv) {
     ServiceServer StTsrv = n.advertiseService("startTrajectory", &startTrajectory);
     ServiceServer SpTsrv = n.advertiseService("stopTrajectory", &stopTrajectory);
 
+    ServiceServer SetPropsrv = n.advertiseService("setProperty", &setProperty);
     while (ros::ok()) {
-        ros::spin();
+        ros::spinOnce();
 
         robot.updateHook();
 
@@ -159,5 +160,11 @@ bool startTrajectory(maestor::startTrajectory::Request &req, maestor::startTraje
 bool stopTrajectory(maestor::stopTrajectory::Request &req, maestor::stopTrajectory::Response &res)
 {
     robot.stopTrajectory(req.name);
+    return true;
+}
+
+bool setProperty(maestor::setProperty::Request &req, maestor::setProperty::Response &res)
+{
+    robot.set(req.name, req.property, req.value);
     return true;
 }

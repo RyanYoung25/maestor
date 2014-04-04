@@ -27,6 +27,7 @@
 #include "maestor/extendTrajectory.h"
 #include "maestor/startTrajectory.h"
 #include "maestor/stopTrajectory.h"
+#include "maestor/setProperty.h"
 
 using ros::NodeHandle;
 using ros::ServiceServer;
@@ -59,3 +60,4 @@ bool setTrigger(maestor::setTrigger::Request &req, maestor::setTrigger::Response
 bool extendTrajectory(maestor::extendTrajectory::Request &req, maestor::extendTrajectory::Response &res);
 bool startTrajectory(maestor::startTrajectory::Request &req, maestor::startTrajectory::Response &res);
 bool stopTrajectory(maestor::stopTrajectory::Request &req, maestor::stopTrajectory::Response &res);
+bool setProperty(maestor::setProperty::Request &req, maestor::setProperty::Response &res);
