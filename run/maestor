@@ -1,0 +1,35 @@
+#! /bin/bash
+
+case "$1" in
+# Start the maestor console
+	'console' )
+		./console.sh
+	;;
+
+# Start all channels and processes
+	'sim-real' )
+		./sim-real.sh $@
+	;;
+
+# Loads new home paramaters
+	'sim' )
+		./sim.sh $@
+	;;
+
+# Start hubo-read
+	'real' )
+		./real.sh $2
+	;;
+
+	*)
+		echo
+		echo 'console       : Starts the maestor console'
+		echo 'sim-real      : Starts maestor with hubo-ach in sim-real mode'
+		echo 'sim           : Starts maestor with hubo-ach in sim mode'
+		echo 'real          : Starts maestor with hubo-ach in real mode'
+		echo
+		exit 1
+	;;
+esac
+
+exit 0
