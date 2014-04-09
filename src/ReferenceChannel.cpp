@@ -51,6 +51,7 @@ void ReferenceChannel::load(){
     size_t fs;
 
     int r = ach_get(&huboReferenceChannel, &temp, sizeof(temp), &fs, NULL, ACH_O_LAST);
+
     if(ACH_OK != r && ACH_MISSED_FRAME != r && ACH_STALE_FRAMES != r) {
         cout << "Error! Reference Channel failed with state " << r << endl;
         errored = true;

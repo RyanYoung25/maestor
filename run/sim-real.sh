@@ -14,7 +14,7 @@ while [ ! $(pgrep hubo-daemon) ]; do
     sleep 1
 done
 
-sudo -E ~/git/git/maestor/bin/maestor
+sudo -E ~/git/git/maestor/bin/maestor sim 
 
 while true; do
     sleep 3

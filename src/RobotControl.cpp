@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 RobotControl::RobotControl(){
 
-	RUN_TYPE = SIMULATION;// getRunType();
+	RUN_TYPE = HARDWARE;
 
     commandChannel = CommandChannel::instance();
     referenceChannel = ReferenceChannel::instance();
@@ -186,12 +186,14 @@ void RobotControl::updateHook(){
     referenceChannel->load();
     stateChannel->load();
 
+
     trajStarted = trajectories.hasRunning();
 
     Boards boards = state->getBoards();
     Motors motors = state->getMotorMap();
     Trajectory* traj = NULL;
     HuboMotor* motor = NULL;
+
 
     if (!boards.empty()) {
         for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
@@ -256,8 +258,8 @@ void RobotControl::updateHook(){
 
     power->addMotionPower("IDLE", (1/200)); //TODO: get the period
 
+
     //Write out a message if we have one
-    std::cout << "About to update the reference channel. maybe update hook isn't happening" << std::endl;
     referenceChannel->update();
 
     usleep(delay);
@@ -285,17 +287,9 @@ void RobotControl::updateHook(){
     return files;
 }*/
 
-/*bool RobotControl::getRunType(){
-    if(nh.hasParam("MaestroRunType")){
-		nh.getParam("MaestroRunType",maestro_run_type);
-		// Run type parameter no longer needed. Delete to save ros bandwith
-		nh.deleteParam("MaestroRunType");
-		return maestro_run_type;
-	}
-
-    cout << endl << "Could not determine run type. Defaulting to hardware" << endl;
-	return true;
-}*/
+void RobotControl::setSimType(){
+    RUN_TYPE = SIMULATION;
+}
 
 bool RobotControl::loadTrajectory(string name, string path, bool read){
     return trajectories.loadTrajectory(name, path, read);
@@ -392,8 +386,9 @@ string RobotControl::getDefaultInitPath(string path){
 void RobotControl::initRobot(string path){
     this->state = new HuboState();
     if (strcmp(path.c_str(), "") == 0)
+    {
         path = getDefaultInitPath(CONFIG_PATH);
-
+    }
     //@TODO: Check for file existence before initializing.
     this->state->initHuboWithDefaults(path, 200);  //TODO: get the period
 

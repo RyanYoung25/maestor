@@ -120,7 +120,7 @@ public:
     void stopTrajectory(string name);
 
     // Configuration Commands
-    bool getRunType();
+    void setSimType();
     bool setAlias(string name, string alias);
     vector<string> splitFields(string input);
     string getDefaultInitPath(string path);
