@@ -177,7 +177,6 @@ void RobotControl::updateHook(){
             return;
         this->handleMessage(message);
     }*/
-
     if (state == NULL)
         return;
 

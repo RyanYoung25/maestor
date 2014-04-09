@@ -27,8 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ROBOTCONTROL_H
 #define ROBOTCONTROL_H
 
-#define CONFIG_PATH "/opt/ros/fuerte/stacks/maestro/maestro/config/config.txt"
-#define LOG_PATH "/opt/ros/fuerte/stacks/maestro/maestro/logs/"
+#define CONFIG_PATH "/opt/ros/fuerte/stacks/maestor/config/config.txt"
+#define LOG_PATH "/opt/ros/fuerte/stacks/maestor/logs/"
 #define HARDWARE true
 #define SIMULATION false
 
