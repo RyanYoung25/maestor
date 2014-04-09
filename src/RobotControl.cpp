@@ -396,6 +396,12 @@ void RobotControl::initRobot(string path){
 
     //@TODO: Check for file existence before initializing.
     this->state->initHuboWithDefaults(path, 200);  //TODO: get the period
+
+    if (this->state == NULL)
+    {
+        std::cout << "Error. Initializing robot failed. Robot state is null." << std::endl;
+    }
+
 }
 
 //GET RID OF BECAUSE EVERYTHING WILL BE A SERVICES
@@ -586,7 +592,10 @@ string RobotControl::getProperties(string name, string properties) {
     {
         double tmp = get(name, propertyList[i]);
         values << tmp;
-        values << ", ";
+        if(i + 1 != propertyList.size())
+        {
+            values << ", ";
+        }
     }
     return values.str();
 }
