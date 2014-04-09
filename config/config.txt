@@ -1,18 +1,4 @@
 RunType:
 Simulation
 Init File:
-/opt/ros/fuerte/stacks/maestro/maestro/models/hubo_default.xml
-Scripts:
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/harmonic.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/newscript.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/otherscript.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/dance.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/fold.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/testure.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/testureLeft.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/armPitch.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/armRoll.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/repREP.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/repRSY.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/repRSR.ops
-/opt/ros/fuerte/stacks/maestro/maestro/gestures/loop.ops
+/opt/ros/fuerte/stacks/maestor/models/hubo_default.xml
