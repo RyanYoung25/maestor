@@ -124,7 +124,7 @@ RobotControl::RobotControl(){
     */
 
     this->written = 0;
-    this->printNow = true;
+    this->printNow = false;
     this->enableControl = false;
     this->delay = 0;
     this->state = NULL;
