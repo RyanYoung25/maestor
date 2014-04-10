@@ -1,4 +1,11 @@
 #!/bin/bash
+if [ $(pgrep maestor | wc -w) -gt 1 ]; then
+    echo "Maestor is already running"
+    echo "If you would like to kill maestor run the command: "
+    echo "maestor kill"
+    exit 0
+fi
+
 if [ $(pgrep hubo-daemon) ]; then
     echo "Hubo-Ach daemon is already running. Terminating..."
     hubo-ach killall &> /dev/null
@@ -15,6 +22,7 @@ while [ ! $(pgrep hubo-daemon) ]; do
 done
 
 sudo -E /opt/ros/fuerte/stacks/maestor/bin/maestor sim &
+sleep 1
 
 while [ ! $(pgrep maestor | wc -w) == 2 ]; do
     sleep 1

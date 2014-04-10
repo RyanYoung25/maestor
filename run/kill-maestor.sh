@@ -1,12 +1,13 @@
 #! /bin/bash
 
-MaestorPID=$(pgrep maestor)
 RoscorePID=$(pgrep roscore)
 SimulationPID=$(pgrep hubo-ach)
 
-sudo kill -2 $MaestorPID
+
 kill -2 $RoscorePID
-kill -9 $SimulationPID
-hubo-ach killall
+kill -9 $SimulationPID >> /dev/null 2>/dev/null
+hubo-ach killall >> /dev/null 2>/dev/null
+sudo pkill -9 maestor
+echo "Maestor shut down successfully"
 
 

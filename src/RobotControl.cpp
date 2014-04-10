@@ -288,6 +288,7 @@ void RobotControl::updateHook(){
 }*/
 
 void RobotControl::setSimType(){
+    simChannels = SimChannels::instance();
     RUN_TYPE = SIMULATION;
 }
 

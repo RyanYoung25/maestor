@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
         if(strcmp(argv[1], "sim") == 0)
         {
             //If simulation set the runtime to sim
+            cout << "Setting mode to simulation" << endl;
             robot.setSimType();
         }
     }
