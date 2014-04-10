@@ -22,6 +22,9 @@ while [ ! $(pgrep roscore) ]; do
 	sleep 1
 done
 
-sudo -E /opt/ros/fuerte/stacks/maestor/bin/maestor
+sudo -E /opt/ros/fuerte/stacks/maestor/bin/maestor &
 
+while [ ! $(pgrep maestor | wc -w) == 2 ]; do
+    sleep 1
+done
 

@@ -14,8 +14,10 @@ while [ ! $(pgrep hubo-daemon) ]; do
     sleep 1
 done
 
-sudo -E ~/git/git/maestor/bin/maestor sim
+sudo -E /opt/ros/fuerte/stacks/maestor/bin/maestor sim &
 
-while true; do
-    sleep 3
+while [ ! $(pgrep maestor | wc -w) == 2 ]; do
+    sleep 1
 done
+
+

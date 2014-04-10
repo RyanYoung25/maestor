@@ -6,19 +6,23 @@ case "$1" in
 		/opt/ros/fuerte/stacks/maestor/run/console.sh
 	;;
 
-# Start all channels and processes
+# Start in simulation without physics, real time
 	'sim-real' )
 		/opt/ros/fuerte/stacks/maestor/run/sim-real.sh 
 	;;
 
-# Loads new home paramaters
+# Start in simulation mode with physics
 	'sim' )
 		/opt/ros/fuerte/stacks/maestor/run/sim.sh 
 	;;
 
-# Start hubo-read
+# Start in hardware mode
 	'real' )
 		/opt/ros/fuerte/stacks/maestor/run/real.sh 
+	;;
+# Kill maestor
+	'kill' )
+		/opt/ros/fuerte/stacks/maestor/run/kill-maestor.sh
 	;;
 
 	*)
@@ -27,6 +31,7 @@ case "$1" in
 		echo 'sim-real      : Starts maestor with hubo-ach in sim-real mode'
 		echo 'sim           : Starts maestor with hubo-ach in sim mode'
 		echo 'real          : Starts maestor with hubo-ach in real mode'
+		echo 'kill			: Kills maestor, roscore, and runs hubo-ach killall'
 		echo
 		exit 1
 	;;
