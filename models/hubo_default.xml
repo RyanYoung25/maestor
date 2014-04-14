@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<robot name="testrig">
+	<board number="0" channels="2" name="R_HIP_YAW_ROLL">
+		<motor mpos1="-90000" mpos2="90000" kp="200" kd="500" ki="0"
+                       dz="44" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="RHY"
+                       drive="10" driven="25" harm="100" enc="4000"/>
+		<motor mpos1="-150000" mpos2="120000" kp="200" kd="500" ki="0"
+                       dz="44" off="4500" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="RHR"
+                       drive="324" driven="1024" harm="160" enc="4000"/>
+	</board>
+ 	<board number="1" channels="1" name="R_HIP_PITCH">
+		<motor mpos1="-165000" mpos2="130000" kp="200" kd="500" ki="0"
+                       dz="44" off="-4000" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="RHP"
+                       drive="16" driven="20" harm="160" enc="4000"/>
+	</board>
+ 	<board number="2" channels="1" name="R_KNEE">
+		<motor mpos1="-30000" mpos2="220000" kp="200" kd="500" ki="0"
+                       dz="44" off="-13000" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="RKP"
+                       drive="16" driven="16" harm="160" enc="4000"/>
+	</board>
+ 	<board number="3" channels="2" name="R_ANKLE_PITCH_ROLL">
+		<motor mpos1="-170000" mpos2="170000" kp="200" kd="500" ki="0"
+                       dz="44" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="RAP"
+                       drive="10" driven="25" harm="100" enc="4000"/>
+		<motor mpos1="-78000" mpos2="78000" kp="200" kd="500" ki="0"
+                       dz="44" off="12000" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="RAR"
+                       drive="324" driven="1024" harm="100" enc="4000"/>
+	</board>
+ 	<board number="4" channels="2" name="L_HIP_YAW_ROLL">
+		<motor mpos1="-90000" mpos2="90000" kp="200" kd="500" ki="0"
+                       dz="44" off="0" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="LHY"
+                       drive="10" driven="25" harm="100" enc="4000"/>
+		<motor mpos1="-120000" mpos2="150000" kp="200" kd="500" ki="0"
+                       dz="44" off="-4500" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="LHR"
+                       drive="324" driven="1024" harm="160" enc="4000"/>
+	</board>
+ 	<board number="5" channels="1" name="L_HIP_PITCH">
+		<motor mpos1="-165000" mpos2="130000" kp="200" kd="500" ki="0"
+                       dz="44" off="-4000" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="LHP"
+                       drive="16" driven="20" harm="160" enc="4000"/>
+	</board>
+ 	<board number="6" channels="1" name="L_KNEE">
+		<motor mpos1="-30000" mpos2="220000" kp="200" kd="500" ki="0"
+                       dz="44" off="-13000" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="LKP"
+                       drive="16" driven="16" harm="160" enc="4000"/>
+	</board>
+ 	<board number="7" channels="2" name="L_ANKLE_PITCH_ROLL">
+		<motor mpos1="-170000" mpos2="170000" kp="200" kd="500" ki="0"
+                       dz="44" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="LAP"
+                       drive="10" driven="25" harm="100" enc="4000"/>
+		<motor mpos1="-78000" mpos2="78000" kp="200" kd="500" ki="0"
+                       dz="44" off="-8000" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="LAR"
+                       drive="324" driven="1024" harm="100" enc="4000"/>
+	</board>
+ 	<board number="8" channels="2" name="R_SHOULDER_PITCH_ROLL">
+		<motor mpos1="-310000" mpos2="280000" kp="100" kd="250" ki="0"
+                       dz="28" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="RSP"
+                       drive="11" driven="16" harm="100" enc="4000"/>
+		<motor mpos1="-180000" mpos2="10000" kp="100" kd="250" ki="0"
+                       dz="28" off="13333" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="RSR"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+	</board>
+ 	<board number="9" channels="2" name="R_SHOULDER_YAW_ELBOW">
+		<motor mpos1="-150000" mpos2="100000" kp="100" kd="250" ki="0"
+                       dz="28" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="RSY"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+		<motor mpos1="-190000" mpos2="0" kp="100" kd="250" ki="0"
+                       dz="28" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="REP"
+                       drive="20" driven="20" harm="100" enc="4000"/>
+	</board>
+ 	<board number="10" channels="2" name="L_SHOULDER_PITCH_ROLL">
+		<motor mpos1="-310000" mpos2="280000" kp="100" kd="250" ki="0"
+                       dz="28" off="0" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="LSP"
+                       drive="11" driven="16" harm="100" enc="4000"/>
+		<motor mpos1="-10000" mpos2="180000" kp="100" kd="250" ki="0"
+                       dz="28" off="-11666" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="LSR"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+	</board>
+ 	<board number="11" channels="2" name="L_SHOULDER_YAW_ELBOW">
+		<motor mpos1="-100000" mpos2="150000" kp="100" kd="250" ki="0"
+                       dz="28" off="0" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="1" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="20" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="0" name="LSY"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+		<motor mpos1="-190000" mpos2="0" kp="100" kd="250" ki="0"
+                       dz="28" off="10000" hlim="20" hld="1" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="1500"
+                       a_max="20" jam_lim="3" jamd="50" pwm_lim="5"
+                       i_err="20000" b_err="10000" channel="1" name="LEP"
+                       drive="20" driven="20" harm="100" enc="4000"/>
+	</board>
+ 	<board number="32" channels="2" name="R_WRIST_YAW_PITCH">
+		<motor mpos1="-100000" mpos2="180000" kp="2000" kd="5000" ki="0"
+                       dz="140" off="0" hlim="100" hld="0" hv1="100" hv2="100"
+                       hma="1" sm="1" ers="4000" as="1" md="0" v_max="-100000"
+                       a_max="180000" jam_lim="2000" jamd="5000" pwm_lim="0"
+                       i_err="0" b_err="10000" channel="0" name="RWY"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+		<motor mpos1="-70000" mpos2="90000" kp="2000" kd="5000" ki="0"
+                       dz="140" off="100000" hlim="100" hld="0" hv1="100" hv2="100"
+                       hma="1" sm="2" ers="4000" as="1" md="0" v_max="-70000"
+                       a_max="90000" jam_lim="2000" jamd="5000" pwm_lim="0"
+                       i_err="100000" b_err="10000" channel="1" name="RWP"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+	</board>
+ 	<board number="33" channels="2" name="L_WRIST_YAW_PITCH">
+		<motor mpos1="-180000" mpos2="100000" kp="2000" kd="5000" ki="0"
+                       dz="140" off="0" hlim="100" hld="1" hv1="100" hv2="100"
+                       hma="1" sm="1" ers="4000" as="1" md="0" v_max="-180000"
+                       a_max="100000" jam_lim="2000" jamd="5000" pwm_lim="0"
+                       i_err="0" b_err="10000" channel="0" name="LWY"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+		<motor mpos1="-70000" mpos2="90000" kp="2000" kd="5000" ki="0"
+                       dz="140" off="100000" hlim="100" hld="0" hv1="100" hv2="100"
+                       hma="1" sm="2" ers="4000" as="1" md="1" v_max="-70000"
+                       a_max="90000" jam_lim="2000" jamd="5000" pwm_lim="0"
+                       i_err="100000" b_err="10000" channel="1" name="LWP"
+                       drive="1" driven="1" harm="100" enc="4000"/>
+	</board>
+ 	<board number="34" channels="3" name="NECK">
+		<motor mpos1="-4000" mpos2="4000" kp="40" kd="100" ki="0"
+                       dz="90" off="0" hlim="30" hld="1" hv1="2" hv2="2"
+                       hma="1" sm="1" ers="128" as="1" md="1" v_max="-4000"
+                       a_max="4000" jam_lim="40" jamd="100" pwm_lim="0"
+                       i_err="0" b_err="30" channel="0" name="NKY"
+                       drive="1" driven="1" harm="100" enc="128"/>
+		<motor mpos1="-1300" mpos2="1500" kp="40" kd="100" ki="0"
+                       dz="90" off="-1470" hlim="30" hld="1" hv1="2" hv2="2"
+                       hma="1" sm="2" ers="128" as="1" md="0" v_max="-1300"
+                       a_max="1050" jam_lim="40" jamd="100" pwm_lim="0"
+                       i_err="-1470" b_err="30" channel="1" name="NK1"
+                       drive="1" driven="1" harm="100" enc="128"/>
+		<motor mpos1="-1300" mpos2="1500" kp="40" kd="100" ki="0"
+                       dz="90" off="-1470" hlim="30" hld="1" hv1="2" hv2="2"
+                       hma="1" sm="2" ers="128" as="1" md="0" v_max="-1300"
+                       a_max="1050" jam_lim="40" jamd="100" pwm_lim="0"
+                       i_err="-1470" b_err="30" channel="2" name="NK2"
+                       drive="1" driven="1" harm="100" enc="128"/>
+	</board>
+ 	<board number="35" channels="1" name="WAIST">
+		<motor mpos1="-170000" mpos2="170000" kp="200" kd="500" ki="0"
+                       dz="44" off="0" hlim="20" hld="0" hv1="40" hv2="50"
+                       hma="0.1" sm="0" ers="4000" as="1" md="0" v_max="-170000"
+                       a_max="170000" jam_lim="200" jamd="500" pwm_lim="0"
+                       i_err="0" b_err="20" channel="0" name="WST"
+                       drive="10" driven="25" harm="100" enc="4000"/>
+	</board>
+ 	<board number="36" channels="5" name="R_HAND">
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="0" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="0" name="RF1"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="1" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="1" name="RF2"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="1" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="2" name="RF3"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="0" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="3" name="RF4"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="0" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="4" name="RF5"
+                       drive="1" driven="1" harm="256" enc="128"/>
+	</board>
+ 	<board number="37" channels="5" name="L_HAND">
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="1" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="0" name="LF1"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="0" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="1" name="LF2"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="0" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="2" name="LF3"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="1" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="3" name="LF4"
+                       drive="1" driven="1" harm="256" enc="128"/>
+		<motor mpos1="-4800" mpos2="4400" kp="50" kd="100" ki="0"
+                       dz="0" off="-5000" hlim="100" hld="1" hv1="20" hv2="20"
+                       hma="1" sm="2" ers="64" as="1" md="1" v_max="-4800"
+                       a_max="4400" jam_lim="50" jamd="100" pwm_lim="0"
+                       i_err="-5000" b_err="100" channel="4" name="LF5"
+                       drive="1" driven="1" harm="256" enc="128"/>
+	</board>
+</robot>
+

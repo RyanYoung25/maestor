@@ -1,29 +1,3 @@
-/*
-#include <sched.h>
-#include <sys/io.h>
-#include <unistd.h>
-
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <string>
-#include <math.h>
-
-#include "Scheduler.h"
-#include "servTest.h"
-#include "RobotControl.h"
-
-using ros::NodeHandle;
-using ros::ServiceServer;
-using ros::init;
-
-void setRealtime();
-
-using std::cout;
-using std::endl;
-*/
 #include "loop.h"
 
 RobotControl robot;
@@ -31,6 +5,18 @@ RobotControl robot;
 int main(int argc, char **argv) {
     ros::init(argc, argv, "Maestor"); 
     setRealtime();
+
+    //Check for the run type
+
+    if(argc == 2)
+    {
+        if(strcmp(argv[1], "sim") == 0)
+        {
+            //If simulation set the runtime to sim
+            cout << "Setting mode to simulation" << endl;
+            robot.setSimType();
+        }
+    }
     //Init the node
     NodeHandle n; //Fully initializes the node
     Scheduler timer(FREQ_200HZ);
@@ -51,11 +37,13 @@ int main(int argc, char **argv) {
     ServiceServer SpTsrv = n.advertiseService("stopTrajectory", &stopTrajectory);
 
     ServiceServer SetPropsrv = n.advertiseService("setProperty", &setProperty);
+
+    std::cout << "Services are set up, entering main loop" << endl;
     while (ros::ok()) {
         ros::spinOnce();
 
         robot.updateHook();
-
+        //std::cout << "looping" << endl;
         timer.sleep();
         timer.update();
     }
@@ -77,8 +65,11 @@ void setRealtime(){
 
 bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &res)
 {
+    std::cout << "init was called" << endl;
     robot.initRobot(req.path);
+    std::cout << "init was run, about to return" << endl;
     return true;
+
 }
 
 bool setProperties(maestor::setProperties::Request &req, maestor::setProperties::Response &res)

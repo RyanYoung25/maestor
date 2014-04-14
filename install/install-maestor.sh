@@ -76,5 +76,7 @@ then
     echo "Creating symbolic link in /opt/ros/fuerte/stacks..."; 
     ln -s $installDir/../ maestor;
 fi
+cd /usr/bin
+ln -s $installDir/../run/maestor maestor
 rosmake maestor
 echo "Installation complete."
