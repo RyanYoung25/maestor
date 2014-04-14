@@ -1,29 +1,3 @@
-/*
-#include <sched.h>
-#include <sys/io.h>
-#include <unistd.h>
-
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <string>
-#include <math.h>
-
-#include "Scheduler.h"
-#include "servTest.h"
-#include "RobotControl.h"
-
-using ros::NodeHandle;
-using ros::ServiceServer;
-using ros::init;
-
-void setRealtime();
-
-using std::cout;
-using std::endl;
-*/
 #include "loop.h"
 
 RobotControl robot;

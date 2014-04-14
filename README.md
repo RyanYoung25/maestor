@@ -23,7 +23,7 @@ Installation scripts exist to install dependencies such as ROS, OpenRAVE, Hubo-A
 ****** 
  Note
 ******
- Pay strict attention to permissions for all scripts. Some require root access, and some mandate non-root access. ****
+ Pay strict attention to permissions for all scripts. Some require root access and some mandate non-root access. ****
 
 To install all dependencies and complementary packages.
 	./install-all.sh
@@ -45,7 +45,7 @@ Installation of OpenHUBO:
 ******
  Note
 ******
-After installation, it is recommended for the user to interact with these packages in a new terminal, in order to 
+After installation, it is recommended for the user to interact with these packages in a new terminal in order to 
 ensure that environment variables are properly loaded. If any errors occur, please reboot the operating system and try again,
 to confirm that the errors are not related to unloaded environment variables.
 
@@ -65,7 +65,7 @@ NOTE: Using source to call the script is necessary because otherwise it will una
 **************        QUICK START      *************
 ****************************************************
 
-If you want to get started immediately, and read about the full interface later, follow these steps:
+If you want to get started immediately and read about the full interface later, follow these steps:
 
 
 	- Run the maestor run script: maestor <run type>
@@ -82,7 +82,8 @@ If you want to get started immediately, and read about the full interface later,
 
 	- If you chose "sim" as your run type:
 		
-		- X Terminals should have opened with hubo ach, roscore and additional simulation windows. Hubo-Ach's terminal may require elevated privileges. Give them. On occation one of the xterminals will be directly over top of the other. If this happens and the one running hubo-ach that needs elevated permissions is on the bottom simply move the top one and give hubo-ach permission. 
+		- X Terminals should have opened with hubo ach, roscore and additional simulation windows. Hubo-Ach's terminal may require elevated privileges. Give them. 
+		-On occasion one of the xterminals will be directly over top of the other. If this happens and the one running hubo-ach that needs elevated permissions is on the bottom, simply move the top one and give hubo-ach permission. 
 		
 	- Once everything has finished starting up, the terminal you started maestor in will be back in your control. 
 	
@@ -99,15 +100,15 @@ If you want to get started immediately, and read about the full interface later,
 		
 		>>> command("HomeAll", "")
 
-    - In order to move the joints them must be enabled. This can be done with the command EnableAll
+    - In order to move the joints they must be enabled. This can be done with the command EnableAll
 	
 		>>> command("EnableAll", "")
 			
-	- From here the robot in hardware or simulation can move all of it's joints. A simple test is to move the right arm up 
+	- From here the robot in hardware or simulation can move all of its joints. A simple test is to move the right arm up 
 
 		>>> setProperty("RSP", "position", -1)
 		
-	- The robot should move its arm up. This should give you an indication of what Maestor can do.
+	- The robot should move its arm up. This should give you an indication of what maestor can do.
 		For more information, please visit the Interface section.
 	
 		
@@ -119,7 +120,7 @@ If you want to get started immediately, and read about the full interface later,
 **********  RUN  ***********
 ****************************
 
-To run maestor type the command maestor and an argument:
+To run maestor, type the command maestor and an argument:
 
 Usage: maestor <Command> 
 <Command>:
@@ -139,6 +140,7 @@ and accepts commands through MAESTOR.
 MAESTOR provides services and thus, MAESTOR commands are funneled to the simulation.
 
 The differences between each mode of operation are as follows:
+
 	Virtual: Hubo-Ach runs in a virtual CAN environment. A separate OpenHUBO simulation appears, with no physics.
 	Sim: Hubo-Ach runs in simulation mode, and opens its own simulation. Physics are enabled - positions of motors can be polled.
 	Sim-real: Hubo-Ach runs in simulation mode without physics. This option is meant for previewing intended robot motion, and should be much faster.

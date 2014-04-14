@@ -37,92 +37,6 @@ RobotControl::RobotControl(){
         simChannels = SimChannels::instance();
     }
 
-    //ALL OF THESE NEED TO BE IMPLEMENTED AS SERVICES 
-    /*
-
-    this->addOperation("initRobot", & RobotControl::initRobot, this, RTT::OwnThread)
-            .doc("Initialize a robot")
-            .arg("Path", "The path to the XML robot representation");
-
-    this->addOperation("setProperty", &RobotControl::set, this, RTT::OwnThread)
-            .doc("Set a property of a robot subsystem")
-            .arg("Name", "The name of the subsystem to set properties for.")
-            .arg("Property", "The name of the property to change. See README for a list of properties and expected values.")
-            .arg("Value", "The value to set the property to.");
-
-    this->addOperation("setProperties", &RobotControl::setProperties, this, RTT::OwnThread)
-            .doc("Set multiple properties of a robot subsystem.")
-            .arg("Names", "The names of the subsystems to set properties for.")
-            .arg("Properties", "The names of the properties to change. See README for a list of mutable properties.")
-            .arg("Values", "The values to set these properties to.");
-
-    this->addOperation("getProperty", &RobotControl::get, this, RTT::OwnThread)
-            .doc("Get the value of a property of a robot subsystem.")
-            .arg("Name", "The name of the subsystem to read values from.")
-            .arg("Property", "The type of value to read. See README for a list of properties and expected values.");
-
-    this->addOperation("getProperties", &RobotControl::getProperties, this, RTT::OwnThread)
-            .doc("Get the value of a list of properties of a robot subsystem.")
-            .arg("Name", "The name of the subsystem to read values from.")
-            .arg("Property", "The list of values to read. See README for a list of properties and expected values.");
-
-    this->addOperation("command", &RobotControl::command, this, RTT::OwnThread)
-            .doc("Send a command to the robot.")
-            .arg("Name", "The name of the command to send. See README for command list and arguments.")
-            .arg("Target", "The target of the command. Usually a joint name.");
-
-    this->addOperation("setMode", &RobotControl::setMode, this, RTT::OwnThread)
-            .doc("Modify the mode of operation of RobotControl.")
-            .arg("Mode", "The mode to be modified. Not yet documented.")
-            .arg("Value", "New value for mode to take on. Not yet documented.");
-
-    this->addOperation("setAlias", &RobotControl::setAlias, this, RTT::OwnThread)
-            .doc("Create an alternate name for a motor, property, sensor, or command.")
-            .arg("Name", "The name of said entity currently recognized")
-            .arg("Alias", "An alias for said name. The old name will not be overwritten. You can not have the same name for different entities.");
-
-    this->addOperation("requiresMotion", &RobotControl::requiresMotion, this, RTT::OwnThread)
-            .arg("Name", "The name of the motor to check for necessary motion on.");
-
-    this->addOperation("setDelay", &RobotControl::setDelay, this, RTT::OwnThread)
-            .arg("Microseconds", "Delay amount in microseconds.");
-
-    this->addOperation("loadTrajectory", &RobotControl::loadTrajectory, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory to load.")
-            .arg("path", "Path to the trajectory to load.")
-            .arg("read", "Boolean - True if reading a trajectory file, false if recording motion.");
-
-    this->addOperation("ignoreFrom", &RobotControl::ignoreFrom, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory.")
-            .arg("Col", "The name of the column to ignore.");
-
-    this->addOperation("ignoreAllFrom", &RobotControl::ignoreAllFrom, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory.");
-
-    this->addOperation("unignoreFrom", &RobotControl::unignoreFrom, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory.")
-            .arg("Col", "The name of the column to unignore.");
-
-    this->addOperation("unignoreAllFrom", &RobotControl::unignoreAllFrom, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory.");
-
-    this->addOperation("setTrigger", &RobotControl::setTrigger, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory to set a trigger for.")
-            .arg("frame", "The frame on which the trigger will fire.")
-            .arg("target", "The trajectory to load upon firing");
-
-    this->addOperation("extendTrajectory", &RobotControl::extendTrajectory, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory to load.")
-            .arg("path", "Path to the trajectory to load.");
-
-    this->addOperation("startTrajectory", &RobotControl::startTrajectory, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory to load.");
-
-    this->addOperation("stopTrajectory", &RobotControl::stopTrajectory, this, RTT::OwnThread)
-            .arg("Name", "The name of the trajectory to stop.");
-
-    */
-
     this->written = 0;
     this->printNow = false;
     this->enableControl = false;
@@ -147,13 +61,6 @@ RobotControl::RobotControl(){
     ostringstream logfile;
     logfile << LOG_PATH << "RobotControl.log";
     tempOutput.open(logfile.str().c_str());
-   //vector<string> paths = getGestureScripts(CONFIG_PATH);
-    /*
-    for (int i = 0; i < paths.size(); i++){
-        //cout << "Adding gestures from path: " << paths[i] << endl;
-        this->getProvider<Scripting>("scripting")->loadPrograms(paths[i]);
-    }
-    */
     power = new PowerControlBoard();
 
     frames = 0;
@@ -166,17 +73,7 @@ RobotControl::~RobotControl(){
 }
 
 void RobotControl::updateHook(){
-   /* commHandler->update();
 
-    if (commHandler->isNew(1)){
-        MaestroCommand message = commHandler->getPyMessage();
-        if(message.command.compare("initRobot") == 0)
-            initRobot("");
-
-        if (state == NULL)
-            return;
-        this->handleMessage(message);
-    }*/
     if (state == NULL)
         return;
 
@@ -264,28 +161,6 @@ void RobotControl::updateHook(){
 
     usleep(delay);
 }
-
-//TODO: Scan directory for gestures, directory defined by config
-/*vector<string> RobotControl::getGestureScripts(string path){
-    vector<string> files;
-
-    ifstream is;
-    is.open(path.c_str());
-    string temp;
-    if (is.is_open()){
-        do {
-            getline(is, temp, '\n');
-        } while (temp.compare("Scripts:") != 0);
-        do {
-            getline(is, temp, '\n');
-            if (temp.compare("") != 0) files.push_back(temp);
-        } while (!is.eof());
-        is.close();
-    } else
-        cout << "Error. Config file nonexistent. Aborting." << endl;
-
-    return files;
-}*/
 
 void RobotControl::setSimType(){
     simChannels = SimChannels::instance();
@@ -399,58 +274,6 @@ void RobotControl::initRobot(string path){
     }
 
 }
-
-//GET RID OF BECAUSE EVERYTHING WILL BE A SERVICES
-/*
-void RobotControl::handleMessage(MaestroCommand message) {
-
-	string joint = message.joint;
-	string command = message.command;
-	string target = message.target;
-	string value = message.value;
-    uint32_t id = message.id; 
-	if(command.compare("initRobot") == 0) {
-		initRobot("");
-	}
-
-	if (joint.compare("") == 0) {
-
-		if (command.compare("initRobot") == 0)
-			initRobot("");
-        else if (command.compare("SetMode") == 0){
-
-            bool boolValue = true;
-            if(target.compare("false") == 0) {
-                boolValue = false;
-            }
-            setMode(value, boolValue);
-            cout << "Was handled correctly" << endl;
-        }
-		else
-			this->command(command, target);
-
-	} else if (command.compare("Get") == 0) {
-		double value = get(joint, target);
-
-		MaestroMessage newMessage;
-		newMessage.joint = joint;
-		newMessage.property = target;
-		newMessage.value = value;
-        newMessage.id = id;
-		this->messageDownPort->write(newMessage);	
-	} else if (command.compare("Check") == 0) {
-		bool value = requiresMotion(joint);
-
-		MaestroMessage newMessage;
-		newMessage.joint = joint;
-		newMessage.property = target;
-		newMessage.value = value;
-        newMessage.id = id;
-		this->messageDownPort->write(newMessage);
-	} else
-		setProperties(joint, command, value);
-}
-*/
 
 void RobotControl::set(string name, string property, double value){
     Motors motors = state->getMotorMap();
@@ -861,15 +684,3 @@ bool RobotControl::requiresMotion(string name){
     }
     return motors[name]->requiresMotion();
 }
-
-/*
-void RobotControl::runGesture(string name){
-    boost::shared_ptr<Scripting> scripting = this->getProvider<Scripting>("scripting");
-    scripting->startProgram(name);
-    if (!scripting->isProgramRunning(name))
-        cout << "Error. Program not running." << endl;
-    if (scripting->inProgramError(name))
-        cout << "Error. Program has encountered an error. " << endl;
-}
-*/
-
