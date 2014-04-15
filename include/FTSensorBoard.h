@@ -27,29 +27,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FTSENSORBOARD_H
 #define FTSENSORBOARD_H
 
-#include <string>
+#include <iostream>
+#include "RobotComponent.h"
+#include "Names.h"
 
-using std::string;
+using std::cout;
+using std::endl;
 
-class FTSensorBoard {
+class FTSensorBoard : public RobotComponent {
+private:
+    int boardNum;
 
-    private:
-        string name;
-        
-        double mX, mY, fZ;
+public:
 
-    public:
+    FTSensorBoard();
 
-        FTSensorBoard();
-        FTSensorBoard(string name);
-   
-        string getName();
-        double getMX();
-        double getMY();
-        double getFZ();
+    bool get(PROPERTY property, double& value);
+    bool set(PROPERTY property, double value);
 
-        void update(double mX, double mY, double fZ);
-        void setName(string name);
+    void setBoardNum(int boardNum);
 };
 
 #endif

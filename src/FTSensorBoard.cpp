@@ -27,40 +27,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FTSensorBoard.h"
 
 FTSensorBoard::FTSensorBoard(){
-    FTSensorBoard("ft0");
+    boardNum = -1;
 }
 
-FTSensorBoard::FTSensorBoard(string name){
-    this->name = name;
-
-    mX = 0;
-    mY = 0;
-    fZ = 0;
+bool FTSensorBoard::get(PROPERTY property, double& value){
+    switch (property){
+    case M_X:
+    case M_Y:
+    case F_Z:
+        // Chooses whether to use the name of the board or the board number to request the property from the state channel
+        // Prints an error if the request fails
+        if ( ( boardNum != -1 ? !stateChannel->getFTProperty(boardNum, property, value) : !stateChannel->getFTProperty(getName(), property, value) ) ){
+            cout << "Error getting " << Names::getName(property) << " from " << getName() << endl;
+            return false;
+        }
+        break;
+    default:
+        return false;
+    }
+    return true;
 }
 
-string FTSensorBoard::getName(){
-    return name;
+bool FTSensorBoard::set(PROPERTY property, double value){
+    return false;
 }
 
-double FTSensorBoard::getMX(){
-    return mX;
-}
-
-double FTSensorBoard::getMY(){
-    return mY;
-}
-
-double FTSensorBoard::getFZ(){
-    return fZ;
-}
-
-
-void FTSensorBoard::update(double mX, double mY, double fZ){
-    this->mX = mX;
-    this->mY = mY;
-    this->fZ = fZ;
-}
-
-void FTSensorBoard::setName(string name){
-    this->name = name;
+void FTSensorBoard::setBoardNum(int boardNum){
+    this->boardNum = boardNum;
 }

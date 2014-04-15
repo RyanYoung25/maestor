@@ -34,6 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 
 #include "ReferenceChannel.h"
+#include "RobotComponent.h"
+#include "Interpolable.h"
 #include "Names.h"
 #include "hubo.h"
 
@@ -41,65 +43,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using std::string;
 
-class HuboMotor {
+class HuboMotor : public RobotComponent, public Interpolable {
 
 private:
 
     typedef ReferenceChannel::Mode Mode;
 
     //Identification
-    string name;
-
-    //Output Data
-    double currGoal;                //Goal position in radians
-    double interStep;                //Current interpolated step in radians
-    double frequency;                //Interpolation Frequency
-    double interVel;                //Current interpolated velocity in rad/sec
-    hubo_mode_type_t mode;          // hubo-ach interpretation mode
-
-    //Sensor Data
-    double currVel;                    //Reported velocity (units?)
-    double currPos;                    //Reported position in radians
-    double currCurrent;                //Reported current (units?)
-    double currTemp;                //Reported temperature (units?)
+    Mode mode;                      //hubo-ach interpretation mode
 
     //Internal State
     bool enabled;                    //Whether the motor has motion enabled
-    bool homed;                        //Whether the motor has been homed or not
-    bool zeroed;                    //Whether the sensors have been zeroed or not
-    int errors;                        //Collection of error flags
+    int boardNum;                   //Board number as referenced in Hubo-ach
+
 
 public:
 
     HuboMotor();
-    HuboMotor(const HuboMotor& rhs);
+    virtual ~HuboMotor();
 
-    void setName(string &name);
-    void setGoalPosition(double rads);
-    void setInterStep(double rads);
-    void setInterVelocity(double omega);
-    void setFrequency(double frequency);
-    void update(double position, double velocity, double temperature, double current, bool homed, int errors);
-    void setEnabled(bool enabled);
-    void setHomed(bool homed);
-    void setZeroed(bool zeroed);
-    void setMode(Mode mode);
-    double interpolate();
+    bool get(PROPERTY property, double& value);
+    bool set(PROPERTY property, double value);
 
-    string& getName();
-    double getGoalPosition();
-    double getPosition();
-    double getInterStep();
-    double getVelocity();
-    double getTemperature();
-    double getCurrent();
-    bool isEnabled();
-    bool isHomed();
-    bool isZeroed();
-    bool hasError();
-    bool hasError(PROPERTY error);
-    bool requiresMotion();
-    Mode getMode();
+    void setBoardNum(int boardNum);
+
+    bool requiresMotion();   
 };
 
 #endif

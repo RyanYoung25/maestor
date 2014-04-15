@@ -27,53 +27,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IMUBoard.h"
 
 IMUBoard::IMUBoard(){
-    IMUBoard("imu");
+    boardNum = -1;
 }
 
-IMUBoard::IMUBoard(string name){
-    this->name = name;
-
-    xAcc = 0;
-    yAcc = 0;
-    zAcc = 0;
-    xRot = 0;
-    yRot = 0;
+bool IMUBoard::get(PROPERTY property, double &value){
+    switch (property){
+    case X_ACCEL:
+    case Y_ACCEL:
+    case Z_ACCEL:
+    case X_ROTAT:
+    case Y_ROTAT:
+        if ( ( boardNum != -1 ? !stateChannel->getFTProperty(boardNum, property, value) : !stateChannel->getFTProperty(getName(), property, value) ) ){
+            cout << "Error getting " << Names::getName(property) << " from " << getName() << endl;
+            return false;
+        }
+        break;
+    default:
+        return false;
+    }
+    return true;
 }
 
-string IMUBoard::getName(){
-    return name;
+bool IMUBoard::set(PROPERTY property, double value){
+    return false;
 }
 
-double IMUBoard::getXAcc(){
-    return xAcc;
-}
-
-double IMUBoard::getYAcc(){
-    return yAcc;
-}
-
-double IMUBoard::getZAcc(){
-    return zAcc;
-}
-
-double IMUBoard::getXRot(){
-    return xRot;
-}
-
-double IMUBoard::getYRot(){
-    return yRot;
-}
-
-void IMUBoard::update(double xAcc, double yAcc, double zAcc, double xRot, double yRot){
-    this->xAcc = xAcc;
-    this->yAcc = yAcc;
-    this->zAcc = zAcc;
-    this->xRot = xRot;
-    this->yRot = yRot;
-}
-
-void IMUBoard::setName(string name){
-    this->name = name;
+void IMUBoard::setBoardNum(int boardNum){
+    this->boardNum = boardNum;
 }
 
 

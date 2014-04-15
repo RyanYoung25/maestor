@@ -75,12 +75,11 @@ using std::endl;
 class RobotControl {
 
 private:
+    typedef HuboState::Components Components;
     typedef HuboState::Motors Motors;
-    typedef HuboState::Boards Boards;
-    typedef HuboState::Properties Properties;
-    typedef HuboState::FTSensors FTSensors;
-    typedef HuboState::IMUSensors IMUSensors;
     typedef Trajectory::Header Header;
+    typedef Names::Properties Properties;
+    typedef Names::Commands Commands;
 
 public:
     RobotControl();
@@ -132,7 +131,7 @@ private:
     HuboState *state;
     PowerControlBoard *power;
 
-    map< string, vector<float> > gestures;
+    //map< string, vector<float> > gestures;
     map< string, COMMAND > commands;
     ofstream tempOutput;
     ifstream trajInput;

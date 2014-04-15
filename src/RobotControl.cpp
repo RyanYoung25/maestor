@@ -28,6 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 RobotControl::RobotControl(){
 
+    std::cout << "Hey we are calling the constuctor" << std::endl;
+
 	RUN_TYPE = HARDWARE;
 
     commandChannel = CommandChannel::instance();
@@ -36,16 +38,32 @@ RobotControl::RobotControl(){
     if(RUN_TYPE == SIMULATION){
         simChannels = SimChannels::instance();
     }
+    std::cout << "Made the ach channels" << std::endl;
+
+
+    this->state = HuboState::instance();
+
+    std::cout << "Got the instance of HuboState" << std::endl;
+
 
     this->written = 0;
+    std::cout << "Is this the problem?" << std::endl;
     this->printNow = false;
     this->enableControl = false;
     this->delay = 0;
-    this->state = NULL;
     this->interpolation = true;    //Interpret all commands as a final destination with given velocity.
     this->override = true;        //Force homing before allowing enabling. (currently disabled)
+    std::cout << "Hey all of the this inits are done" << std::endl;
 
-    commands["Enable"] = ENABLE;
+    Names::initPropertyMap();
+    std::cout << "After Property map" << std::endl;
+
+    Names::initCommandMap();
+
+    std::cout << "Init the maps" << std::endl;
+
+
+    /*commands["Enable"] = ENABLE;
     commands["EnableAll"] = ENABLEALL;
     commands["Disable"] = DISABLE;
     commands["DisableAll"] = DISABLEALL;
@@ -56,7 +74,7 @@ RobotControl::RobotControl(){
     commands["InitializeSensors"] = INITSENSORS;
     commands["Update"] = UPDATE;
     commands["Zero"] = ZERO;
-    commands["ZeroAll"] = ZEROALL;
+    commands["ZeroAll"] = ZEROALL;*/
 
     ostringstream logfile;
     logfile << LOG_PATH << "RobotControl.log";
@@ -68,7 +86,6 @@ RobotControl::RobotControl(){
 }
   
 RobotControl::~RobotControl(){
-    delete state;
     delete power;
 }
 
@@ -86,56 +103,63 @@ void RobotControl::updateHook(){
 
     trajStarted = trajectories.hasRunning();
 
-    Boards boards = state->getBoards();
-    Motors motors = state->getMotorMap();
+    Components components = state->getComponents();
+
+    //Boards boards = state->getBoards();
+    //Motors motors = state->getMotorMap();
     Trajectory* traj = NULL;
-    HuboMotor* motor = NULL;
+    RobotComponent* component = NULL;
 
 
-    if (!boards.empty()) {
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            motor = it->second;
-            traj = trajectories.inRunning(motor->getName());
+    if (!components.empty()) {
+        for (int i = 0; i < components.size(); i++){
+            component = components[i];
+            double enabled;
+            if (!component->get(ENABLED, enabled))
+                continue;
 
-            if (motor->isEnabled()){
+            traj = trajectories.inRunning(component->getName());
+
+            if ((bool)enabled){
                 double pos = 0;
 
-                if (motor->getMode() == HUBO_REF_MODE_COMPLIANT){
+                double mode = HUBO_REF_MODE_REF_FILTER;
+                component->get(MOTION_TYPE, mode);
+                if ((hubo_mode_type_t)mode == HUBO_REF_MODE_COMPLIANT){
                     // Compliance
-                    motor->setInterStep(motor->getPosition());
-                    motor->setGoalPosition(motor->getPosition());
-                    pos = motor->getPosition();
+                    component->get(POSITION, pos);
+                    component->set(INTERPOLATION_STEP, pos);
+                    component->set(GOAL, pos);
 
                 } else if (trajStarted && traj){
                     // Trajectory Playback
-                    pos = motor->getGoalPosition();
-                    motor->setMode(HUBO_REF_MODE_REF);
-                    if (!traj->nextPosition(motor->getName(), pos) && !traj->hasNext()){
+                    component->get(GOAL, pos);
+                    component->set(MOTION_TYPE, HUBO_REF_MODE_REF);
+                    if (!traj->nextPosition(component->getName(), pos) && !traj->hasNext()){
                         cout << "Reading of trajectory positions has terminated." << endl << "> ";
                         cout.flush(); // Fixing flushing issue with the deployer, maybe....
                         trajectories.stopTrajectory(traj);
                         trajStarted = trajectories.hasRunning();
                     }
-                    motor->setGoalPosition(pos);
-                    motor->setInterStep(pos);
+                    component->set(GOAL, pos);
+                    component->get(INTERPOLATION_STEP, pos);
 
                 } else if (interpolation){
-                    if (motor->requiresMotion())
-                        pos = motor->interpolate();
-                    else
-                        pos = motor->getGoalPosition();
-                    power->addMotionPower(motor->getName(), (1/200));  //TODO: Get the period
-                    motor->setMode(HUBO_REF_MODE_REF_FILTER);
+                    component->get(INTERPOLATION_STEP, pos);
+                    power->addMotionPower(component->getName(), 200); //TODO: get the period
+                    component->set(MOTION_TYPE, HUBO_REF_MODE_REF);
                 } else {
-                    pos = motor->getGoalPosition();
+                    component->get(GOAL, pos);
                 }
-                referenceChannel->setReference(motor->getName(), pos, motor->getMode());
+                component->get(MOTION_TYPE, mode);
+                referenceChannel->setReference(component->getName(), pos, (hubo_mode_type_t)mode);
                 string key(WRITE_KEY);
                 traj = trajectories.get(key);
                 if (trajStarted && traj){
-                    double currPos = get(motor->getName(), "position");
+                    double currPos = 0;
+                    component->get(POSITION, currPos);
 
-                    if (!traj->nextPosition(motor->getName(), currPos)){
+                    if (traj->contains(component->getName()) && !traj->nextPosition(component->getName(), currPos)){
                         cout << "Writing of trajectory positions has terminated." << endl << "> ";
                         cout.flush(); // Fixing flushing issue with the deployer, maybe....
                         trajectories.stopTrajectory(traj);
@@ -159,7 +183,7 @@ void RobotControl::updateHook(){
     //Write out a message if we have one
     referenceChannel->update();
 
-    usleep(delay);
+    //usleep(delay);
 }
 
 void RobotControl::setSimType(){
@@ -204,20 +228,26 @@ void RobotControl::startTrajectory(string name){
         return;
     }
 
-    Motors motors = state->getMotorMap();
+    Components components = state->getComponents();
     if (traj->read_only()) {
 
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            HuboMotor* motor = it->second;
+        for (Components::iterator it = components.begin(); it != components.end(); it++){
+            RobotComponent* component = *it;
+            string name = component->getName();
 
-            if (traj->contains(motor->getName())){
-                if (!motor->isEnabled()){
-                    cout << "Cannot start trajectory: references disabled motor " << motor->getName() << endl;
+            if (traj->contains(name)){
+                double enabled;
+                if (!component->get(ENABLED, enabled))
+                    continue;
+
+                if (!(bool)enabled){
+                    cout << "Cannot start trajectory: references disabled motor " << name << endl;
                     return;
                 }
-                double pos = get(motor->getName(), "position");
-                if (fabs(pos - traj->startPosition(motor->getName())) > .1){
-                    cout << "Cannot start trajectory: motor " << motor->getName() << " should be at " << traj->startPosition(motor->getName()) << endl;
+                double pos;
+                component->get(POSITION, pos);
+                if (fabs(pos - traj->startPosition(name)) > .1){
+                    cout << "Cannot start trajectory: motor " << name << " should be at " << traj->startPosition(name) << endl;
                     return;
                 }
             }
@@ -225,10 +255,15 @@ void RobotControl::startTrajectory(string name){
     } else {
         Header header;
 
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            HuboMotor* motor = it->second;
-            if (motor->isEnabled())
-                header.push_back(motor->getName());
+        for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++){
+            HuboMotor* component = *it;
+
+            double enabled;
+            if (!component->get(ENABLED, enabled))
+                continue;
+
+            if ((bool)enabled)
+                header.push_back(component->getName());
 
         }
         traj->setHeader(header);
@@ -260,7 +295,6 @@ string RobotControl::getDefaultInitPath(string path){
 }
 
 void RobotControl::initRobot(string path){
-    this->state = new HuboState();
     if (strcmp(path.c_str(), "") == 0)
     {
         path = getDefaultInitPath(CONFIG_PATH);
@@ -275,66 +309,22 @@ void RobotControl::initRobot(string path){
 
 }
 
-void RobotControl::set(string name, string property, double value){
-    Motors motors = state->getMotorMap();
 
-    if (motors.count(name) == 0){
-        cout << "Error. Motor with name " << name << " is not on record. Aborting." << endl;
+void RobotControl::set(string name, string property, double value){
+    if (!state->nameExists(name)){
+        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
         return;
     }
-    HuboMotor* motor = motors[name];
 
-    Properties properties = state->getPropertyMap();
+    Properties properties = Names::getProps();
+
     if (properties.count(property) == 0){
         cout << "Error. No property with name " << property << " registered. Aborting." << endl;
         return;
     }
 
-    switch (properties[property]){
-    case POSITION:
-        if (printNow) cout << "Setting position of motor " << name << " to " << value << " ." << endl;
-        //power->addMotionPower(name, motor->getGoalPosition(), value);
-        motor->setGoalPosition(value);
-        break;
-    case VELOCITY:
-        if (printNow) cout << "Setting velocity of motor " << name << " to " << value << " ." << endl;
-        motor->setInterVelocity(value);
-        if (!interpolation) {
-            cout << "Warning. RobotControl is not currently handling interpolation. " << endl <<
-                    "Automatically enabling interpolation for velocity control." << endl << "> ";
-            cout.flush();
-            setMode("Interpolation",true);
-        }
-        break;
-    case MOTION_TYPE:
-        switch ((int)value) {
-        case HUBO_REF_MODE_REF:
-            if (printNow) cout << "Setting mode to direct reference control for motor " << motor->getName() << endl;
-            motor->setMode(HUBO_REF_MODE_REF);
-            break;
-        case HUBO_REF_MODE_REF_FILTER:
-            if (printNow) cout << "Setting mode to filtered reference control for motor " << motor->getName() << endl;
-            motor->setMode(HUBO_REF_MODE_REF_FILTER);
-            break;
-        case HUBO_REF_MODE_COMPLIANT:
-            if (printNow) cout << "Setting mode to compliant control for motor " << motor->getName() << endl;
-            motor->setMode(HUBO_REF_MODE_COMPLIANT);
-            break;
-        case HUBO_REF_MODE_ENC_FILTER:
-            if (printNow) cout << "Setting mode to encoder filtered control for motor " << motor->getName() << endl;
-            motor->setMode(HUBO_REF_MODE_ENC_FILTER);
-            break;
-        case HUBO_REF_MODE_REFX:
-            if (printNow) cout << "Setting mode to differential reference control for motor " << motor->getName() << endl;
-            motor->setMode(HUBO_REF_MODE_REFX);
-            break;
-        default:
-            cout << "Motion type " << value << " not recognized." << endl;
-            return;
-        }
-        break;
-    default:
-        cout << "Motor with name " << name << " has no mutable property named " << property << " ." << endl;
+    if (!state->getComponent(name)->set(properties[property], value)){
+        cout << "Error setting property " << property << " of component " << name << endl;
         return;
     }
 }
@@ -360,48 +350,30 @@ void RobotControl::setProperties(string names, string properties, string values)
 }
 
 double RobotControl::get(string name, string property){
-    Motors motors = state->getMotorMap();
-    FTSensors ftSensors = state->getFTSensorMap();
-    IMUSensors imuSensors = state->getIMUSensorMap();
-    Properties properties = state->getPropertyMap();
+    if (!state->nameExists(name)){
+        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
+        return 0;
+    }
 
-    double result = 0;
+    Properties properties = Names::getProps();
 
     if (properties.count(property) == 0){
         cout << "Error. No property with name " << property << " registered. Aborting." << endl;
         return 0;
     }
 
-    if (motors.count(name) == 1){
+    double result = 0;
 
-        if (!stateChannel->getMotorProperty(name, properties[property], result)){
-            cout << "Error requesting property " << property << " from state channel." << endl;
-            return 0;
-        }
-        return result;
-
-    } else if (ftSensors.count(name) == 1){
-
-        if (!stateChannel->getFTProperty(name, properties[property], result)){
-            cout << "Error requesting property " << property << " from state channel." << endl;
-            return 0;
-        }
-        return result;
-
-    } else if (imuSensors.count(name) == 1){
-
-        if (!stateChannel->getIMUProperty(name, properties[property], result)){
-            std::cout << "Error requesting property " << property << " from state channel." << std::endl;
-            return 0;
-        }
-        return result;
-
-    } else if (name.compare("PWR") == 0){
-        return power->getTotalPowerUsed();
-    } else {
-        cout << "Error. Readable Object with name " << name << " is not on record. Aborting." << endl;
+    if (!state->getComponent(name)->get(properties[property], result)){
+        cout << "Error getting property " << property << " of component " << name << endl;
         return 0;
     }
+
+    return result;
+
+//    else if (name.compare("PWR") == 0){
+//        return power->getTotalPowerUsed();
+
 }
 
 string RobotControl::getProperties(string name, string properties) {
@@ -420,13 +392,10 @@ string RobotControl::getProperties(string name, string properties) {
 }
 
 void RobotControl::command(string name, string target){
-    Motors motors = state->getMotorMap();
+    Commands commands = Names::getComms();
+    RobotComponent* component = NULL;
+    double temp;
 
-    HuboMotor* motor;
-
-    //only for normalization
-    double pos;
-    string joint;
 
     if (commands.count(name) == 0){
         cout << "Error. No command with name " << name << " is defined for RobotControl. Aborting." << endl << "> ";
@@ -436,8 +405,8 @@ void RobotControl::command(string name, string target){
 
     switch (commands[name]){
     case ENABLE:
-        if (motors.count(target) == 0){
-            cout << "Error. Motor with name " << target << " is not on record. Aborting." << endl << "> ";
+        if (!state->nameExists(target)){
+            cout << "Error. Component with name " << target << " is not on record. Aborting." << endl << "> ";
             cout.flush();
             return;
         }
@@ -447,10 +416,17 @@ void RobotControl::command(string name, string target){
             return;
         }
 
-        motor = motors[target];
-        motor->setGoalPosition(get(motor->getName(), "position"));
+        component = state->getComponent(target);
+        if (component == NULL){
+            cout << "Error retrieving component with name " << target << endl;
+            return;
+        }
 
-        motor->setEnabled(true);
+        double pos;
+        component->get(POSITION, pos);
+        component->set(GOAL, pos);
+
+        component->set(ENABLED, true);
         /*
         if (RUN_TYPE == HARDWARE && !motor->isHomed()){
             cout << "Warning! Motor " << target << " has not yet been homed. Skipping enabling of this motor." << endl;
@@ -468,8 +444,8 @@ void RobotControl::command(string name, string target){
             return;
         }
 
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            motor = it->second;
+        for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++){
+            component = *it;
 
             /*
             if (RUN_TYPE == HARDWARE && !motor->isHomed()){
@@ -479,14 +455,16 @@ void RobotControl::command(string name, string target){
             if (RUN_TYPE == HARDWARE)
                 motor->setGoalPosition(motor->getPosition());
             */
-            motor->setGoalPosition(get(motor->getName(), "position"));
-            motor->setEnabled(true);
+            component->get(POSITION, temp);
+            component->set(GOAL, temp);
+            component->set(ENABLED, true);
         }
 
         break;
     case DISABLE:
-        if (motors.count(target) == 0){
-            cout << "Error. Motor with name " << target << " is not on record. Aborting.";
+        if (!state->nameExists(target)){
+            cout << "Error. Component with name " << target << " is not on record. Aborting." << endl << "> ";
+            cout.flush();
             return;
         }
 
@@ -495,8 +473,13 @@ void RobotControl::command(string name, string target){
             return;
         }
 
-        motor = motors[target];
-        motor->setEnabled(false);
+        component = state->getComponent(target);
+        if (component == NULL){
+            cout << "Error retrieving component with name " << target << endl;
+            return;
+        }
+
+        component->set(ENABLED, false);
         break;
     case DISABLEALL:
         if (!this->commandChannel->disable("all")){
@@ -504,17 +487,16 @@ void RobotControl::command(string name, string target){
             return;
         }
 
+        for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++)
+            (*it)->set(ENABLED, false);
 
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            motor = it->second;
-            motor->setEnabled(false);
-        }
         break;
     case RESET:
-        if (motors.count(target) == 0){
-            cout << "Error. Motor with name " << target << " is not on record. Aborting.";
-            return;
-        }
+        if (!state->nameExists(target)){
+           cout << "Error. Component with name " << target << " is not on record. Aborting." << endl << "> ";
+           cout.flush();
+           return;
+       }
 
         if (!this->commandChannel->reset(target)){
             cout << "Reset command failed. Aborting." << endl;
@@ -522,24 +504,28 @@ void RobotControl::command(string name, string target){
         }
         break;
     case RESETALL:
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            motor = it->second;
-            command("ResetJoint", motor->getName());
-        }
+        for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++)
+            command("ResetJoint", (*it)->getName());
+
         return;
     case HOME:
-        if (motors.count(target) == 0){
-            cout << "Error. Motor with name " << target << " is not on record. Aborting.";
-            return;
-        }
+        if (!state->nameExists(target)){
+           cout << "Error. Component with name " << target << " is not on record. Aborting." << endl << "> ";
+           cout.flush();
+           return;
+       }
 
         if (!this->commandChannel->home(target)){
             cout << "Homing command failed. Aborting." << endl;
             return;
         }
 
-        motor = motors[target];
-        set(target, "position", 0);
+        component = state->getComponent(target);
+        if (component == NULL){
+            cout << "Error retrieving component with name " << target << endl;
+            return;
+        }
+        component->set(GOAL, 0);
         break;
     case HOMEALL:
         if (!this->commandChannel->home("all")){
@@ -547,10 +533,9 @@ void RobotControl::command(string name, string target){
             return;
         }
 
-        for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            motor = it->second;
-            set(motor->getName(), "position", 0);
-        }
+        for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++)
+            (*it)->set(GOAL, 0);
+
         break;
         //TODO: Find a way to pause for a length of time here.
     case INITSENSORS:
@@ -561,42 +546,56 @@ void RobotControl::command(string name, string target){
         }
         break;
     case ZERO:
-		if (motors.count(target) == 0){
-			std::cout << "Error. Motor with name " << target << " is not on record. Aborting.";
-			return;
-		}
-		set(target, "position", 0);
-		break;
-	case ZEROALL:
-	    for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-            motor = it->second;
-            set(motor->getName(), "position", 0);
+        component = state->getComponent(target);
+        if (component == NULL){
+            cout << "Error retrieving component with name " << target << endl;
+            return;
         }
-		break;
-	case UPDATE:
+        if (!component->get(ENABLED, temp)){
+            cout << "Attempting to zero a non-motor component. Aborting" << endl;
+            return;
+        }
+        component->set(GOAL, 0);
+        break;
+    case ZEROALL:
+        for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++)
+            (*it)->set(GOAL, 0);
+        break;
+    case UPDATE:
         //updateState();
         break;
     }
 }
 
+
+
+
 void RobotControl::setMode(string mode, bool value){
-    Motors motors = state->getMotorMap();
+    Components components = state->getComponents();
+//    Motors motors = state->getMotorMap();
+    RobotComponent* component = NULL;
     HuboMotor* motor = NULL;
 
     if (mode.compare("Interpolation") == 0){
         if (printNow) cout << "Setting interpolation " << (value ? "on." : "off.") << endl;
 
         //If we are switching to interpolation, the internal step of each motor must be updated.
-        if (value && !this->state->getBoards().empty()){
+        if (value && !components.empty()){
 
-            for (Motors::iterator it = motors.begin(); it != motors.end(); it++){
-                motor = it->second;
-                if (motor->isEnabled()){
-                    double pos = motor->getInterStep();
-                    if (!stateChannel->getMotorProperty(motor->getName(), POSITION, pos))
+            for (Components::iterator it = components.begin(); it != components.end(); it++){
+                component = *it;
+
+                double enabled;
+                if (!component->get(ENABLED, enabled))
+                    continue;
+
+                if ((bool)enabled){
+                    motor = static_cast<HuboMotor*> (component);
+
+                    double pos = 0;
+                    if (!motor->get(POSITION, pos))
                         continue;
-                    motor->setInterStep(pos);
-
+                    motor->set(INTERPOLATION_STEP, pos);
                 }
             }
         }
@@ -607,34 +606,11 @@ void RobotControl::setMode(string mode, bool value){
 }
 
 bool RobotControl::setAlias(string name, string alias){
-    Motors motors = state->getMotorMap();
-    FTSensors ftSensors = state->getFTSensorMap();
-    IMUSensors imuSensors = state->getIMUSensorMap();
-    Properties properties = state->getPropertyMap();
-
-    int entries = 0;
-
-    entries += motors.count(alias);
-    entries += ftSensors.count(alias);
-    entries += imuSensors.count(alias);
-    entries += properties.count(alias);
-    entries += commands.count(alias);
-
-    if (entries > 0){
-        cout << "There already exists an entity named " << alias << " in RobotControl." << cout;
-        return false;
-    } else if (motors.count(name) == 1)
-        motors[alias] = motors[name];
-    else if (ftSensors.count(name) == 1)
-        ftSensors[alias] = ftSensors[name];
-    else if (imuSensors.count(name) == 1)
-        imuSensors[alias] = imuSensors[name];
-    else if (properties.count(name) == 1)
-        properties[alias] = properties[name];
-    else if (commands.count(name) == 1)
-        commands[alias] = commands[name];
-
-    return true;
+    bool res = Names::setAlias(name, alias);
+    if(res == true){
+        return res;
+    }
+    return state->setAlias(name, alias);
 }
 
 vector<string> RobotControl::splitFields(string input){
@@ -677,10 +653,16 @@ void RobotControl::setDelay(int us){
 }
 
 bool RobotControl::requiresMotion(string name){
-    Motors motors = state->getMotorMap();
-    if (motors.count(name) == 0){
-        cout << "Error. Motor with name " << name << " is not on record. Aborting." << endl;
+    RobotComponent* component = state->getComponent(name);
+    if (component == NULL){
+        cout << "Error retrieving component with name " << name << endl;
         return false;
     }
-    return motors[name]->requiresMotion();
+    double step, goal;
+    if (!component->get(POSITION, step) || !component->get(GOAL, goal)){
+        cout << "Error retrieving data from component " << name << endl;
+        return false;
+    }
+
+    return fabs(step - goal) > .00001;
 }

@@ -3,6 +3,7 @@
 RobotControl robot;
 
 int main(int argc, char **argv) {
+    cout << "Let's see what's broke" << endl;
     ros::init(argc, argv, "Maestor"); 
     setRealtime();
 

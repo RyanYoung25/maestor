@@ -70,64 +70,76 @@ bool StateChannel::getMotorProperty(string &name, PROPERTY property, double &res
     if (errored)
         return false;
 
-    int index = indexLookup(name);
-    if (index == -1)
+    return getMotorProperty(indexLookup(name), property, result);
+}
+
+bool StateChannel::getMotorProperty(int board, PROPERTY property, double &result){
+    if (errored || board < 0 || board >= HUBO_JOINT_COUNT)
         return false;
 
     switch (property){
     case POSITION:
-        result = currentReference.joint[index].pos;
+        result = currentReference.joint[board].pos;
         break;
     case GOAL:
-        result = currentReference.joint[index].ref;
+        result = currentReference.joint[board].ref;
         break;
     case VELOCITY:
-        result = currentReference.joint[index].vel;
+        result = currentReference.joint[board].vel;
         break;
     case TEMPERATURE:
-        result = currentReference.joint[index].tmp;
+        result = currentReference.joint[board].tmp;
         break;
     case CURRENT:
-        result = currentReference.joint[index].cur;
+        result = currentReference.joint[board].cur;
         break;
     case ENABLED:
-        result = currentReference.joint[index].active;
+        result = currentReference.joint[board].active;
         break;
     case HOMED:
-        result = currentReference.status[index].homeFlag;
+        result = currentReference.status[board].homeFlag;
         break;
     case ERRORED:
-        return false; // currently unsupported;
-        //break; // unreachable code :D
+        result = currentReference.status[board].jam
+        || currentReference.status[board].pwmSaturated
+        || currentReference.status[board].bigError
+        || currentReference.status[board].encError
+        || currentReference.status[board].driverFault
+        || currentReference.status[board].posMinError
+        || currentReference.status[board].posMaxError
+        || currentReference.status[board].velError
+        || currentReference.status[board].accError
+        || currentReference.status[board].tempError;
+        break;
     case JAM_ERROR:
-        result = currentReference.status[index].jam;
+        result = currentReference.status[board].jam;
         break;
     case PWM_SATURATED_ERROR:
-        result = currentReference.status[index].pwmSaturated;
+        result = currentReference.status[board].pwmSaturated;
         break;
     case BIG_ERROR:
-        result = currentReference.status[index].bigError;
+        result = currentReference.status[board].bigError;
         break;
     case ENC_ERROR:
-        result = currentReference.status[index].encError;
+        result = currentReference.status[board].encError;
         break;
     case DRIVE_FAULT_ERROR:
-        result = currentReference.status[index].driverFault;
+        result = currentReference.status[board].driverFault;
         break;
     case POS_MIN_ERROR:
-        result = currentReference.status[index].posMinError;
+        result = currentReference.status[board].posMinError;
         break;
     case POS_MAX_ERROR:
-        result = currentReference.status[index].posMaxError;
+        result = currentReference.status[board].posMaxError;
         break;
     case VELOCITY_ERROR:
-        result = currentReference.status[index].velError;
+        result = currentReference.status[board].velError;
         break;
     case ACCELERATION_ERROR:
-        result = currentReference.status[index].accError;
+        result = currentReference.status[board].accError;
         break;
     case TEMP_ERROR:
-        result = currentReference.status[index].tempError;
+        result = currentReference.status[board].tempError;
         break;
     default:
         return false;
@@ -147,24 +159,28 @@ bool StateChannel::getIMUProperty(string &name, PROPERTY property, double& resul
     else if (strcmp(name.c_str(), "RAI") == 0)
         index = RIGHT_IMU;
 
-    if (index == -1)
+    return getIMUProperty(index, property, result);
+}
+
+bool StateChannel::getIMUProperty(int board, PROPERTY property, double& result){
+    if (errored || board < 0 || board >= HUBO_IMU_COUNT)
         return false;
 
     switch (property){
     case X_ACCEL:
-        result = currentReference.imu[index].a_x;
+        result = currentReference.imu[board].a_x;
         break;
     case Y_ACCEL:
-        result = currentReference.imu[index].a_y;
+        result = currentReference.imu[board].a_y;
         break;
     case Z_ACCEL:
-        result = currentReference.imu[index].a_z;
+        result = currentReference.imu[board].a_z;
         break;
     case X_ROTAT:
-        result = currentReference.imu[index].w_x;
+        result = currentReference.imu[board].w_x;
         break;
     case Y_ROTAT:
-        result = currentReference.imu[index].w_y;
+        result = currentReference.imu[board].w_y;
         break;
     default:
         return false;
@@ -186,18 +202,22 @@ bool StateChannel::getFTProperty(string &name, PROPERTY property, double& result
     else if (strcmp(name.c_str(), "RWT") == 0)
         index = FT_RW;
 
-    if (index == -1)
+    return getFTProperty(index, property, result);
+}
+
+bool StateChannel::getFTProperty(int board, PROPERTY property, double& result){
+    if (errored || board < 0 || board >= HUBO_FT_COUNT)
         return false;
 
     switch (property){
     case M_X:
-        result = currentReference.ft[index].m_x;
+        result = currentReference.ft[board].m_x;
         break;
     case M_Y:
-        result = currentReference.ft[index].m_y;
+        result = currentReference.ft[board].m_y;
         break;
     case F_Z:
-        result = currentReference.ft[index].f_z;
+        result = currentReference.ft[board].f_z;
         break;
     default:
         return false;

@@ -27,25 +27,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef HUBOSTATE_H
 #define HUBOSTATE_H
 
-#include "HuboMotor.h"
 #include "MotorBoard.h"
-#include "FTSensorBoard.h"
 #include "pugixml.hpp"
-#include "IMUBoard.h"
 #include "Names.h"
 #include <map>
 #include <string>
 #include <queue>
 #include <iostream>
 
+#include "RobotComponent.h"
+#include "MetaJointController.h"
+
+#include "HuboMotor.h"
+#include "FTSensorBoard.h"
+#include "IMUBoard.h"
+#include "MetaJoint.h"
+#include "NeckRollPitch.h"
+#include "ArmWristXYZ.h"
+#include "LowerBodyLeg.h"
+
 using std::map;
 using std::string;
-using std::queue;
 using std::cout;
 using std::endl;
 
 using pugi::xml_document;
 using pugi::xml_node;
+using pugi::xml_object_range;
 
 /*
 enum MOTOR_NAME {
@@ -56,40 +64,45 @@ enum MOTOR_NAME {
 } ;
 */
 
-class HuboState {
+class HuboState : public Singleton<HuboState> {
+    friend class Singleton<HuboState>;
 public:
-    typedef vector< MotorBoard* > Boards;
-    typedef map< string, HuboMotor* > Motors;
-    typedef map< string, PROPERTY > Properties;
-    typedef map< string, FTSensorBoard* > FTSensors;
-    typedef map< string, IMUBoard* > IMUSensors;
+    typedef vector< RobotComponent* > Components;
+    typedef vector< HuboMotor* > Motors;
 
 private:
     
-    Boards boards;
-    IMUBoard *IMU0, *IMU1, *IMU2;
-    FTSensorBoard *leftWrist, *rightWrist, *leftAnkle, *rightAnkle;
+    Components components;
+    Motors motors;
+    vector< MetaJointController* > controllers;
+    map< string, RobotComponent* > index;
 
-    Motors motorMap;
-    FTSensors FTSensorMap;
-    IMUSensors IMUSensorMap;
-    Properties propertyMap;
+protected:
+    HuboState();
+    ~HuboState();
 
 public:
 
-    HuboState();
-
-    HuboState(const HuboState& rhs);
     void initHuboWithDefaults(string path, double frequency);
 
-    HuboMotor* getMotorByName(string name);
+    bool setAlias(string name, string alias);
+    bool nameExists(string name);
 
-    void addBoard(MotorBoard* board);
+    RobotComponent* getComponent(string name);
 
-    Boards &getBoards();
-    Motors &getMotorMap();
-    Properties &getPropertyMap();
-    FTSensors &getFTSensorMap();
-    IMUSensors &getIMUSensorMap();
+    const Components &getComponents();
+    const Motors &getMotors();
+
+private:
+
+    RobotComponent* HuboMotorFromXML(xml_node node, HuboMotor* component, double frequency);
+    RobotComponent* FTSensorFromXML(xml_node node, FTSensorBoard* component);
+    RobotComponent* IMUSensorFromXML(xml_node node, IMUBoard* component);
+    RobotComponent* MetaJointFromXML(xml_node node, MetaJoint* component, double frequency);
+
+    bool addComponentFromXML(xml_node node, RobotComponent* component, bool back);
+    bool addMetaJointControllerFromXML(xml_node node, MetaJointController* controller, string type, double frequency);
+
+    void reset();
 };
 #endif

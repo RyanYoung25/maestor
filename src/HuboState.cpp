@@ -26,34 +26,37 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "HuboState.h"
 
-HuboState::HuboState(){
-    propertyMap["position"] = POSITION;
-    propertyMap["goal"] = GOAL;
-    propertyMap["velocity"] = VELOCITY;
-    propertyMap["motion_type"] = MOTION_TYPE;
-    propertyMap["temp"] = TEMPERATURE;
-    propertyMap["homed"] = HOMED;
-    propertyMap["zeroed"] = ZEROED;
-    propertyMap["enabled"] = ENABLED;
-    propertyMap["errored"] = ERRORED;
-    propertyMap["jamError"] = JAM_ERROR;
-    propertyMap["PWMSaturatedError"] = PWM_SATURATED_ERROR;
-    propertyMap["bigError"] = BIG_ERROR;
-    propertyMap["encoderError"] = ENC_ERROR;
-    propertyMap["driveFaultError"] = DRIVE_FAULT_ERROR;
-    propertyMap["posMinError"] = POS_MIN_ERROR;
-    propertyMap["posMaxError"] = POS_MAX_ERROR;
-    propertyMap["velocityError"] = VELOCITY_ERROR;
-    propertyMap["accelerationError"] = ACCELERATION_ERROR;
-    propertyMap["tempError"] = TEMP_ERROR;
-    propertyMap["x_acc"] = X_ACCEL;
-    propertyMap["y_acc"] = Y_ACCEL;
-    propertyMap["z_acc"] = Z_ACCEL;
-    propertyMap["x_rot"] = X_ROTAT;
-    propertyMap["y_rot"] = Y_ROTAT;
-    propertyMap["m_x"] = M_X;
-    propertyMap["m_y"] = M_Y;
-    propertyMap["f_z"] = F_Z;
+HuboState::HuboState(){}
+
+HuboState::~HuboState(){
+    reset();
+}
+
+bool HuboState::setAlias(string name, string alias){
+    if (!nameExists(name) || nameExists(alias))
+        return false;
+
+    index[alias] = index[name];
+
+    return true;
+}
+
+bool HuboState::nameExists(string name){
+    return index.count(name) == 1;
+}
+
+RobotComponent* HuboState::getComponent(string name){
+    if (nameExists(name))
+        return index[name];
+    return NULL;
+}
+
+const HuboState::Components& HuboState::getComponents(){
+    return components;
+}
+
+const HuboState::Motors& HuboState::getMotors(){
+    return motors;
 }
 
 void HuboState::initHuboWithDefaults(string path, double frequency){
@@ -62,95 +65,246 @@ void HuboState::initHuboWithDefaults(string path, double frequency){
         cout << "No such file, " << path.c_str() << endl;
         return;
     }
+    reset();
     xml_node robot = doc.child("robot");
 
     //Loop through each board
+    cout << "Beginning to loop through each board" << endl;
+    for (xml_node::iterator it = robot.begin(); it != robot.end(); it++) {
+        xml_node node = *it;
+        string type = node.attribute("type").as_string();
+        cout << "Above the if else ladder" << endl;
+        if (strcmp(type.c_str(), "HuboMotor") == 0){
+            RobotComponent* component = HuboMotorFromXML(node, new HuboMotor(), frequency);
+            if (component == NULL){
+                cout << "Error instantiating " << type << " in initialization." << endl;
+                continue;
+            }
+            if (!addComponentFromXML(node, component, true)){
+                cout << "Error adding component " << component->getName() << endl;
+                delete component;
+                continue;
+            }
+            motors.push_back(static_cast<HuboMotor*>(component));
 
-    for (xml_node board = robot.first_child(); board; board = board.next_sibling())
-    {
-        //cout << "Board: ";
+        } else if (strcmp(type.c_str(), "FTSensor") == 0) {
+            RobotComponent* component = FTSensorFromXML(node, new FTSensorBoard());
+            if (component == NULL){
+                cout << "Error instantiating " << type << " in initialization." << endl;
+                continue;
+            }
 
-        int channels = board.attribute("channels").as_int();
- 
-        //cout << "Channels " << channels << endl;
+            if (!addComponentFromXML(node, component, true)){
+                cout << "Error adding component " << component->getName() << endl;
+                delete component;
+                continue;
+            }
 
-        //cout << "Before new mb" << endl;
+        } else if (strcmp(type.c_str(), "IMUSensor") == 0) {
+            RobotComponent* component = IMUSensorFromXML(node, new IMUBoard());
+            if (component == NULL){
+                cout << "Error instantiating " << type << " in initialization." << endl;
+                continue;
+            }
 
-        MotorBoard* mb = new MotorBoard(channels);
+            if (!addComponentFromXML(node, component, true)){
+                cout << "Error adding component " << component->getName() << endl;
+                delete component;
+                continue;
+            }
 
-        //cout << "After new mb" << endl;
+        } else if (strcmp(type.c_str(), "NeckRollPitch") == 0) {
+            MetaJointController* controller = new NeckRollPitch();
+            addMetaJointControllerFromXML(node, controller, type, frequency);
 
-        //Loop through each motor on each board.  Initialize a blank motor and then use
-        //the board methods to set values.  This way the values are also sent to the
-        //hardware.
+        } else if (strcmp(type.c_str(), "RightArmWristXYZ") == 0) {
+            MetaJointController* controller = new ArmWristXYZ(false);
+            addMetaJointControllerFromXML(node, controller, type, frequency);
 
-        for (xml_node motor = board.first_child(); motor; motor = motor.next_sibling()){
-            string name = motor.attribute("name").as_string();
-            //cout << "Motor: " << name << endl;
-            
-            HuboMotor* hm = new HuboMotor();
-            int CH = motor.attribute("channel").as_int();
-        
-            mb->addMotor(hm, CH);
-            //cout << "Added motor to: " << mb->getMotorByChannel(CH) << endl;
-            mb->getMotorByChannel(CH)->setName(name);
-            mb->getMotorByChannel(CH)->setFrequency(frequency);
+        } else if (strcmp(type.c_str(), "LeftArmWristXYZ") == 0) {
+            MetaJointController* controller = new ArmWristXYZ(true);
+            addMetaJointControllerFromXML(node, controller, type, frequency);
 
-            assert(motorMap.count(name) == 0); //Multiple motors should not have the same name.
-            motorMap[name] = hm;
+        } else if (strcmp(type.c_str(), "LowerBodyLeg") == 0) {
+            MetaJointController* controller = new LowerBodyLeg(false);
+            addMetaJointControllerFromXML(node, controller, type, frequency);
 
+        } else if (strcmp(type.c_str(), "GlobalLeg") == 0) {
+            MetaJointController* controller = new LowerBodyLeg(true);
+            addMetaJointControllerFromXML(node, controller, type, frequency);
+
+        } else {
+            cout << "Skipping unknown type " << type << endl;
+            continue;
         }
-        this->addBoard(mb);
+    }
+}
+
+RobotComponent* HuboState::HuboMotorFromXML(xml_node node, HuboMotor* component, double frequency){
+    if (!node.attribute("boardNum").empty())
+        component->setBoardNum(node.attribute("boardNum").as_int());
+
+    if (node.attribute("name").empty()){
+        delete component;
+        return NULL;
     }
 
+    component->setFrequency(frequency);
+    component->setName(node.attribute("name").as_string());
 
-    IMU0 = new IMUBoard("IMU");
-    IMUSensorMap["IMU"] = IMU0;
-    IMU1 = new IMUBoard("LAI");
-    IMUSensorMap["LAI"] = IMU1;
-    IMU2 = new IMUBoard("RAI");
-    IMUSensorMap["RAI"] = IMU2;
-
-    leftAnkle = new FTSensorBoard("LAT");
-    FTSensorMap["LAT"] = leftAnkle;
-    rightAnkle = new FTSensorBoard("RAT");
-    FTSensorMap["RAT"] = rightAnkle;
-    leftWrist = new FTSensorBoard("LWT");
-    FTSensorMap["LWT"] = leftWrist;
-    rightWrist = new FTSensorBoard("RWT");
-    FTSensorMap["RWT"] = rightWrist;
+    return component;
 }
 
-HuboMotor* HuboState::getMotorByName(string name){
-    for (Boards::iterator it = boards.begin(); it != boards.end(); it++){
-        for (int i = 0; i < (*it)->getNumChannels(); i++){
-            if ((*it)->getMotorByChannel(i)->getName().compare(name) == 0)
-                return (*it)->getMotorByChannel(i);
+RobotComponent* HuboState::FTSensorFromXML(xml_node node, FTSensorBoard* component){
+    if (!node.attribute("boardNum").empty())
+        component->setBoardNum(node.attribute("boardNum").as_int());
+
+    if (node.attribute("name").empty()){
+        delete component;
+        return NULL;
+    }
+
+    component->setName(node.attribute("name").as_string());
+    return component;
+}
+
+RobotComponent* HuboState::IMUSensorFromXML(xml_node node, IMUBoard* component){
+    if (!node.attribute("boardNum").empty())
+        component->setBoardNum(node.attribute("boardNum").as_int());
+
+    if (node.attribute("name").empty()){
+        delete component;
+        return NULL;
+    }
+
+    component->setName(node.attribute("name").as_string());
+    return component;
+}
+
+RobotComponent* HuboState::MetaJointFromXML(xml_node node, MetaJoint* component, double frequency){
+    if (node.attribute("name").empty()){
+        delete component;
+        return NULL;
+    }
+
+    component->setName(node.attribute("name").as_string());
+
+    if (!node.attribute("default").empty())
+        component->setGoal(node.attribute("default").as_double());
+    component->setFrequency(frequency);
+
+    return component;
+}
+
+bool HuboState::addComponentFromXML(xml_node node, RobotComponent* component, bool back){
+    if (nameExists(component->getName())){
+        cout << "Skipping duplicate component with name " << component->getName() << endl;
+        return false;
+    }
+
+    if (!node.attribute("vel").empty()){
+        component->set(VELOCITY, node.attribute("vel").as_double());
+    }
+
+    if (back)
+        components.push_back(component);
+    else
+        components.insert(components.begin(), component); //Note: This is extremely inefficient. Luckily, this is initialization.
+    index[component->getName()] = component;
+
+    xml_node aliases = node.child("aliases");
+    for (xml_node::iterator values = aliases.begin(); values != aliases.end(); values++){
+        string alias = (*values).child_value();
+        setAlias(component->getName(), alias);
+    }
+
+    return true;
+}
+
+bool HuboState::addMetaJointControllerFromXML(xml_node node, MetaJointController* controller, string type, double frequency){
+    vector<RobotComponent*> parameters;
+    vector<xml_node> parameterNodes; // I guess I need this for aliases.... ah well.
+    vector<RobotComponent*> controlled;
+
+    for (xml_node::iterator it = node.begin(); it != node.end(); it++) {
+        if (strcmp((*it).name(), "parameter") == 0){
+            RobotComponent* component = MetaJointFromXML(*it, new MetaJoint(controller), frequency);
+            if (component == NULL){
+                cout << "Error instantiating parameter of " << type << " in initialization." << endl;
+                return false;
+            } else if (nameExists(component->getName())){
+                cout << "Parameter name " << component->getName() << " of " << type << " already exists." << endl;
+                delete component;
+                return false;
+            }
+            parameters.push_back(component);
+            parameterNodes.push_back(*it);
+
+        } else if (strcmp((*it).name(), "controlled") == 0){
+            if ((*it).attribute("name").empty()){
+                cout << "Error instantiating controlled joint of " << type << " in initialization." << endl;
+                return false;
+            }
+
+            string name = (*it).attribute("name").as_string();
+
+            RobotComponent* component = getComponent(name);
+            if (component == NULL){
+                cout << "Could not find component " << name << " for type " << type << endl;
+                return false;
+            }
+
+            controlled.push_back(component);
         }
     }
-    return NULL;
+
+    bool errorFound = false;
+    if (controller->getNumParameters() != parameters.size()) {
+        cout << "Incorrect number of parameters passed to " << type << endl;
+        errorFound = true;
+    } else if (controller->getNumControlled() != controlled.size()){
+        cout << "Incorrect number of controlled joints passed to " << type << endl;
+        errorFound = true;
+    } else if (parameters.size() != parameterNodes.size()){
+        cout << "The unlikeliest error seems to have occurred.... abort mission? " << endl;
+        errorFound = true;
+    }
+
+    if (errorFound){
+        for (int i = 0; i < parameters.size(); i++)
+            delete parameters[i];
+        delete controller;
+        return false;
+    }
+
+    for (int i = 0; i < parameters.size(); i++){
+        controller->addParameter(parameters[i]);
+
+        //Theoretically there's no way this can fail, so I don't check for errors here.
+        addComponentFromXML(parameterNodes[i], parameters[i], false);
+    }
+
+    for (int i = 0; i < controlled.size(); i++)
+        controller->addControlledJoint(controlled[i]);
+
+    controllers.push_back(controller);
+    return true;
 }
 
-void HuboState::addBoard(MotorBoard* board){
-    this->boards.push_back(board);
-}
+void HuboState::reset(){
+    cout << "Going to reset" << endl;
+    if (components.size() != 0) {
+        for (Components::iterator it = components.begin(); it != components.end(); it++)
+            delete (*it);
+    }
+    if (controllers.size() != 0){
+        for (vector<MetaJointController*>::iterator it = controllers.begin(); it != controllers.end(); it++)
+            delete (*it);
+    }
 
-HuboState::Boards &HuboState::getBoards(){
-    return this->boards;
-}
-
-HuboState::Motors &HuboState::getMotorMap(){
-    return this->motorMap;
-}
-
-HuboState::Properties &HuboState::getPropertyMap(){
-    return this->propertyMap;
-}
-
-HuboState::FTSensors &HuboState::getFTSensorMap(){
-    return FTSensorMap;
-}
-
-HuboState::IMUSensors &HuboState::getIMUSensorMap(){
-    return IMUSensorMap;
+    cout << "Did we make it past the ifs?" << endl;
+    components.clear();
+    motors.clear();
+    controllers.clear();
+    index.clear();
 }
