@@ -24,8 +24,12 @@ case "$1" in
 	'kill' )
 		/opt/ros/fuerte/stacks/maestor/run/kill-maestor.sh
 	;;
+# Run a script found in the maestor scripts directory
+	'script' )
+		/opt/ros/fuerte/stacks/maestor/scripts/$2.py
+	;;
 
-	*)
+	*) 
 		echo
 		echo 'console       : Starts the maestor console'
 		echo 'sim-real      : Starts maestor with hubo-ach in sim-real mode'

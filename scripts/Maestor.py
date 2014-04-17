@@ -4,12 +4,10 @@ import sys
 import subprocess
 from maestor.srv import *
 
-class maestorClient:
+class maestor:
 
     def __init__(self):
-        print "Init"
         rospy.init_node("maestor_commands")
-        print "Waiting for services"
         rospy.wait_for_service("initRobot")
         rospy.wait_for_service("setProperties")
         rospy.wait_for_service("command")
@@ -58,56 +56,64 @@ class maestorClient:
     def requiresMotion(self, name):
         try:
             service = rospy.ServiceProxy("requiresMotion", requiresMotion)
-            service(name)
+            res = service(name)
+            return res.requiresMotion
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
     
     def getProperties(self, names, properties):
         try:
             service = rospy.ServiceProxy("getProperties", getProperties)
-            service(names, properties)
+            res = service(names, properties)
+            return res.properties
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
     def loadTrajectory(self, name, path, read):
         try:
             service = rospy.ServiceProxy("loadTrajectory", loadTrajectory)
-            service(name, path, read)
+            res = service(name, path, read)
+            return res.success
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
     
     def ignoreFrom(self, name, col):
         try:
             service = rospy.ServiceProxy("ignoreFrom", ignoreFrom)
-            service(name, col)
+            res = service(name, col)
+            return res.success
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
     def ignoreAllFrom(self, name):
         try:
             service = rospy.ServiceProxy("ignoreAllFrom", ignoreAllFrom)
-            service(name)
+            res = service(name)
+            return res.success
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
     
     def unignoreFrom(self, name, col):
         try:
             service = rospy.ServiceProxy("unignoreFrom", unignoreFrom)
-            service(name, col)
+            res = service(name, col)
+            return res.success
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
     def unignoreAllFrom(self, name):
         try:
             service = rospy.ServiceProxy("unignoreAllFrom", unignoreAllFrom)
-            service(name)
+            res = service(name)
+            return res.success
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
     
     def setTrigger(self, name, frame, target):
         try:
             service = rospy.ServiceProxy("setTrigger", setTrigger)
-            service(name, frame, target)
+            res = service(name, frame, target)
+            return res.success
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
@@ -132,3 +138,6 @@ class maestorClient:
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
+    def waitForJoint(self, name):
+        while self.requiresMotion(name):
+            pass

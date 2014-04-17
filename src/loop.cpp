@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
         if(strcmp(argv[1], "sim") == 0)
         {
             //If simulation set the runtime to sim
-            cout << "Setting mode to simulation" << endl;
+            //cout << "Setting mode to simulation" << endl;
             robot.setSimType();
         }
     }
@@ -38,12 +38,10 @@ int main(int argc, char **argv) {
 
     ServiceServer SetPropsrv = n.advertiseService("setProperty", &setProperty);
 
-    std::cout << "Services are set up, entering main loop" << endl;
+    //std::cout << "Services are set up, entering main loop" << endl;
     while (ros::ok()) {
         ros::spinOnce();
-
         robot.updateHook();
-        //std::cout << "looping" << endl;
         timer.sleep();
         timer.update();
     }
