@@ -47,7 +47,7 @@ sudo bash install-hubo-ach.sh
 echo "Installing ROS-Orocos-Maestro..."
 sudo bash install-ros-fuerte.sh -y
 sudo bash install-openrave.sh -y
-sudo bash install-maestor -y
+sudo bash install-maestor.sh -y
 if [[ $? != 0 ]]; then exit $?; fi
 echo "Installing OpenHUBO..."
 bash install-openHubo.sh
