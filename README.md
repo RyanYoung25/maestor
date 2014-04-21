@@ -25,7 +25,7 @@ Installation scripts exist to install dependencies such as ROS, OpenRAVE, Hubo-A
 ******
  Pay strict attention to permissions for all scripts. Some require root access and some mandate non-root access. ****
 
-To install all dependencies and complementary packages.
+To install all dependencies and complementary packages, change directory to the install directory.
 	./install-all.sh
 
 Alternatively, you can install some components individually:
