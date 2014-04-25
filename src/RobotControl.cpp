@@ -324,10 +324,10 @@ void RobotControl::set(string name, string property, double value){
             if (printNow) cout << "Setting mode to encoder filtered control for motor " << motor->getName() << endl;
             motor->setMode(HUBO_REF_MODE_ENC_FILTER);
             break;
-        case HUBO_REF_MODE_REFX:
-            if (printNow) cout << "Setting mode to differential reference control for motor " << motor->getName() << endl;
-            motor->setMode(HUBO_REF_MODE_REFX);
-            break;
+        // case HUBO_REF_MODE_REFX:
+        //     if (printNow) cout << "Setting mode to differential reference control for motor " << motor->getName() << endl;
+        //     motor->setMode(HUBO_REF_MODE_REFX);
+        //     break;
         default:
             cout << "Motion type " << value << " not recognized." << endl;
             return;
