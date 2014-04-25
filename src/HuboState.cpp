@@ -33,8 +33,10 @@ HuboState::~HuboState(){
 }
 
 bool HuboState::setAlias(string name, string alias){
-    if (!nameExists(name) || nameExists(alias))
+    if (!nameExists(name) || nameExists(alias)){
+        cout << "Alias " << alias << "Already exists. returning false" << endl;
         return false;
+    }
 
     index[alias] = index[name];
 
@@ -72,8 +74,7 @@ void HuboState::initHuboWithDefaults(string path, double frequency){
     cout << "Beginning to loop through each board" << endl;
     for (xml_node::iterator it = robot.begin(); it != robot.end(); it++) {
         xml_node node = *it;
-        string type = node.attribute("type").as_string();
-        cout << "Above the if else ladder" << endl;
+        string type = node.attribute("type").as_string();       
         if (strcmp(type.c_str(), "HuboMotor") == 0){
             RobotComponent* component = HuboMotorFromXML(node, new HuboMotor(), frequency);
             if (component == NULL){
@@ -85,6 +86,7 @@ void HuboState::initHuboWithDefaults(string path, double frequency){
                 delete component;
                 continue;
             }
+            cout << "Adding component: " << component->getName() << endl;
             motors.push_back(static_cast<HuboMotor*>(component));
 
         } else if (strcmp(type.c_str(), "FTSensor") == 0) {
@@ -216,6 +218,11 @@ bool HuboState::addComponentFromXML(xml_node node, RobotComponent* component, bo
     for (xml_node::iterator values = aliases.begin(); values != aliases.end(); values++){
         string alias = (*values).child_value();
         setAlias(component->getName(), alias);
+    }
+
+    if(index[component->getName()] == NULL)
+    {
+        return false;
     }
 
     return true;

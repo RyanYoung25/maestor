@@ -9,12 +9,12 @@
 
 const char *StateChannel::urdf_joint_names[] = {
         "WST", "NKY", "NK1", "NK2",
-        "LSP", "LSR", "LSY", "LEP", "LWY", "LWR", "LWP",
-        "RSP", "RSR", "RSY", "REP", "RWY", "RWR", "RWP",
+        "LSP", "LSR", "LSY", "LEB", "LWY", "LWR", "LWP",
+        "RSP", "RSR", "RSY", "REB", "RWY", "RWR", "RWP",
         "UNUSED1",
-        "LHY", "LHR", "LHP", "LKP", "LAP", "LAR",
+        "LHY", "LHR", "LHP", "LKN", "LAP", "LAR",
         "UNUSED2",
-        "RHY", "RHR", "RHP", "RKP", "RAP", "RAR",
+        "RHY", "RHR", "RHP", "RKN", "RAP", "RAR",
         "RF1", "RF2", "RF3", "RF4", "RF5",
         "LF1", "LF2", "LF3", "LF4", "LF5",
         "unknown1", "unknown2", "unknown3", "unknown4", "unknown5", "unknown6", "unknown7", "unknown8"};

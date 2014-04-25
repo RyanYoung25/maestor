@@ -22,13 +22,13 @@
     <!-- <component type="HuboMotor" name="LWR" boardNum="9" vel="2.0"/> -->
     <component type="HuboMotor" name="LWP" boardNum="10" vel="2.0"/> 
     <component type="LeftArmWristXYZ">
-        <parameter name="LWX"/>
-        <parameter name="LWY"/>
-        <parameter name="LWZ"/>
+        <parameter name="LAX"/>
+        <parameter name="LAY"/>
+        <parameter name="LAZ"/>
         <controlled name="LSY"/>
         <controlled name="LSP"/>
         <controlled name="LSR"/>
-        <controlled name="LEP"/>
+        <controlled name="LEB"/>
     </component>
     <component type="HuboMotor" name="RSP" boardNum="11" vel="2.0"/>
     <component type="HuboMotor" name="RSR" boardNum="12" vel="2.0"/>
@@ -42,13 +42,13 @@
     <!-- <component type="HuboMotor" name="RWR" boardNum="16" vel="2.0"/> -->
     <component type="HuboMotor" name="RWP" boardNum="17" vel="2.0"/>
     <component type="RightArmWristXYZ">
-        <parameter name="RWX"/>
-        <parameter name="RWY"/>
-        <parameter name="RWZ"/>
+        <parameter name="RAX"/>
+        <parameter name="RAY"/>
+        <parameter name="RAZ"/>
         <controlled name="RSY"/>
         <controlled name="RSP"/>
         <controlled name="RSR"/>
-        <controlled name="REP"/>
+        <controlled name="REB"/>
     </component>
     <component type="HuboMotor" name="LHY" boardNum="19" vel="2.0"/>
     <component type="HuboMotor" name="LHR" boardNum="20" vel="2.0"/>
@@ -80,7 +80,7 @@
         <controlled name="LHY"/>
         <controlled name="LHR"/>
         <controlled name="LHP"/>
-        <controlled name="LKP"/>
+        <controlled name="LKN"/>
         <controlled name="LAP"/>
         <controlled name="LAR"/>
     </component>
@@ -110,7 +110,7 @@
         <controlled name="RHY"/>
         <controlled name="RHR"/>
         <controlled name="RHP"/>
-        <controlled name="RKP"/>
+        <controlled name="RKN"/>
         <controlled name="RAP"/>
         <controlled name="RAR"/>
     </component>

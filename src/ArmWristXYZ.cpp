@@ -50,12 +50,14 @@ void ArmWristXYZ::setInverse(){
     double wrist_y = -0.08;
     double wrist_z = -0.33;
 
-    parameters[WRIST_X]->get(GOAL, wrist_x);
-    parameters[WRIST_Y]->get(GOAL, wrist_y);
+    parameters[WRIST_X]->get(INTERPOLATION_STEP, wrist_x);
+    parameters[WRIST_Y]->get(INTERPOLATION_STEP, wrist_y);
     if(isLeft){
         wrist_y = -wrist_y;
     }
-    parameters[WRIST_Z]->get(GOAL, wrist_z);
+    parameters[WRIST_Z]->get(INTERPOLATION_STEP, wrist_z);
+
+
 
     double shoulder_pitch = 0;
     double shoulder_roll = 0;
@@ -106,6 +108,8 @@ void ArmWristXYZ::setInverse(){
         cout << "Error: One or more joints out of joint limits" << endl;
         return;
     }
+
+    cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
 
     controlledJoints[SHOULDER_YAW]->set(GOAL, shoulder_yaw);
     controlledJoints[SHOULDER_PITCH]->set(GOAL, shoulder_pitch);
