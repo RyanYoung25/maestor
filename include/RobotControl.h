@@ -103,6 +103,7 @@ public:
     double get(string name, string property);
     string getProperties(string name, string properties);
     void updateState();
+    double getZMP();
 
     // Parameter Commands
     void setMode(string mode, bool value);

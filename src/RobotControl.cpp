@@ -350,6 +350,12 @@ void RobotControl::setProperties(string names, string properties, string values)
 }
 
 double RobotControl::get(string name, string property){
+    
+    if(name.compare("ZMP"))
+    {
+        return getZMP();
+    }
+
     if (!state->nameExists(name)){
         cout << "Error. No component with name " << name << " registered. Aborting." << endl;
         return 0;
@@ -389,6 +395,10 @@ string RobotControl::getProperties(string name, string properties) {
         }
     }
     return values.str();
+}
+
+double getZMP() {
+    
 }
 
 void RobotControl::command(string name, string target){
