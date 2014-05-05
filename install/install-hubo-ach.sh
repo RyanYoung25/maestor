@@ -67,6 +67,7 @@ add-apt-repository "deb http://code.golems.org/ubuntu precise golems.org"
 #add-apt-repository "deb http://www.repo.danlofaro.com/release precise main"
 apt-get update
 apt-get install -y --force-yes --no-remove libach1 libach-dev ach-utils
+apt-get install libreadline-dev
 
 git clone https://github.com/isaacgaretmia/hubo-ach
 

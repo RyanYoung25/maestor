@@ -66,7 +66,7 @@ then
     echo "Would you like a link to your Maestor install in /opt/ros/fuerte/stacks?"
     select yn in "Yes" "No"; do
             case $yn in
-                    Yes ) echo "Creating symbolic link in /opt/ros/fuerte/stacks..."; ln -s $installDir/../ maestor; break;;
+                    Yes ) echo "Creating symbolic link in /opt/ros/fuerte/stacks..."; sudo ln -s $installDir/../ maestor; break;;
                     No ) echo "Skipping symbolic link creation..."; break;;
             esac
     done
@@ -74,9 +74,9 @@ then
 elif [[ "$1" == "-y" ||  "$1" == "--auto-yes" ]]
 then
     echo "Creating symbolic link in /opt/ros/fuerte/stacks..."; 
-    ln -s $installDir/../ maestor;
+    sudo ln -s $installDir/../ maestor;
 fi
 cd /usr/bin
-ln -s $installDir/../run/maestor maestor
+sudo ln -s $installDir/../run/maestor maestor 
 rosmake maestor
 echo "Installation complete."

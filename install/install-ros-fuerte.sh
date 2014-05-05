@@ -24,7 +24,7 @@ if [[ `echo "$0" | grep "/" | wc -l` > 0 ]]; then
 fi
 
 # Source environment checking functions.
-source ../maestro/utils.sh
+source ../utils.sh
 
 # Stop execution on any significant error.
 #set -e
@@ -35,8 +35,7 @@ echo ""
 
 DEPENDENCY_DIRS="/etc /etc/apt /etc/apt/sources.list.d"
 DEPENDENCY_FILES=""
-BLACKLISTED_DIRS="/opt/ros/fuerte/stacks/armnavigation
-/opt/ros/fuerte/stacks/maestro"
+BLACKLISTED_DIRS=""
 BLACKLISTED_FILES=""
 
 check dependency dir "$DEPENDENCY_DIRS"

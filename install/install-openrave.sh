@@ -25,7 +25,7 @@ fi
 
 # Source environment checking functions.
 source ../utils.sh
-
+source /opt/ros/fuerte/setup.bash
 # Stop execution on any significant error.
 #set -e
 
