@@ -28,9 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 RobotControl::RobotControl(){
 
-    std::cout << "Hey we are calling the constuctor" << std::endl;
-
-	RUN_TYPE = HARDWARE;
+   	RUN_TYPE = HARDWARE;
 
     commandChannel = CommandChannel::instance();
     referenceChannel = ReferenceChannel::instance();
@@ -38,29 +36,19 @@ RobotControl::RobotControl(){
     if(RUN_TYPE == SIMULATION){
         simChannels = SimChannels::instance();
     }
-    std::cout << "Made the ach channels" << std::endl;
-
 
     this->state = HuboState::instance();
 
-    std::cout << "Got the instance of HuboState" << std::endl;
-
 
     this->written = 0;
-    std::cout << "Is this the problem?" << std::endl;
     this->printNow = false;
     this->enableControl = false;
     this->delay = 0;
     this->interpolation = true;    //Interpret all commands as a final destination with given velocity.
     this->override = true;        //Force homing before allowing enabling. (currently disabled)
-    std::cout << "Hey all of the this inits are done" << std::endl;
-
+    
     Names::initPropertyMap();
-    std::cout << "After Property map" << std::endl;
-
     Names::initCommandMap();
-
-    std::cout << "Init the maps" << std::endl;
 
 
     /*commands["Enable"] = ENABLE;
@@ -351,7 +339,7 @@ void RobotControl::setProperties(string names, string properties, string values)
 
 double RobotControl::get(string name, string property){
     
-    if(name.compare("ZMP"))
+    if(name.compare("ZMP") == 0)
     {
         return getZMP();
     }
@@ -397,8 +385,82 @@ string RobotControl::getProperties(string name, string properties) {
     return values.str();
 }
 
-double getZMP() {
-    
+double RobotControl::getZMP() {
+
+    // zmp[0]: x-direction ZMP based on whole legs
+    // zmp[1]: y-direction ZMP based on whole legs
+    // zmp[2]: x-direction ZMP based on right leg
+    // zmp[3]: y-direction ZMP based on right leg
+    // zmp[3]: x-direction ZMP based on left leg
+    // zmp[4]: y-direction ZMP based on left leg
+
+    double zmp[6];
+    double pelvis_width = 0.177;
+    double Rx = get("RAT", "m_x");
+    double Ry = get("RAT", "m_y");
+    double Rz = get("RAT", "f_z");
+    double Lx = get("LAT", "m_x");
+    double Ly = get("LAT", "m_y"); 
+    double Lz = get("LAT", "f_z");
+    double RAx = get("RAX", "position"); 
+    double RAy = get("RAY", "position");
+    double RAz = get("RAZ", "position");
+    double LAx = get("LAX", "position");
+    double LAy = get("LAY", "position");
+    double LAz = get("LAZ", "position");
+
+    double totalMX;
+    double totalMY;
+
+
+    if(Rz > 30 && Lz > 30)
+    {
+        //Double support
+        totalMX = Rx + Lx + ((LAy+.5*pelvis_width)*Lz) + ((RAy-.5*pelvis_width)*Rz);
+        totalMY = Ry + Ly - (LAx*Lz) - (RAx*Rz);
+
+        zmp[0] = -1000.0*totalMY/(Lz+Rz);
+        zmp[1] = 1000.0*totalMX/(Lz+Rz);
+        zmp[2] = -1000.0*Ry/Rz;
+        zmp[3] = 1000.0*Rx/Rz;
+        zmp[4] = -1000.0*Ly/Lz;
+        zmp[5] = 1000.0*Lx/Lz;
+    }
+    else if(Rz > 30)
+    {
+        //Right leg support
+
+        zmp[2] = -1000.0*Ry/Rz;
+        zmp[3] = 1000.0*Rx/Rz;
+        zmp[0] = RAx*1000.0 + zmp[2];
+        zmp[1] = (RAy-0.5*pelvis_width)*1000.0 + zmp[3];
+        zmp[4] = 0.0;
+        zmp[5] = 0.0;
+    }
+    else if(Lz > 30)
+    {
+        //Left leg support
+        zmp[4] = -1000.0*Ly/Lz;
+        zmp[5] = 1000.0*Lx/Lz;
+        zmp[0]  = LAx*1000.0 + zmp[4];
+        zmp[1]  = (LAy+0.5*pelvis_width)*1000.0 + zmp[5];   
+        zmp[2] = 0.0;
+        zmp[3] = 0.0;
+    }
+    else
+    {
+        //something really screwy happened or the robot is flying through the air... 
+        //generally bad :/
+    }
+
+    for(i=0 ; i<6 ; i++)
+    {
+        filteredZMPOld[i] = _filteredZMP[i];
+        _filteredZMP[i] = (1.0f-2.0f*PI*5.0f*(float)INT_TIME/1000.0f)*filteredZMPOld[i] + (2.0f*PI*2.0f*(float)INT_TIME/1000.0f)*_zmp[i];
+    }
+
+    return zmp[0];
+
 }
 
 void RobotControl::command(string name, string target){

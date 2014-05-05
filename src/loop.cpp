@@ -3,7 +3,6 @@
 RobotControl robot;
 
 int main(int argc, char **argv) {
-    cout << "Let's see what's broke" << endl;
     ros::init(argc, argv, "Maestor"); 
     setRealtime();
 
@@ -66,9 +65,7 @@ void setRealtime(){
 
 bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &res)
 {
-    std::cout << "init was called" << endl;
     robot.initRobot(req.path);
-    std::cout << "init was run, about to return" << endl;
     return true;
 
 }
