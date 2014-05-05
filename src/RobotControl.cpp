@@ -453,12 +453,6 @@ double RobotControl::getZMP() {
         //generally bad :/
     }
 
-    for(i=0 ; i<6 ; i++)
-    {
-        filteredZMPOld[i] = _filteredZMP[i];
-        _filteredZMP[i] = (1.0f-2.0f*PI*5.0f*(float)INT_TIME/1000.0f)*filteredZMPOld[i] + (2.0f*PI*2.0f*(float)INT_TIME/1000.0f)*_zmp[i];
-    }
-
     return zmp[0];
 
 }
