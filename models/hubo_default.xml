@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="testrig">
-    <component type="HuboMotor" name="WST" boardNum="0" vel="2.0"/>
-    <component type="HuboMotor" name="NKY" boardNum="1" vel="2.0"/>
+    <component type="HuboMotor" name="WST" boardNum="0" vel="1.0"/>
+    <component type="HuboMotor" name="NKY" boardNum="1" vel="1.0"/>
     <component type="HuboMotor" name="NK1" boardNum="2" vel="5.0"/>
     <component type="HuboMotor" name="NK2" boardNum="3" vel="5.0"/>
     <component type="NeckRollPitch">
@@ -10,17 +10,17 @@
         <controlled name="NK1"/>
         <controlled name="NK2"/>
     </component>
-    <component type="HuboMotor" name="LSP" boardNum="4" vel="2.0"/>
-    <component type="HuboMotor" name="LSR" boardNum="5" vel="2.0"/>
-    <component type="HuboMotor" name="LSY" boardNum="6" vel="2.0"/>
-    <component type="HuboMotor" name="LEB" boardNum="7" vel="2.0">
+    <component type="HuboMotor" name="LSP" boardNum="4" vel="1.0"/>
+    <component type="HuboMotor" name="LSR" boardNum="5" vel="1.0"/>
+    <component type="HuboMotor" name="LSY" boardNum="6" vel="1.0"/>
+    <component type="HuboMotor" name="LEB" boardNum="7" vel="1.0">
         <aliases>
             <value>LEP</value>
         </aliases>
     </component>
-    <component type="HuboMotor" name="LWY" boardNum="8" vel="2.0"/>
-    <!-- <component type="HuboMotor" name="LWR" boardNum="9" vel="2.0"/> -->
-    <component type="HuboMotor" name="LWP" boardNum="10" vel="2.0"/> 
+    <component type="HuboMotor" name="LWY" boardNum="8" vel="1.0"/>
+    <!-- <component type="HuboMotor" name="LWR" boardNum="9" vel="1.0"/> -->
+    <component type="HuboMotor" name="LWP" boardNum="10" vel="1.0"/> 
     <component type="LeftArmWristXYZ">
         <parameter name="LAX"/>
         <parameter name="LAY"/>
@@ -30,17 +30,17 @@
         <controlled name="LSR"/>
         <controlled name="LEB"/>
     </component>
-    <component type="HuboMotor" name="RSP" boardNum="11" vel="2.0"/>
-    <component type="HuboMotor" name="RSR" boardNum="12" vel="2.0"/>
-    <component type="HuboMotor" name="RSY" boardNum="13" vel="2.0"/>
-    <component type="HuboMotor" name="REB" boardNum="14" vel="2.0">
+    <component type="HuboMotor" name="RSP" boardNum="11" vel="1.0"/>
+    <component type="HuboMotor" name="RSR" boardNum="12" vel="1.0"/>
+    <component type="HuboMotor" name="RSY" boardNum="13" vel="1.0"/>
+    <component type="HuboMotor" name="REB" boardNum="14" vel="1.0">
         <aliases>
             <value>REP</value>
         </aliases>
     </component>
-    <component type="HuboMotor" name="RWY" boardNum="15" vel="2.0"/>
-    <!-- <component type="HuboMotor" name="RWR" boardNum="16" vel="2.0"/> -->
-    <component type="HuboMotor" name="RWP" boardNum="17" vel="2.0"/>
+    <component type="HuboMotor" name="RWY" boardNum="15" vel="1.0"/>
+    <!-- <component type="HuboMotor" name="RWR" boardNum="16" vel="1.0"/> -->
+    <component type="HuboMotor" name="RWP" boardNum="17" vel="1.0"/>
     <component type="RightArmWristXYZ">
         <parameter name="RAX"/>
         <parameter name="RAY"/>
@@ -50,26 +50,26 @@
         <controlled name="RSR"/>
         <controlled name="REB"/>
     </component>
-    <component type="HuboMotor" name="LHY" boardNum="19" vel="2.0"/>
-    <component type="HuboMotor" name="LHR" boardNum="20" vel="2.0"/>
-    <component type="HuboMotor" name="LHP" boardNum="21" vel="2.0"/>
-    <component type="HuboMotor" name="LKN" boardNum="22" vel="2.0">
+    <component type="HuboMotor" name="LHY" boardNum="19" vel="1.0"/>
+    <component type="HuboMotor" name="LHR" boardNum="20" vel="1.0"/>
+    <component type="HuboMotor" name="LHP" boardNum="21" vel="1.0"/>
+    <component type="HuboMotor" name="LKN" boardNum="22" vel="1.0">
         <aliases>
             <value>LKP</value>
         </aliases>
     </component>
-    <component type="HuboMotor" name="LAP" boardNum="23" vel="2.0"/>
-    <component type="HuboMotor" name="LAR" boardNum="24" vel="2.0"/>
-    <component type="HuboMotor" name="RHY" boardNum="26" vel="2.0"/>
-    <component type="HuboMotor" name="RHR" boardNum="27" vel="2.0"/>
-    <component type="HuboMotor" name="RHP" boardNum="28" vel="2.0"/>
-    <component type="HuboMotor" name="RKN" boardNum="29" vel="2.0">
+    <component type="HuboMotor" name="LAP" boardNum="23" vel="1.0"/>
+    <component type="HuboMotor" name="LAR" boardNum="24" vel="1.0"/>
+    <component type="HuboMotor" name="RHY" boardNum="26" vel="1.0"/>
+    <component type="HuboMotor" name="RHR" boardNum="27" vel="1.0"/>
+    <component type="HuboMotor" name="RHP" boardNum="28" vel="1.0"/>
+    <component type="HuboMotor" name="RKN" boardNum="29" vel="1.0">
         <aliases>
             <value>RKP</value>
         </aliases>
     </component>
-    <component type="HuboMotor" name="RAP" boardNum="30" vel="2.0"/>
-    <component type="HuboMotor" name="RAR" boardNum="31" vel="2.0"/>
+    <component type="HuboMotor" name="RAP" boardNum="30" vel="1.0"/>
+    <component type="HuboMotor" name="RAR" boardNum="31" vel="1.0"/>
     <component type="LowerBodyLeg">
         <parameter name="LFX" vel=".02"/>
         <parameter name="LFY" vel=".02"/>
