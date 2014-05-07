@@ -75,10 +75,7 @@ bool HuboMotor::set(PROPERTY property, double value){
             //Having the start velocity be the current velocity really isn't supported mathematically... :/ but it's not blowing up.
             currParams = initFourthOrder( startParams.ths, currVel/frequency, newVia, currStepCount, value, totalStepCount );
         }
-        else
-        {
-            cout << "The starParams are valid and the current step count equals the curr params" << endl;
-        }
+    
 
         currGoal = value;
 

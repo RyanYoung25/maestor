@@ -87,6 +87,7 @@ public:
 
     void updateHook();
     void initRobot(string path);
+    void setPeriod(double period);
 
     //JOINT MOVEMENT API
     void set(string name, string property, double value);
@@ -145,6 +146,7 @@ private:
 
     int written;
     int frames;
+    double PERIOD;
     bool trajStarted, terminateTraj;
     bool printNow, enableControl;
     int delay;

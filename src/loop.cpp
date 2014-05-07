@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
     //Init the node
     NodeHandle n; //Fully initializes the node
     Scheduler timer(FREQ_200HZ);
+    robot.setPeriod(timer.getPeriod());
     ServiceServer srv = n.advertiseService("fib", &fib);
     ServiceServer Initsrv = n.advertiseService("initRobot", &initRobot);
     ServiceServer SPsrv = n.advertiseService("setProperties", &setProperties);

@@ -81,11 +81,19 @@ void LowerBodyLeg::getForward(){
         double hip_yaw = 0;
         controlledJoints[HIP_YAW]->get(GOAL,hip_yaw);
         // Convert position to hip yaw reference frame
+        parameters[FOOT_X]->set(META_VALUE, cos(hip_yaw)*v[0] - sin(hip_yaw)*v[1]);
+        parameters[FOOT_Y]->set(META_VALUE, sin(hip_yaw)*v[0] - cos(hip_yaw)*v[1]);
+        parameters[FOOT_Z]->set(META_VALUE, v[2]);
         //cout << "x: " << cos(hip_yaw)*v[0] - sin(hip_yaw)*v[1] << " y: " << sin(hip_yaw)*v[0] - cos(hip_yaw)*v[1] << " z: " << v[2] << endl;
     }
     else{
+
+        parameters[FOOT_X]->set(META_VALUE, v[0]); 
+        parameters[FOOT_Y]->set(META_VALUE, v[1]);
+        parameters[FOOT_Z]->set(META_VALUE, v[2]);
         //cout << "x: " << v[0] << " y: " << v[1] << " z: " << v[2] << endl;
     }
+
 }
 
 // Calculate joint angles to achieve desired position in hip roll reference fram

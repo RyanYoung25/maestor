@@ -134,7 +134,7 @@ void RobotControl::updateHook(){
 
                 } else if (interpolation){
                     component->get(INTERPOLATION_STEP, pos);
-                    power->addMotionPower(component->getName(), 200); //TODO: get the period
+                    power->addMotionPower(component->getName(), 1/PERIOD); //TODO: get the period
                     component->set(MOTION_TYPE, HUBO_REF_MODE_REF);
                 } else {
                     component->get(GOAL, pos);
@@ -165,7 +165,7 @@ void RobotControl::updateHook(){
             trajectories.advanceFrame();
     }
 
-    power->addMotionPower("IDLE", (1/200)); //TODO: get the period
+    power->addMotionPower("IDLE", PERIOD); //TODO: get the period
 
 
     //Write out a message if we have one
@@ -288,7 +288,7 @@ void RobotControl::initRobot(string path){
         path = getDefaultInitPath(CONFIG_PATH);
     }
     //@TODO: Check for file existence before initializing.
-    this->state->initHuboWithDefaults(path, 200);  //TODO: get the period
+    this->state->initHuboWithDefaults(path, 1/PERIOD);  //TODO: get the period
 
     if (this->state == NULL)
     {
@@ -391,8 +391,8 @@ double RobotControl::getZMP() {
     // zmp[1]: y-direction ZMP based on whole legs
     // zmp[2]: x-direction ZMP based on right leg
     // zmp[3]: y-direction ZMP based on right leg
-    // zmp[3]: x-direction ZMP based on left leg
-    // zmp[4]: y-direction ZMP based on left leg
+    // zmp[4]: x-direction ZMP based on left leg
+    // zmp[5]: y-direction ZMP based on left leg
 
     double zmp[6];
     double pelvis_width = 0.177;
@@ -400,14 +400,14 @@ double RobotControl::getZMP() {
     double Ry = get("RAT", "m_y");
     double Rz = get("RAT", "f_z");
     double Lx = get("LAT", "m_x");
-    double Ly = get("LAT", "m_y"); 
+    double Ly = get("LAT", "m_y");
     double Lz = get("LAT", "f_z");
-    double RAx = get("RAX", "position"); 
-    double RAy = get("RAY", "position");
-    double RAz = get("RAZ", "position");
-    double LAx = get("LAX", "position");
-    double LAy = get("LAY", "position");
-    double LAz = get("LAZ", "position");
+    double RAx = get("RFX", "position"); 
+    double RAy = get("RFY", "position");
+    double RAz = get("RFZ", "position");
+    double LAx = get("LFX", "position");
+    double LAy = get("LFY", "position");
+    double LAz = get("LFZ", "position");
 
     double totalMX;
     double totalMY;
@@ -669,6 +669,10 @@ void RobotControl::setMode(string mode, bool value){
     } else {
         cout << "RobotControl does not have a mutable mode with name " << mode << "." << endl;
     }
+}
+
+void RobotControl::setPeriod(double period){
+    PERIOD = period;
 }
 
 bool RobotControl::setAlias(string name, string alias){

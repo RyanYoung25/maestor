@@ -109,7 +109,7 @@ void ArmWristXYZ::setInverse(){
         return;
     }
 
-    cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
+    //cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
 
     controlledJoints[SHOULDER_YAW]->set(GOAL, shoulder_yaw);
     controlledJoints[SHOULDER_PITCH]->set(GOAL, shoulder_pitch);
@@ -140,10 +140,15 @@ void ArmWristXYZ::getForward(){
     double cY= cos(Y);
     double cE= cos(E);
 
+    //dem matrices 
+
     double xPos = L*(cE*cP*cR + sE*(cP*sR*sY - sP*cY)) + UPPER_ARM_X*(sP*cY - cP*sR*sY) + UPPER_ARM_Z*cP*cR;
     double yPos = L*(cE*sP*cR + sE*(sP*sR*sY + cP*cY)) - UPPER_ARM_X*(cP*cY + sP*sR*sY) + UPPER_ARM_Z*sP*cR;
     double zPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
 
     // Shoulder pitch reference frame axes do not match that of hubo's reference frame
-    cout << -yPos << " " << zPos << " " << -xPos << endl;
+    parameters[WRIST_X]->set(META_VALUE, -xPos);
+    parameters[WRIST_Y]->set(META_VALUE, -yPos);
+    parameters[WRIST_Z]->set(META_VALUE, zPos);
+    //cout << -yPos << " " << zPos << " " << -xPos << endl;
 }
