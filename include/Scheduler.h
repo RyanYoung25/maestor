@@ -25,7 +25,7 @@
 #define FREQ_2HZ    500000000;  // (0.50 sec)
 #define FREQ_50HZ   20000000;   // (0.02 sec)
 #define FREQ_100HZ  10000000;   // (0.01 sec)
-#define FREQ_200HZ  5000000     // (.005 sec)
+#define FREQ_200HZ  5000000    // (.005 sec)
 #define FREQ_250HZ  4000000;    // (.004 sec)
 #define FREQ_500HZ  2000000;    // (.002 sec)
 
@@ -44,6 +44,7 @@ public:
     timespec& getNextShot();
 
     double getPeriod();
+    double getFrequency();
 
 private:
 

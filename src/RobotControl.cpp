@@ -454,7 +454,6 @@ double RobotControl::getZMP() {
     }
 
     return zmp[0];
-
 }
 
 void RobotControl::command(string name, string target){
@@ -672,6 +671,7 @@ void RobotControl::setMode(string mode, bool value){
 }
 
 void RobotControl::setPeriod(double period){
+    cout << "The period is: " << period << endl;
     PERIOD = period;
 }
 
