@@ -394,6 +394,20 @@ double RobotControl::getZMP() {
     // zmp[4]: x-direction ZMP based on left leg
     // zmp[5]: y-direction ZMP based on left leg
 
+    // Rx: Right x force component
+    // Ry: Right y force component
+    // Rz: Right z torque component
+    // Lx: Left x force component
+    // Ly: Left y force component
+    // Lz: Left z torque component
+
+    // RAx: Right ankle x position 
+    // RAy: Right ankle y position
+    // RAz: Right ankle z position
+    // LAx: Left ankle x position
+    // LAy: Left ankle y position
+    // LAz: Left ankle z position
+
     double zmp[6];
     double pelvis_width = 0.177;
     double Rx = get("RAT", "m_x");
@@ -409,14 +423,14 @@ double RobotControl::getZMP() {
     double LAy = get("LFY", "position");
     double LAz = get("LFZ", "position");
 
-    double totalMX;
-    double totalMY;
+    double totalMX;    // total moment in the x
+    double totalMY;    // total moment in the y
 
-
+    // All calculations are from RAINBOW code
     if(Rz > 30 && Lz > 30)
     {
         //Double support
-        totalMX = Rx + Lx + ((LAy+.5*pelvis_width)*Lz) + ((RAy-.5*pelvis_width)*Rz);
+        totalMX = Rx + Lx + ((LAy+.5*pelvis_width)*Lz) + ((RAy-.5*pelvis_width)*Rz);  
         totalMY = Ry + Ly - (LAx*Lz) - (RAx*Rz);
 
         zmp[0] = -1000.0*totalMY/(Lz+Rz);
