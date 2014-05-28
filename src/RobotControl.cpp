@@ -69,12 +69,16 @@ RobotControl::RobotControl(){
     tempOutput.open(logfile.str().c_str());
     power = new PowerControlBoard();
 
+    balancer = new BalanceController();
+    cout << "Made the balancer" << endl;
+
     frames = 0;
     trajStarted = false;
 }
   
 RobotControl::~RobotControl(){
     delete power;
+    delete balancer;
 }
 
 void RobotControl::updateHook(){
@@ -100,6 +104,8 @@ void RobotControl::updateHook(){
 
 
     if (!components.empty()) {
+        cout << "Calling balance" << endl;
+        balancer->Balance();
         for (int i = 0; i < components.size(); i++){
             component = components[i];
             double enabled;
@@ -159,7 +165,7 @@ void RobotControl::updateHook(){
                     startTrajectory(trajectories.getCurrentTriggers().front());
                     trajectories.getCurrentTriggers().pop();
                 }
-            }
+            }   
         }
         if (trajStarted)
             trajectories.advanceFrame();
@@ -290,13 +296,14 @@ void RobotControl::initRobot(string path){
     //@TODO: Check for file existence before initializing.
     this->state->initHuboWithDefaults(path, 1/PERIOD);  //TODO: get the period
 
+    balancer->initBalanceController(*(this->state));
+
     if (this->state == NULL)
     {
         std::cout << "Error. Initializing robot failed. Robot state is null." << std::endl;
     }
 
 }
-
 
 void RobotControl::set(string name, string property, double value){
     if (!state->nameExists(name)){
@@ -339,11 +346,6 @@ void RobotControl::setProperties(string names, string properties, string values)
 
 double RobotControl::get(string name, string property){
     
-    if(name.compare("ZMP") == 0)
-    {
-        return getZMP();
-    }
-
     if (!state->nameExists(name)){
         cout << "Error. No component with name " << name << " registered. Aborting." << endl;
         return 0;
@@ -385,90 +387,107 @@ string RobotControl::getProperties(string name, string properties) {
     return values.str();
 }
 
-double RobotControl::getZMP() {
+// double RobotControl::getZMP(string value) {
 
-    // zmp[0]: x-direction ZMP based on whole legs
-    // zmp[1]: y-direction ZMP based on whole legs
-    // zmp[2]: x-direction ZMP based on right leg
-    // zmp[3]: y-direction ZMP based on right leg
-    // zmp[4]: x-direction ZMP based on left leg
-    // zmp[5]: y-direction ZMP based on left leg
+//     // zmp[0]: x-direction ZMP based on whole legs XW
+//     // zmp[1]: y-direction ZMP based on whole legs YW
+//     // zmp[2]: x-direction ZMP based on right leg XR
+//     // zmp[3]: y-direction ZMP based on right leg YR
+//     // zmp[4]: x-direction ZMP based on left leg XL
+//     // zmp[5]: y-direction ZMP based on left leg YL
+//     int type;
+//     if(value.compare("XW")){
+//         type = 0;
+//     } else if (value.compare("YW")){
+//         type = 1;
+//     } else if (value.compare("XR")){
+//         type = 2;
+//     } else if (value.compare("YR")){
+//         type = 3;
+//     } else if (value.compare("XL")){
+//         type = 4;
+//     } else if (value.compare("YL")){
+//         type = 5;
+//     } else {
+//         cout << "Error no ZMP value for: " << value << endl;
+//         return;
+//     }
 
-    // Rx: Right x force component
-    // Ry: Right y force component
-    // Rz: Right z torque component
-    // Lx: Left x force component
-    // Ly: Left y force component
-    // Lz: Left z torque component
+//     // Rx: Right x force component
+//     // Ry: Right y force component
+//     // Rz: Right z torque component
+//     // Lx: Left x force component
+//     // Ly: Left y force component
+//     // Lz: Left z torque component
 
-    // RAx: Right ankle x position 
-    // RAy: Right ankle y position
-    // RAz: Right ankle z position
-    // LAx: Left ankle x position
-    // LAy: Left ankle y position
-    // LAz: Left ankle z position
+//     // RAx: Right ankle x position 
+//     // RAy: Right ankle y position
+//     // RAz: Right ankle z position
+//     // LAx: Left ankle x position
+//     // LAy: Left ankle y position
+//     // LAz: Left ankle z position
 
-    double zmp[6];
-    double pelvis_width = 0.177;
-    double Rx = get("RAT", "m_x");
-    double Ry = get("RAT", "m_y");
-    double Rz = get("RAT", "f_z");
-    double Lx = get("LAT", "m_x");
-    double Ly = get("LAT", "m_y");
-    double Lz = get("LAT", "f_z");
-    double RAx = get("RFX", "position"); 
-    double RAy = get("RFY", "position");
-    double RAz = get("RFZ", "position");
-    double LAx = get("LFX", "position");
-    double LAy = get("LFY", "position");
-    double LAz = get("LFZ", "position");
+//     double zmp[6];
+//     double pelvis_width = 0.177;
+//     double Rx = get("RAT", "m_x");
+//     double Ry = get("RAT", "m_y");
+//     double Rz = get("RAT", "f_z");
+//     double Lx = get("LAT", "m_x");
+//     double Ly = get("LAT", "m_y");
+//     double Lz = get("LAT", "f_z");
+//     double RAx = get("RFX", "position"); 
+//     double RAy = get("RFY", "position");
+//     double RAz = get("RFZ", "position");
+//     double LAx = get("LFX", "position");
+//     double LAy = get("LFY", "position");
+//     double LAz = get("LFZ", "position");
 
-    double totalMX;    // total moment in the x
-    double totalMY;    // total moment in the y
+//     double totalMX;    // total moment in the x
+//     double totalMY;    // total moment in the y
 
-    // All calculations are from RAINBOW code
-    if(Rz > 30 && Lz > 30)
-    {
-        //Double support
-        totalMX = Rx + Lx + ((LAy+.5*pelvis_width)*Lz) + ((RAy-.5*pelvis_width)*Rz);  
-        totalMY = Ry + Ly - (LAx*Lz) - (RAx*Rz);
+//     // All calculations are from RAINBOW code
+//     if(Rz > 30 && Lz > 30)
+//     {
+//         //Double support
+//         totalMX = Rx + Lx + ((LAy+.5*pelvis_width)*Lz) + ((RAy-.5*pelvis_width)*Rz);  
+//         totalMY = Ry + Ly - (LAx*Lz) - (RAx*Rz);
 
-        zmp[0] = -1000.0*totalMY/(Lz+Rz);
-        zmp[1] = 1000.0*totalMX/(Lz+Rz);
-        zmp[2] = -1000.0*Ry/Rz;
-        zmp[3] = 1000.0*Rx/Rz;
-        zmp[4] = -1000.0*Ly/Lz;
-        zmp[5] = 1000.0*Lx/Lz;
-    }
-    else if(Rz > 30)
-    {
-        //Right leg support
+//         zmp[0] = -1000.0*totalMY/(Lz+Rz);
+//         zmp[1] = 1000.0*totalMX/(Lz+Rz);
+//         zmp[2] = -1000.0*Ry/Rz;
+//         zmp[3] = 1000.0*Rx/Rz;
+//         zmp[4] = -1000.0*Ly/Lz;
+//         zmp[5] = 1000.0*Lx/Lz;
+//     }
+//     else if(Rz > 30)
+//     {
+//         //Right leg support
 
-        zmp[2] = -1000.0*Ry/Rz;
-        zmp[3] = 1000.0*Rx/Rz;
-        zmp[0] = RAx*1000.0 + zmp[2];
-        zmp[1] = (RAy-0.5*pelvis_width)*1000.0 + zmp[3];
-        zmp[4] = 0.0;
-        zmp[5] = 0.0;
-    }
-    else if(Lz > 30)
-    {
-        //Left leg support
-        zmp[4] = -1000.0*Ly/Lz;
-        zmp[5] = 1000.0*Lx/Lz;
-        zmp[0]  = LAx*1000.0 + zmp[4];
-        zmp[1]  = (LAy+0.5*pelvis_width)*1000.0 + zmp[5];   
-        zmp[2] = 0.0;
-        zmp[3] = 0.0;
-    }
-    else
-    {
-        //something really screwy happened or the robot is flying through the air... 
-        //generally bad :/
-    }
+//         zmp[2] = -1000.0*Ry/Rz;
+//         zmp[3] = 1000.0*Rx/Rz;
+//         zmp[0] = RAx*1000.0 + zmp[2];
+//         zmp[1] = (RAy-0.5*pelvis_width)*1000.0 + zmp[3];
+//         zmp[4] = 0.0;
+//         zmp[5] = 0.0;
+//     }
+//     else if(Lz > 30)
+//     {
+//         //Left leg support
+//         zmp[4] = -1000.0*Ly/Lz;
+//         zmp[5] = 1000.0*Lx/Lz;
+//         zmp[0]  = LAx*1000.0 + zmp[4];
+//         zmp[1]  = (LAy+0.5*pelvis_width)*1000.0 + zmp[5];   
+//         zmp[2] = 0.0;
+//         zmp[3] = 0.0;
+//     }
+//     else
+//     {
+//         //something really screwy happened or the robot is flying through the air... 
+//         //generally bad :/
+//     }
 
-    return zmp[0];
-}
+//     return zmp[type];
+//}
 
 void RobotControl::command(string name, string target){
     Commands commands = Names::getComms();

@@ -1,0 +1,521 @@
+/*
+ * BalanceController.cpp
+ *
+ *  Created on: May 21, 2014
+ *      Author: Ryan Young
+ */
+#include "BalanceController.h"
+
+BalanceController::BalanceController(){
+    dampingGain[0] = 0.2f;      dampingGain[3] = 0.2f;
+    dampingGain[1] = 1.0f;      dampingGain[4] = 1.0f;
+    dampingGain[2] = 0.4f;      dampingGain[5] = 0.5f;
+
+    // double InitZmp = {0.0, 0.0};
+    // phase = BOTH_FEET;
+    // double zmp = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    // double filteredZMP = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    // double DampingGain = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; 
+    // double InitRefAngles = {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}}; 
+    // double hipPitchOffsets = {0.0, 0.0};  
+    // double ControlDSP = {{0.0, 0.0}, {0.0, 0.0}};    
+    // double Damping = {0.0, 0.0, 0.0, 0.0};   
+
+    initialized = false;
+
+    balanceComponents[0] = "RFX"; 
+    balanceComponents[2] = "RFY"; 
+    balanceComponents[1] = "RFZ"; 
+    balanceComponents[3] = "LFX"; 
+    balanceComponents[4] = "LFY"; 
+    balanceComponents[5] = "LFZ"; 
+    balanceComponents[6] = "RAT"; 
+    balanceComponents[7] = "LAT"; 
+    balanceComponents[8] = "IMU";
+
+    logfile.open("log.log.log");
+}
+
+BalanceController::~BalanceController(){
+    logfile.close();
+}
+
+bool BalanceController::isBalanced(){
+    return true; // for now...
+}
+
+void BalanceController::Balance(){
+    getCurrentSupportPhase();
+    DSPControl();
+    DampingControl();
+    ZMPInitialization();
+    ZMPcalculation();
+
+    logfile << "SupportPhase: " << phase << endl;
+    logfile << "ZMP: X: " << zmp[0] << " Y: " << zmp[1] << endl;
+    logfile << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
+    logfile << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
+    logfile << "Damping RAP: " << Damping[0] << " RAR: " << Damping[1] << " LAP: " << Damping[2] << " LAR: " << Damping[3] << endl;
+}
+
+void BalanceController::initBalanceController(HuboState& theState){
+
+    state = &theState; 
+    if(state == NULL)
+    {
+        cout << "Error initializing the Balance Controller, the state was never initalized." << endl;
+        return; 
+    }
+    initialized = allComponentsFound(); // Check to see if the hubo state has all of the needed components
+
+    if(!initialized){
+        cout << "Error initializing the Balance Controller, Not all of the components needed to balance were found." << endl;
+        return;
+    }
+
+    getCurrentSupportPhase(); //Find the initial support phase
+    ZMPInitialization(); //Initialize the zmp
+}
+
+bool BalanceController::allComponentsFound(){
+    for(int i = 0; i < 9; i++)
+    {
+        if(!state->nameExists(balanceComponents[i])) //If the name does not exist
+        {
+            return false;
+        }
+    }
+    return true; // All names existed
+}
+
+double BalanceController::getZMP(int value){
+    return filteredZMP[value];
+}
+
+void BalanceController::ZMPcalculation(){
+    // Rx: Right x force component
+    // Ry: Right y force component
+    // Rz: Right z torque component
+    // Lx: Left x force component
+    // Ly: Left y force component
+    // Lz: Left z torque component
+
+    // RAx: Right ankle x position 
+    // RAy: Right ankle y position
+    // RAz: Right ankle z position
+    // LAx: Left ankle x position
+    // LAy: Left ankle y position
+    // LAz: Left ankle z position
+    double filteredZMPOld[6];
+    double pelvis_width = 0.177;
+    double alpha = 0.1570796; //alpha  2.0*PI*5.0f*5/1000.0
+    
+    double Rx = BalanceController::get("RAT", "m_x");
+    double Ry = BalanceController::get("RAT", "m_y");
+    double Rz = BalanceController::get("RAT", "f_z");
+    double Lx = BalanceController::get("LAT", "m_x");
+    double Ly = BalanceController::get("LAT", "m_y");
+    double Lz = BalanceController::get("LAT", "f_z");
+    double RAx = BalanceController::get("RFX", "position"); 
+    double RAy = BalanceController::get("RFY", "position");
+    double RAz = BalanceController::get("RFZ", "position");
+    double LAx = BalanceController::get("LFX", "position");
+    double LAy = BalanceController::get("LFY", "position");
+    double LAz = BalanceController::get("LFZ", "position");
+
+    double totalMX;    // total moment in the x
+    double totalMY;    // total moment in the y
+
+    // All calculations are from RAINBOW code
+    if(Rz > 30 && Lz > 30)
+    {
+        //Double support
+        totalMX = Rx + Lx + ((LAy+.5*pelvis_width)*Lz) + ((RAy-.5*pelvis_width)*Rz);  
+        totalMY = Ry + Ly - (LAx*Lz) - (RAx*Rz);
+
+        zmp[0] = -1000.0*totalMY/(Lz+Rz);
+        zmp[1] = 1000.0*totalMX/(Lz+Rz);
+        zmp[2] = -1000.0*Ry/Rz;
+        zmp[3] = 1000.0*Rx/Rz;
+        zmp[4] = -1000.0*Ly/Lz;
+        zmp[5] = 1000.0*Lx/Lz;
+    }
+    else if(Rz > 30)
+    {
+        //Right leg support
+
+        zmp[2] = -1000.0*Ry/Rz;
+        zmp[3] = 1000.0*Rx/Rz;
+        zmp[0] = RAx*1000.0 + zmp[2];
+        zmp[1] = (RAy-0.5*pelvis_width)*1000.0 + zmp[3];
+        zmp[4] = 0.0;
+        zmp[5] = 0.0;
+    }
+    else if(Lz > 30)
+    {
+        //Left leg support
+        zmp[4] = -1000.0*Ly/Lz;
+        zmp[5] = 1000.0*Lx/Lz;
+        zmp[0]  = LAx*1000.0 + zmp[4];
+        zmp[1]  = (LAy+0.5*pelvis_width)*1000.0 + zmp[5];   
+        zmp[2] = 0.0;
+        zmp[3] = 0.0;
+    }
+    else
+    {
+        //something really screwy happened or the robot is flying through the air... 
+        //generally bad :/
+    }
+
+    for(int i=0 ; i<6 ; i++)
+    {
+        filteredZMPOld[i] = filteredZMP[i];
+        filteredZMP[i] = (1.0f-alpha) * filteredZMPOld[i] + alpha * zmp[i];
+    }
+}
+
+void BalanceController::getCurrentSupportPhase(){
+    double Rx = get("RAT", "m_x");
+    double Ry = get("RAT", "m_y");
+    double Rz = get("RAT", "f_z");
+    double Lx = get("LAT", "m_x");
+    double Ly = get("LAT", "m_y");
+    double Lz = get("LAT", "f_z");
+
+    if(Rz > 30 && Lz > 30)
+    {
+        phase = BOTH_FEET;
+    }
+    else if(Rz > 30)
+    {
+        phase = RIGHT_FOOT;
+    }
+    else if(Lz > 30)
+    {
+        phase = LEFT_FOOT;
+    }
+}
+
+/* Code duplication. I know. I should really fix it */
+double BalanceController::get(string name, string property){
+
+    if (!state->nameExists(name)){
+        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
+        return 0;
+    }
+
+    Properties properties = Names::getProps();
+
+    if (properties.count(property) == 0){
+        cout << "Error. No property with name " << property << " registered. Aborting." << endl;
+        return 0;
+    }
+
+    double result = 0;
+
+    if (!state->getComponent(name)->get(properties[property], result)){
+        cout << "Error getting property " << property << " of component " << name << endl;
+        return 0;
+    }
+
+    return result;
+}
+/* More duplication. I know it's bad :( */
+void BalanceController::set(string name, string property, double value){
+    if (!state->nameExists(name)){
+        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
+        return;
+    }
+
+    Properties properties = Names::getProps();
+
+    if (properties.count(property) == 0){
+        cout << "Error. No property with name " << property << " registered. Aborting." << endl;
+        return;
+    }
+
+    if (!state->getComponent(name)->set(properties[property], value)){
+        cout << "Error setting property " << property << " of component " << name << endl;
+        return;
+    }
+}
+
+void BalanceController::DSPControl(){
+
+    unsigned char i;
+    unsigned char Command = 1;
+    static float x1new[2] = {0.0f, 0.0f}, x2new[2] = {0.0f, 0.0f};
+    static float x1[2] = {0.0f, 0.0f}, x2[2] = {0.0f, 0.0f};
+    //static long ControlTime = (long)(_time/5);
+    float delZMP[2] = {zmp[0]+InitZmp[0], zmp[1]+InitZmp[1]};
+    static float gainOveriding = 0.0f;
+    float controlOutput[2];
+    float dspLimit = 100.0f;
+    float gain = 0.8;
+
+    const float adm[2][4] = {0.519417298104f,   -2.113174135817f,   0.003674390567f,    0.994144954175f,    0.734481292627f,    -1.123597885586f,   0.004304846434f,    0.997046817458f};
+    const float bdm[2][2] = {0.003674390567f,   0.000010180763f,    0.004304846434f,    0.000011314544f};
+    const float cdm[2][2] = {9.698104154920f,   -126.605319064208f, -0.555683927701f,   -77.652283056185f};
+    
+
+    //if( (ControlTime==0) && (Command==0x01) ) Command = 0x03;
+
+    /*switch(Command)
+    {
+    case 0x00:  //Zero everything out
+        for(i=0 ; i<2 ; i++) x1[i] = x2[i] = x1new[i] = x2new[i] = controlOutput[i] = 0.0f;
+        break;
+    case 0x01: */
+        for(i=0 ; i<2 ; i++)
+        {
+            x1new[i] = adm[i][0]*x1[i] + adm[i][1]*x2[i] + bdm[i][0]*delZMP[i];
+            x2new[i] = adm[i][2]*x1[i] + adm[i][3]*x2[i] + bdm[i][1]*delZMP[i];
+            controlOutput[i] = cdm[i][0]*x1new[i] + cdm[i][1]*x2new[i];
+            
+            x1[i] = x1new[i];   x2[i] = x2new[i];
+            
+            if(controlOutput[i] > dspLimit) controlOutput[i] = dspLimit;
+            else if(controlOutput[i] < -dspLimit) controlOutput[i] = -dspLimit;
+            else;
+            
+            ControlDSP[0][i] = gainOveriding*gain*controlOutput[i]/1000.0f;
+            ControlDSP[1][i] = gainOveriding*gain*controlOutput[i]/1000.0f;
+        }
+        //ControlTime--;
+        gainOveriding += 0.05;
+        if(gainOveriding > 1.0) gainOveriding = 1.0;
+        //break;
+    /*case 0x02:
+        ControlTime = (long)(_time/5);
+        gainOveriding = 0.0f;
+        break;
+    case 0x03:
+        for(i=0 ; i<2 ; i++)
+        {
+            controlDSP[0][i] *= 0.9f;
+            controlDSP[1][i].ControlDSPZMP *= 0.9f;
+        }
+        gainOveriding = 0.0f;
+        break;
+    }*/
+}
+
+
+
+// void BalanceController::vibrationControl(){
+//     float temp, limit;
+
+//     //0:RHR 1:LHR
+
+//     double DEG2RAD = 3.141592/180.0;
+
+//     static float X_Roll_R[2] = {0.0f, 0.0f};
+//     static float X_Roll_New_R[2] = {0.0f, 0.0f};
+//     static float Y_Roll_R = 0.0f;
+
+//     static float X_Roll_L[2] = {0.0f, 0.0f};
+//     static float X_Roll_New_L[2] = {0.0f, 0.0f};
+//     static float Y_Roll_L = 0.0f;
+
+//     const float A_Roll[4] = {0.259455231689f, -3.299530027401f, 0.005542044942f, 0.979921074166f}; 
+//     const float B_Roll[2] = {0.005542044942f, 0.000033725503f}; 
+//     const float C_Roll[2] = {4.457995647858f, -29.104042013618f};
+
+//     limit = 5.0f;
+
+//     switch(phase)
+//     {
+//     case LEFT_FOOT:
+//         temp = DEG2RAD*FTSensor[RFFT].VelRoll/FTSensor[RFFT].SF_Roll;
+//         X_Roll_New_R[0] = A_Roll[0]*X_Roll_R[0] + A_Roll[1]*X_Roll_R[1] + B_Roll[0]*temp;
+//         X_Roll_New_R[1] = A_Roll[2]*X_Roll_R[0] + A_Roll[3]*X_Roll_R[1] + B_Roll[1]*temp;
+//         Y_Roll_R = C_Roll[0]*X_Roll_New_R[0] + C_Roll[1]*X_Roll_New_R[1]; 
+        
+//         X_Roll_R[0] = X_Roll_New_R[0];  X_Roll_R[1] = X_Roll_New_R[1];
+        
+//         temp = -1.5f*10.0f*RAD2DEG*Y_Roll_R;
+//         if(temp > limit) temp = limit;
+//         else if(temp < -limit) temp = -limit;
+    
+//         VibrationControl[0] = temp;
+//         break;
+//     case RIGHT_FOOT:
+//         temp = DEG2RAD*FTSensor[LFFT].VelRoll/FTSensor[LFFT].SF_Roll;
+//         X_Roll_New_L[0] = A_Roll[0]*X_Roll_L[0] + A_Roll[1]*X_Roll_L[1] + B_Roll[0]*temp;
+//         X_Roll_New_L[1] = A_Roll[2]*X_Roll_L[0] + A_Roll[3]*X_Roll_L[1] + B_Roll[1]*temp;
+//         Y_Roll_L = C_Roll[0]*X_Roll_New_L[0] + C_Roll[1]*X_Roll_New_L[1];  
+        
+//         X_Roll_L[0] = X_Roll_New_L[0];  X_Roll_L[1] = X_Roll_New_L[1];
+        
+//         temp = -1.5f*10.0f*RAD2DEG*Y_Roll_L;
+//         if(temp > limit) temp = limit;
+//         else if(temp < -limit) temp = -limit;
+    
+//         VibrationControl[1] = temp;
+//         break;
+//     case BOTH_FEET:
+//         VibrationControl[0] *= 0.9f;
+//         VibrationControl[1] *= 0.9f;
+//         break;
+//     }
+// }
+
+double BalanceController::DampingControl(){
+    float tempControlAngle[2];
+    float limitAngle = 20.0f;
+    float gain[6];
+    float controlDampCutoff = 1.0f;
+
+    double roll         = get("IMU", "x_rot");  
+    double pitch        = get("IMU", "y_rot");
+    double roll_vel     = get("IMU", "x_acc"); 
+    double pitch_vel    = get("IMU", "y_acc");
+    double oldDampingAngle[4];
+
+    double alpha = 0.0314159;//2.0f*PI*controlDampCutoff*INT_TIME/1000.0f
+
+    // without case(pitch   roll)
+//  gain[0] = 0.2f;     gain[3] = 0.2f;
+//  gain[1] = 1.0f;     gain[4] = 1.0f;
+//  gain[2] = 0.4f;     gain[5] = 0.5f;
+    // with case
+//  gain[0] = 0.3f;     gain[3] = 0.3f;
+//  gain[1] = 1.0f;     gain[4] = 1.0f;
+//  gain[2] = 0.4f;     gain[5] = 0.5f;
+
+    unsigned char i;
+    for(i=0 ; i<6 ; i++) gain[i] = dampingGain[i];
+
+    for(int i=0; i < 4; i ++)
+    {
+        oldDampingAngle[i] = Damping[i];
+    }
+    
+    tempControlAngle[0] = gain[0]*(-gain[1]*pitch + gain[2]*pitch_vel);
+    tempControlAngle[1] = gain[3]*(-gain[4]*roll + gain[5]*roll_vel);
+
+    switch(phase)
+    {
+    case RIGHT_FOOT:
+        Damping[0] = (float)((1.0f-alpha)*oldDampingAngle[0]+alpha*tempControlAngle[0]);
+        oldDampingAngle[0] = Damping[0];
+        Damping[1] = (float)((1.0f-alpha)*oldDampingAngle[1]+alpha*tempControlAngle[1]);
+        oldDampingAngle[1] = Damping[1];
+        break;
+    case LEFT_FOOT:
+        Damping[2] = (float)((1.0f-alpha)*oldDampingAngle[2]+alpha*tempControlAngle[0]);
+        oldDampingAngle[2] = Damping[2];
+        Damping[3] = (float)((1.0f-alpha)*oldDampingAngle[3]+alpha*tempControlAngle[1]);
+        oldDampingAngle[3] = Damping[3];
+        break;
+    case BOTH_FEET:
+    default:
+        tempControlAngle[0] = 0.0f;
+        tempControlAngle[1] = 0.0f;
+        Damping[0] = (float)((1.0f-alpha)*oldDampingAngle[0]+alpha*tempControlAngle[0]);
+        oldDampingAngle[0] = Damping[0];
+        Damping[1] = (float)((1.0f-alpha)*oldDampingAngle[1]+alpha*tempControlAngle[1]);
+        oldDampingAngle[1] = Damping[1];
+        Damping[2] = (float)((1.0f-alpha)*oldDampingAngle[2]+alpha*tempControlAngle[0]);
+        oldDampingAngle[2] = Damping[2];
+        Damping[3] = (float)((1.0f-alpha)*oldDampingAngle[3]+alpha*tempControlAngle[1]);
+        oldDampingAngle[3] = Damping[3];
+        break;
+    }
+
+    if(Damping[0] > limitAngle) Damping[0] = limitAngle;
+    else if(Damping[0] < -limitAngle) Damping[0] = -limitAngle;
+    if(Damping[2] > limitAngle) Damping[2] = limitAngle;
+    else if(Damping[2] < -limitAngle) Damping[2] = -limitAngle;
+    
+    if(Damping[1] > limitAngle) Damping[1] = limitAngle;
+    else if(Damping[1] < -limitAngle) Damping[1] = -limitAngle;
+    if(Damping[3] > limitAngle) Damping[3] = limitAngle;
+    else if(Damping[3] < -limitAngle) Damping[3] = -limitAngle;
+}
+
+void BalanceController::ZMPInitialization(){
+    unsigned char i;
+    float KI;
+    float zmpTemp[2], heightTemp, pitchHipTemp;
+    double roll = get("IMU", "x_rot");
+    double pitch = get("IMU", "y_rot");
+
+    // _zmpInit[]
+    // 0: torso x-direction
+    // 1: torso y-direction
+    // 2: z-direction of the foot
+    // 3: hip pitch angle
+    // 4: ankle pitch angle
+    // 5: right ankle roll angle
+    // 6: left ankle roll angle
+
+    // 0:Right 1:Left
+    // 0:X 1:Y 2:Z
+    // [Right/Left][X/Y/Z]
+    
+
+    // ZMP initialization using the torso center position // Adjusts the X and Y offsets 
+    KI = 0.005/5;
+    
+    for(i=0 ; i<2 ; i++) // For X and Y 
+    {
+        zmpTemp[i] = (InitZmp[i] - zmp[i])/1000.0; // Create the average zmp 
+        
+        if(zmpTemp[i] > 0.05) zmpTemp[i] = 0.05;
+        else if(zmpTemp[i] < -0.05) zmpTemp[i] = -0.05;
+        InitRefAngles[0][i] -= KI*zmpTemp[i];
+        InitRefAngles[1][i] -= KI*zmpTemp[i];
+    }
+
+
+
+    // body roll angle initialization using the foot position(z-direction) // Changes the height
+    KI = 0.004/5;
+
+    heightTemp = roll/1000.0;
+    
+    if(heightTemp > 0.001) heightTemp = 0.001;
+    else if(heightTemp < -0.001) heightTemp = -0.001;
+
+    InitRefAngles[0][2] -= KI*heightTemp;
+    InitRefAngles[1][2] += KI*heightTemp;
+    
+
+
+
+    // body pitch angle initialization using the hip pitch angles
+    KI = 0.01;
+    pitchHipTemp = pitch;///1000.0f;
+        
+    if(pitchHipTemp > 0.01) pitchHipTemp = 0.01;
+    else if(pitchHipTemp < -0.01) pitchHipTemp = -0.01;
+    
+    //_joint[RAP].RefAngleFF += KI*pitchHipTemp;
+    //_joint[LAP].RefAngleFF += KI*pitchHipTemp;
+    double RHP_ref = get("RHP", "position");
+    double LHP_ref = get("LHP", "position");
+    double RAP_ref = get("RAP", "position");
+    double LAP_ref = get("LAP", "position");
+    double RAR_ref = get("RAR", "position");
+    double LAR_ref = get("LAR", "position");
+    double Lmy = get("LAT", "m_y");
+    double Rmy = get("RAT", "m_y");
+    double Lmx = get("LAT", "m_x");
+    double Rmx = get("RAT", "m_x");
+
+    RHP_ref += KI*pitchHipTemp;
+    LHP_ref += KI*pitchHipTemp;
+    
+    // moment at ankle(My) initialization using ankle pitch angles
+    //KI=0.0001f;
+    KI = 0.0002;
+    RAP_ref += KI*(Rmy-Lmy);
+
+    // moment at ankle(Mx) initialization using ankle roll angles
+    KI = 0.02/5; 
+    RAR_ref += KI*Rmx;
+    LAR_ref += KI*Lmx;
+
+     // Initial joint off sets 
+}

@@ -17,6 +17,8 @@ Interpolable::Interpolable() {
     currStepCount = 0;
     totalStepCount = 0;
 
+    offset = 0.0;
+
     memset(&startParams, 0, sizeof(startParams));
     memset(&currParams, 0, sizeof(currParams));
 }
@@ -67,6 +69,15 @@ double Interpolable::interpolate(){
 
 void Interpolable::setFrequency(double frequency){
     this->frequency = frequency;
+}
+
+void Interpolable::setOffset(double offSet){
+    offset = offSet;
+}
+
+double Interpolable::getOffset()
+{
+    return offset;
 }
 
 /*

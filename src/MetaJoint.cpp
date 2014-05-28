@@ -52,9 +52,10 @@ bool MetaJoint::set(PROPERTY property, double value){
         break;
     case POSITION:
     case GOAL:
-        if (value == interStep)
+        if (value == interStep){
+            cout << "value equals interStep" << endl;
             break;
-
+        }
         currVel = (currStepCount != 0 && currParams.valid) ?
                 (interpolateFourthOrder(currParams, currStepCount) - interpolateFourthOrder(currParams, currStepCount - 1)) : 0;
 

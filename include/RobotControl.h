@@ -59,6 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SimChannels.h"
 #include "Trajectory.h"
 #include "TrajHandler.h"
+#include "BalanceController.h"
 
 using ros::NodeHandle;
 using std::queue;
@@ -104,7 +105,14 @@ public:
     double get(string name, string property);
     string getProperties(string name, string properties);
     void updateState();
-    double getZMP();
+
+    // Feedback for walking
+    //double getZMP(int typeValue);
+    void DSPControl();
+    void vibrationControl();
+    double DampingControl();
+    void ZMPInitialization();
+
 
     // Parameter Commands
     void setMode(string mode, bool value);
@@ -132,6 +140,7 @@ private:
     
     HuboState *state;
     PowerControlBoard *power;
+    BalanceController *balancer;
 
     //map< string, vector<float> > gestures;
     map< string, COMMAND > commands;

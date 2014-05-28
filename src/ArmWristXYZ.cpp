@@ -46,9 +46,10 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
 ArmWristXYZ::~ArmWristXYZ() {}
 
 void ArmWristXYZ::setInverse(){
-    double wrist_x = 0.0;
-    double wrist_y = -0.08;
-    double wrist_z = -0.33;
+    cout << "Set inverse was called" << endl;
+    double wrist_x;// = 0.0;
+    double wrist_y;// = -0.08;
+    double wrist_z;// = -0.33;
 
     parameters[WRIST_X]->get(INTERPOLATION_STEP, wrist_x);
     parameters[WRIST_Y]->get(INTERPOLATION_STEP, wrist_y);
@@ -57,15 +58,15 @@ void ArmWristXYZ::setInverse(){
     }
     parameters[WRIST_Z]->get(INTERPOLATION_STEP, wrist_z);
 
-
+    cout << "X: " << wrist_x << " Y: " << wrist_y << " Z: " << wrist_z << endl; 
 
     double shoulder_pitch = 0;
     double shoulder_roll = 0;
     double elbow_pitch = 0;
 
-    double radius = sqrt(wrist_x*wrist_x + wrist_y*wrist_y + wrist_z*wrist_z);
-    double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);
-    double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);
+    double radius = sqrt(wrist_x*wrist_x + wrist_y*wrist_y + wrist_z*wrist_z);   //line in 3d space
+    double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the upper arm
+    double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the lower arm
 
     if(radius > L + U || radius < ARM_MIN_REACH){
         cout << "Error: Position is out of arm's reach" << endl;
@@ -109,7 +110,7 @@ void ArmWristXYZ::setInverse(){
         return;
     }
 
-    //cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
+    cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
 
     controlledJoints[SHOULDER_YAW]->set(GOAL, shoulder_yaw);
     controlledJoints[SHOULDER_PITCH]->set(GOAL, shoulder_pitch);
