@@ -37,7 +37,7 @@ bool IMUBoard::get(PROPERTY property, double &value){
     case Z_ACCEL:
     case X_ROTAT:
     case Y_ROTAT:
-        if ( ( boardNum != -1 ? !stateChannel->getFTProperty(boardNum, property, value) : !stateChannel->getFTProperty(getName(), property, value) ) ){
+        if ( ( boardNum != -1 ? !stateChannel->getIMUProperty(boardNum, property, value) : !stateChannel->getIMUProperty(getName(), property, value) ) ){
             cout << "Error getting " << Names::getName(property) << " from " << getName() << endl;
             return false;
         }

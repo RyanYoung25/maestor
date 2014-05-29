@@ -235,7 +235,12 @@ bool HuboState::addMetaJointControllerFromXML(xml_node node, MetaJointController
 
     for (xml_node::iterator it = node.begin(); it != node.end(); it++) {
         if (strcmp((*it).name(), "parameter") == 0){
-            RobotComponent* component = MetaJointFromXML(*it, new MetaJoint(controller), frequency);
+            RobotComponent* component;
+            if(strcmp((*it).attribute("type").as_string(),"ARM") == 0){
+                component = MetaJointFromXML(*it, new ArmMetaJoint(controller), frequency);
+            } else {
+                component = MetaJointFromXML(*it, new MetaJoint(controller), frequency);
+            }
             if (component == NULL){
                 cout << "Error instantiating parameter of " << type << " in initialization." << endl;
                 return false;

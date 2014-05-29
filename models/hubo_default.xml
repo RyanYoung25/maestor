@@ -22,9 +22,9 @@
     <!-- <component type="HuboMotor" name="LWR" boardNum="9" vel="1.0"/> -->
     <component type="HuboMotor" name="LWP" boardNum="10" vel="1.0"/> 
     <component type="LeftArmWristXYZ">
-        <parameter name="LAX"/>
-        <parameter name="LAY"/>
-        <parameter name="LAZ"/>
+        <parameter type="ARM" name="LAX" default="0.0"/>
+        <parameter type="ARM" name="LAY" default="-0.05"/>
+        <parameter type="ARM" name="LAZ" default=".25"/>
         <controlled name="LSY"/>
         <controlled name="LSP"/>
         <controlled name="LSR"/>
@@ -42,9 +42,9 @@
     <!-- <component type="HuboMotor" name="RWR" boardNum="16" vel="1.0"/> -->
     <component type="HuboMotor" name="RWP" boardNum="17" vel="1.0"/>
     <component type="RightArmWristXYZ">
-        <parameter name="RAX"/>
-        <parameter name="RAY"/>
-        <parameter name="RAZ"/>
+        <parameter type="ARM" name="RAX" default="0"/>
+        <parameter type="ARM" name="RAY" default="-.05"/>
+        <parameter type="ARM" name="RAZ" default="-.25"/>
         <controlled name="RSY"/>
         <controlled name="RSP"/>
         <controlled name="RSR"/>

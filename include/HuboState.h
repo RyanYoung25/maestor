@@ -42,6 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FTSensorBoard.h"
 #include "IMUBoard.h"
 #include "MetaJoint.h"
+#include "ArmMetaJoint.h"
 #include "NeckRollPitch.h"
 #include "ArmWristXYZ.h"
 #include "LowerBodyLeg.h"

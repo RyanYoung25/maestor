@@ -23,10 +23,10 @@ public:
     MetaJoint(MetaJointController* controller);
     virtual ~MetaJoint();
 
-    bool get(PROPERTY property, double &value);
-    bool set(PROPERTY property, double value);
+    virtual bool get(PROPERTY property, double &value);
+    virtual bool set(PROPERTY property, double value);
 
-    void setGoal(double pos);
+    virtual void setGoal(double pos);
 
 };
 

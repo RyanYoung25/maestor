@@ -46,6 +46,12 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
 ArmWristXYZ::~ArmWristXYZ() {}
 
 void ArmWristXYZ::setInverse(){
+    cout << "Something is going on with the metajoint controller set Inverse" << endl;
+    if (!allSet()){ //wait for all joints
+        cout << "not all of the joints are ready" << endl; 
+        return;
+    }
+
     double wrist_x = 0.0;
     double wrist_y = -0.08;
     double wrist_z = -0.33;
@@ -57,7 +63,7 @@ void ArmWristXYZ::setInverse(){
     }
     parameters[WRIST_Z]->get(INTERPOLATION_STEP, wrist_z);
 
-
+    cout << "X: " << wrist_x << " Y: " << wrist_y << " Z: "  << wrist_z << endl;
 
     double shoulder_pitch = 0;
     double shoulder_roll = 0;
@@ -67,8 +73,10 @@ void ArmWristXYZ::setInverse(){
     double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);
     double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);
 
+    cout << "Radius: " << radius << " Lower + Uppper: " << U+L << endl;
     if(radius > L + U || radius < ARM_MIN_REACH){
         cout << "Error: Position is out of arm's reach" << endl;
+        unsetAll();
         return;
     }
 
@@ -100,21 +108,25 @@ void ArmWristXYZ::setInverse(){
     // Not entirely sure if this check is necessary
     if(isnan(shoulder_pitch) || isnan(shoulder_roll) || isnan(elbow_pitch)){
         cout << "Error: inverse solver returned NaN" << endl;
+        unsetAll();
         return;
     }
 
     // Check that joint angles are within limits
     if(shoulder_roll > SHOULDER_ROLL_UPPER || shoulder_roll < SHOULDER_ROLL_LOWER || shoulder_pitch > SHOULDER_PITCH_UPPER || shoulder_pitch < SHOULDER_PITCH_LOWER || elbow_pitch > ELBOW_PITCH_UPPER || elbow_pitch < ELBOW_PITCH_LOWER){
         cout << "Error: One or more joints out of joint limits" << endl;
+        unsetAll();
         return;
     }
 
-    //cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
+    cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
 
     controlledJoints[SHOULDER_YAW]->set(GOAL, shoulder_yaw);
     controlledJoints[SHOULDER_PITCH]->set(GOAL, shoulder_pitch);
     controlledJoints[SHOULDER_ROLL]->set(GOAL, shoulder_roll);
     controlledJoints[ELBOW_PITCH]->set(GOAL, elbow_pitch);
+
+    unsetAll();
 }
 
 void ArmWristXYZ::getForward(){
@@ -147,8 +159,8 @@ void ArmWristXYZ::getForward(){
     double zPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
 
     // Shoulder pitch reference frame axes do not match that of hubo's reference frame
-    parameters[WRIST_X]->set(META_VALUE, -xPos);
-    parameters[WRIST_Y]->set(META_VALUE, -yPos);
+    parameters[WRIST_X]->set(META_VALUE, xPos);
+    parameters[WRIST_Y]->set(META_VALUE, yPos);
     parameters[WRIST_Z]->set(META_VALUE, zPos);
     //cout << -yPos << " " << zPos << " " << -xPos << endl;
 }

@@ -90,34 +90,32 @@ RobotControl::~RobotControl(){
 }
 
 void RobotControl::updateHook(){
-
     if (state == NULL)
         return;
-
     if(RUN_TYPE == SIMULATION){
         simChannels->load();
     }
     referenceChannel->load();
     stateChannel->load();
 
-
     trajStarted = trajectories.hasRunning();
 
     Components components = state->getComponents();
-
     //Boards boards = state->getBoards();
     //Motors motors = state->getMotorMap();
     Trajectory* traj = NULL;
     RobotComponent* component = NULL;
 
-
     if (!components.empty()) {
         for (int i = 0; i < components.size(); i++){
             component = components[i];
+            if(component == NULL){
+                cout << "Got a null component in here" << endl;
+                continue;
+            }
             double enabled;
             if (!component->get(ENABLED, enabled))
                 continue;
-
             traj = trajectories.inRunning(component->getName());
 
             if ((bool)enabled){
@@ -130,7 +128,6 @@ void RobotControl::updateHook(){
                     component->get(POSITION, pos);
                     component->set(INTERPOLATION_STEP, pos);
                     component->set(GOAL, pos);
-
                 } else if (trajStarted && traj){
                     // Trajectory Playback
                     component->get(GOAL, pos);
