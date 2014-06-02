@@ -28,3 +28,5 @@ for i in range(0, 5):
     robot.waitForJoint("REP")
 
 robot.setProperties("RSY RSR", "position position", "0 0")
+robot.waitForJoint("RSR")
+robot.waitForJoint("RSY")
