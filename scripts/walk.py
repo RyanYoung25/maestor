@@ -15,6 +15,10 @@ def crouch():
     robot.waitForJoint("RFZ")
     robot.waitForJoint("LFZ") 
 
+def stand():
+    robot.setProperties("RFZ LFZ", "position position", "-.56 -.56")
+    waitForZ()
+
 def FirstRightFootUp():
     #Y direction "now with 20% more sway"
     robot.setProperties("RFY LFY", "position position", "-.09 -.09")
@@ -32,8 +36,8 @@ def FirstRightFootDown():
     #Y direction "now with 20% more sway"
     robot.setProperties("RFY LFY", "position position", "0 0")
     #X direction
-    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForX()
+    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForY()
     waitForZ()
 
@@ -47,7 +51,6 @@ def FirstLeftFootUp():
     #X direction
     robot.setProperties("RFZ LFZ", "position position", "-.52 -.485")
     waitForX()
-    waitForY()
     waitForZ()
 
 
@@ -57,8 +60,8 @@ def FirstLeftFootDown():
     #Y direction "now with 20% more sway"
     robot.setProperties("RFY LFY", "position position", "0 0")
     #X direction
-    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForX()
+    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForY()
     waitForZ()
 
@@ -80,8 +83,8 @@ def RightFootDown():
     #Y direction "now with 20% more sway"
     robot.setProperties("RFY LFY", "position position", "0 0")
     #X direction
-    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForX()
+    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForY()
     waitForZ()
 
@@ -103,8 +106,8 @@ def LeftFootDown():
     #Y direction "now with 20% more sway"
     robot.setProperties("RFY LFY", "position position", "0 0")
     #X direction
-    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForX()
+    robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForY()
     waitForZ()
 
@@ -151,6 +154,7 @@ def main():
     LeftFootDown()
     RightFootUp()
     HipToCenter()
+    stand()
     #resetVelocities()
 
 if __name__ == '__main__':
