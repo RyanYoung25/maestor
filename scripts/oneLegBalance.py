@@ -16,6 +16,10 @@ def crouch():
     robot.waitForJoint("RFZ")
     robot.waitForJoint("LFZ") 
 
+def stand():
+    robot.setProperties("RFZ LFZ", "position position", "-.56 -.56")
+    robot.waitForJoint("RFZ")
+    robot.waitForJoint("LFZ")
 
 def HipToCenter():
     #X direction
@@ -30,7 +34,7 @@ def HipToCenter():
 
 def HipToLeft():
     '''Hip To left sway control'''
-    robot.setProperties("RFY LFY", "position position", ".07 .07")
+    robot.setProperties("RFY LFY", "position position", ".09 .09")
     waitForY()
 
 def raiseLeg():
@@ -63,6 +67,7 @@ def main():
     time.sleep(5)
     lowerLeg()
     HipToCenter()
+    stand()
     #resetVelocities()
 
 if __name__ == '__main__':
