@@ -7,7 +7,7 @@ robot = maestor()
 def main():
     setVelocities()
     bendDown()
-    for i in range(0, 10):
+    for i in range(0, 2):
         wiggle()
     standUp()
     resetVelocities()

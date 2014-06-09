@@ -6,10 +6,9 @@ robot = maestor()
 
 def main():
     setVelocities()
-    for i in range(0, 3):
-        bendDown()
-        doTheRobot()
-        standUp()
+    bendDown()
+    doTheRobot()
+    standUp()
     resetVelocities()
 
 def setVelocities():
@@ -30,7 +29,7 @@ def doTheRobot():
     robot.setProperties("RSY RSR", "position position", "1.57 -1.35")
     robot.waitForJoint("RSR")
     robot.waitForJoint("RSY")
-    for i in range(0, 3):
+    for i in range(0, 2):
         robot.setProperty("REP", "position", -1.7)
         robot.waitForJoint("REP")
         robot.setProperty("REP", "position", 0)
