@@ -56,6 +56,15 @@ void BalanceController::Balance(){
     logfile << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
     logfile << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
     logfile << "Damping RAP: " << Damping[0] << " RAR: " << Damping[1] << " LAP: " << Damping[2] << " LAR: " << Damping[3] << endl;
+
+    cout << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
+    cout << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
+
+    setOffset("RFX", ControlDSP[0][0]);
+    setOffset("RFY", ControlDSP[0][1]);
+    setOffset("LFX", ControlDSP[1][0]);
+    setOffset("LFY", ControlDSP[1][1]);
+
 }
 
 void BalanceController::initBalanceController(HuboState& theState){
@@ -193,6 +202,20 @@ void BalanceController::getCurrentSupportPhase(){
     else if(Lz > 30)
     {
         phase = LEFT_FOOT;
+    }
+}
+
+void BalanceController::setOffset(string name, double offset){
+    if (!state->nameExists(name)){
+        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
+        return;
+    }
+
+
+
+    if (!static_cast<MetaJoint*>(state->getComponent(name))->setOffset(offset)){
+        cout << "Error setting offset of component " << name << endl;
+        return;
     }
 }
 

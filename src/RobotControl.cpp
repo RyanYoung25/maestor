@@ -104,7 +104,6 @@ void RobotControl::updateHook(){
 
 
     if (!components.empty()) {
-        cout << "Calling balance" << endl;
         balancer->Balance();
         for (int i = 0; i < components.size(); i++){
             component = components[i];

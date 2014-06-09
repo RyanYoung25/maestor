@@ -53,6 +53,7 @@ private:
     // Calculation methods
     double get(string name, string property);
     void set(string name, string property, double value);
+    void setOffset(string name, double offset);
     void getCurrentSupportPhase();
     void DSPControl();
     //void vibrationControl();

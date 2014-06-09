@@ -62,7 +62,7 @@ double Interpolable::interpolate(){
 
     error = currGoal - interStep;
     velocity = interVel / frequency;
-    interStep += interpolateTrap(error, velocity);
+    interStep = interStep + offset + interpolateTrap(error, velocity);
 
     return interStep;
 }
@@ -71,8 +71,9 @@ void Interpolable::setFrequency(double frequency){
     this->frequency = frequency;
 }
 
-void Interpolable::setOffset(double offSet){
+bool Interpolable::setOffset(double offSet){
     offset = offSet;
+    return true;
 }
 
 double Interpolable::getOffset()

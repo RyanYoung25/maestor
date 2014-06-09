@@ -39,7 +39,7 @@ public:
     virtual ~Interpolable();
 
     void setFrequency(double frequency);
-    void setOffset(double offSet);
+    bool setOffset(double offSet);
     double getOffset();
 
     virtual double interpolate();
