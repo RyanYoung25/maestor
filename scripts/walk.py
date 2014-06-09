@@ -17,7 +17,7 @@ def crouch():
 
 def FirstRightFootUp():
     #Y direction "now with 20% more sway"
-    robot.setProperties("RFY LFY", "position position", "-.07 -.07")
+    robot.setProperties("RFY LFY", "position position", "-.09 -.09")
     waitForY()
     #X direction
     robot.setProperties("RFX LFX", "position position", ".05 0")
@@ -40,7 +40,7 @@ def FirstRightFootDown():
 
 def FirstLeftFootUp():
     #Y direction "now with 20% more sway"
-    robot.setProperties("RFY LFY", "position position", ".07 .07")
+    robot.setProperties("RFY LFY", "position position", ".09 .09")
     waitForY()
     #X direction
     robot.setProperties("RFX LFX", "position position", "0 .05")
@@ -64,7 +64,7 @@ def FirstLeftFootDown():
 
 def RightFootUp():
     #Y direction "now with 20% more sway"
-    robot.setProperties("RFY LFY", "position position", "-.07 -.07")
+    robot.setProperties("RFY LFY", "position position", "-.09 -.09")
     waitForY()
     #X direction
     robot.setProperties("RFX LFX", "position position", "0 0")
@@ -87,7 +87,7 @@ def RightFootDown():
 
 def LeftFootUp():
     #Y direction "now with 20% more sway"
-    robot.setProperties("RFY LFY", "position position", ".07 .07")
+    robot.setProperties("RFY LFY", "position position", ".09 .09")
     waitForY()
     #X direction
     robot.setProperties("RFX LFX", "position position", "0 0")
