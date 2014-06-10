@@ -51,6 +51,8 @@ void Names::initCommandMap(){
     getCommands()["Update"] = UPDATE;
     getCommands()["Zero"] = ZERO;
     getCommands()["ZeroAll"] = ZEROALL;
+    getCommands()["BalanceOn"] = BALANCEON;
+    getCommands()["BalanceOff"] = BALANCEOFF;
 }
 
 bool Names::setAlias(string name, string alias){

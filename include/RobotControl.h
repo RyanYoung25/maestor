@@ -161,6 +161,7 @@ private:
     int delay;
     bool interpolation, override;
     bool RUN_TYPE;
+    bool balanceOn;
 
     //ros::NodeHandle nh;
 	bool maestro_run_type;
