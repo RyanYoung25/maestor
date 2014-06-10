@@ -65,26 +65,26 @@ void BalanceController::Balance(){
     double LFx = BalanceController::get("LFX", "position");
     double LFy = BalanceController::get("LFY", "position");
     //rounded offsets
-    double Rx = floor(ControlDSP[0][0]*100) / 100; 
-    double Ry = floor(ControlDSP[0][1]*100) / 100;
-    double Lx = floor(ControlDSP[1][0]*100) / 100;
-    double Ly = floor(ControlDSP[1][1]*100) / 100;
+    double Rx = -1 * floor(ControlDSP[0][0]*1000) / 1000; 
+    double Ry = -1 * floor(ControlDSP[0][1]*1000) / 1000;
+    double Lx = -1 * floor(ControlDSP[1][0]*1000) / 1000;
+    double Ly = -1 * floor(ControlDSP[1][1]*1000) / 1000;
 
-
-    if(!requiresMotion("RFX")){
+    cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
+    cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
+    
+    if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", (RFx + Rx));
     }
-    if(!requiresMotion("RFY")){
+    if(!requiresMotion("RFY") && fabs(Ry) > .005){
         BalanceController::set("RFY", "position", (RFy + Ry));
     }
-    if(!requiresMotion("LFX")){
+    if(!requiresMotion("LFX") && fabs(Lx) > .005){
         BalanceController::set("LFX", "position", (LFx + Lx));
     }
-    if(!requiresMotion("LFY")){
+    if(!requiresMotion("LFY") && fabs(Ly) > .005){
         BalanceController::set("LFY", "position", (LFy + Ly));
     }
-
-
 }
 
 void BalanceController::initBalanceController(HuboState& theState){
