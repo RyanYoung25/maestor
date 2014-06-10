@@ -64,6 +64,11 @@ void BalanceController::Balance(){
     double RFy = BalanceController::get("RFY", "position");
     double LFx = BalanceController::get("LFX", "position");
     double LFy = BalanceController::get("LFY", "position");
+    //rounded offsets
+    double Rx = floor(ControlDSP[0][0]*1000) / 1000; 
+    double Ry = floor(ControlDSP[0][1]*1000) / 1000;
+    double Lx = floor(ControlDSP[1][0]*1000) / 1000;
+    double Ly = floor(ControlDSP[1][1]*1000) / 1000;
     if(!requiresMotion("RFX")){
         BalanceController::set("RFX", "position", (RFx + ControlDSP[0][0]));
     }
@@ -288,7 +293,7 @@ bool BalanceController::requiresMotion(string name){
         return false;
     }
 
-    return fabs(step - goal) > .00001;
+    return fabs(step - goal) > .001;
 }
 
 void BalanceController::DSPControl(){
