@@ -67,7 +67,7 @@ def FirstLeftFootDown():
 
 def RightFootUp():
     #Y direction "now with 20% more sway"
-    robot.setProperties("RFY LFY", "position position", "-.09 -.09")
+    robot.setProperties("RFY LFY", "position position", "-.092 -.092")
     waitForY()
     #X direction
     robot.setProperties("RFX LFX", "position position", "0 0")
@@ -81,12 +81,12 @@ def RightFootDown():
     #X direction
     robot.setProperties("RFX LFX", "position position", ".05 -.05")
     waitForX()
-    #Y direction "now with 20% more sway"
-    robot.setProperties("RFY LFY", "position position", "0 0")
     #X direction
     robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
-    waitForY()
+    #Y direction "now with 20% more sway"
     waitForZ()
+    robot.setProperties("RFY LFY", "position position", "0 0")
+    waitForY()
 
 def LeftFootUp():
     #Y direction "now with 20% more sway"
