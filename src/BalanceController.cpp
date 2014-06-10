@@ -69,16 +69,16 @@ void BalanceController::Balance(){
     double Ry = floor(ControlDSP[0][1]*1000) / 1000;
     double Lx = floor(ControlDSP[1][0]*1000) / 1000;
     double Ly = floor(ControlDSP[1][1]*1000) / 1000;
-    if(!requiresMotion("RFX")){
+    if(!requiresMotion("RFX") && abs(Rx) > .005){
         BalanceController::set("RFX", "position", (RFx + ControlDSP[0][0]));
     }
-    if(!requiresMotion("RFY")){
+    if(!requiresMotion("RFY") && abs(Ry) > .005){
         BalanceController::set("RFY", "position", (RFy + ControlDSP[0][1]));
     }
-    if(!requiresMotion("LFX")){
+    if(!requiresMotion("LFX") && abs(Lx) > .005){
         BalanceController::set("LFX", "position", (LFx + ControlDSP[1][0]));
     }
-    if(!requiresMotion("LFY")){
+    if(!requiresMotion("LFY") && abs(Ly) > .005){
         BalanceController::set("LFY", "position", (LFy + ControlDSP[1][1]));
     }
 
