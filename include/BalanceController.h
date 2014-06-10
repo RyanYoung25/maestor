@@ -60,6 +60,7 @@ private:
     double DampingControl();
     void ZMPInitialization();
     void ZMPcalculation();
+    bool requiresMotion(string name);
 public:
     BalanceController();
     virtual ~BalanceController();
