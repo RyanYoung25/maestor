@@ -72,16 +72,16 @@ void BalanceController::Balance(){
 
 
     if(!requiresMotion("RFX")){
-        BalanceController::set("RFX", "position", (RFx - Rx));
+        BalanceController::set("RFX", "position", (RFx + Rx));
     }
     if(!requiresMotion("RFY")){
-        BalanceController::set("RFY", "position", (RFy - Ry));
+        BalanceController::set("RFY", "position", (RFy + Ry));
     }
     if(!requiresMotion("LFX")){
-        BalanceController::set("LFX", "position", (LFx - Lx));
+        BalanceController::set("LFX", "position", (LFx + Lx));
     }
     if(!requiresMotion("LFY")){
-        BalanceController::set("LFY", "position", (LFy - Ly));
+        BalanceController::set("LFY", "position", (LFy + Ly));
     }
 
 
