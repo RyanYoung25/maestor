@@ -54,9 +54,6 @@ void BalanceController::Balance(){
     setOffset("RFY", ControlDSP[0][1]);
     setOffset("LFX", ControlDSP[1][0]);
     setOffset("LFY", ControlDSP[1][1]);
-
-
-
     //Active balance attempt
     //If the joint does not require motion then we can set it's new goal as the current position plus 
     //the offset. 
@@ -69,12 +66,11 @@ void BalanceController::Balance(){
     double Ry = -1 * floor(ControlDSP[0][1]*1000) / 1000;
     double Lx = -1 * floor(ControlDSP[1][0]*1000) / 1000;
     double Ly = -1 * floor(ControlDSP[1][1]*1000) / 1000;
-
     // New position
-    double Rxpos = RFx + Rx   
-    double Rypos = RFy + Ry
-    double Lxpos = LFx + Lx
-    double Lypos = LFy + Ly
+    double Rxpos = RFx + Rx;   
+    double Rypos = RFy + Ry;
+    double Lxpos = LFx + Lx;
+    double Lypos = LFy + Ly;
 
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
