@@ -70,20 +70,26 @@ void BalanceController::Balance(){
     double Lx = -1 * floor(ControlDSP[1][0]*1000) / 1000;
     double Ly = -1 * floor(ControlDSP[1][1]*1000) / 1000;
 
+    // New position
+    double Rxpos = RFx + Rx   
+    double Rypos = RFy + Ry
+    double Lxpos = LFx + Lx
+    double Lypos = LFy + Ly
+
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
     
     if(!requiresMotion("RFX") && fabs(Rx) > .005){
-        BalanceController::set("RFX", "position", (RFx + Rx));
+        BalanceController::set("RFX", "position", Rxpos);
     }
     if(!requiresMotion("RFY") && fabs(Ry) > .005){
-        BalanceController::set("RFY", "position", (RFy + Ry));
+        BalanceController::set("RFY", "position", Rypos);
     }
     if(!requiresMotion("LFX") && fabs(Lx) > .005){
-        BalanceController::set("LFX", "position", (LFx + Lx));
+        BalanceController::set("LFX", "position", Lxpos);
     }
     if(!requiresMotion("LFY") && fabs(Ly) > .005){
-        BalanceController::set("LFY", "position", (LFy + Ly));
+        BalanceController::set("LFY", "position", Lypos);
     }
 }
 
