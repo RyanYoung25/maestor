@@ -139,17 +139,11 @@ void LowerBodyLeg::setHipRollXYZ(double foot_x, double foot_y, double foot_z, do
 
     if ( isnan(foot_yaw) || isnan(hip_roll) || isnan(hip_pitch) || isnan(knee_pitch) || isnan(ankle_pitch) || isnan(ankle_roll) ){
         cout << "Error: Inverse solver returned NaN" << endl;
-        parameters[FOOT_X]->set(GOAL, foot_x);
-        parameters[FOOT_Y]->set(GOAL, foot_y);
-        parameters[FOOT_Z]->set(GOAL, foot_z);
         return;
     }
 
     if (hip_roll < HIP_ROLL_LOWER || hip_roll > HIP_ROLL_UPPER || hip_pitch < HIP_PITCH_LOWER || hip_pitch > HIP_PITCH_UPPER || knee_pitch < KNEE_PITCH_LOWER || knee_pitch > KNEE_PITCH_UPPER || ankle_pitch < ANKLE_PITCH_LOWER || ankle_pitch > ANKLE_PITCH_UPPER || ankle_roll < ANKLE_ROLL_LOWER || ankle_roll > ANKLE_ROLL_UPPER){
         cout << "Error: One or more joints out of joint limits" << endl;
-        parameters[FOOT_X]->set(GOAL, foot_x);
-        parameters[FOOT_Y]->set(GOAL, foot_y);
-        parameters[FOOT_Z]->set(GOAL, foot_z);
         return;
     }
 

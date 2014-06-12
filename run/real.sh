@@ -16,7 +16,7 @@ fi
 if [ $(pgrep roscore) ]; then
     echo "roscore is already running."
 else
-    roscore &
+    roscore &> /dev/null
 fi
 
 sudo openvt -- hubo-ach start 

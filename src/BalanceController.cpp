@@ -75,13 +75,13 @@ void BalanceController::Balance(){
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
     
-    if(!requiresMotion("RFX") && fabs(Rx) > .005){
+    if(!requiresMotion("RFX") && fabs(Rx) > .009){
         BalanceController::set("RFX", "position", Rxpos);
     }
     if(!requiresMotion("RFY") && fabs(Ry) > .005){
         BalanceController::set("RFY", "position", Rypos);
     }
-    if(!requiresMotion("LFX") && fabs(Lx) > .005){
+    if(!requiresMotion("LFX") && fabs(Lx) > .009){
         BalanceController::set("LFX", "position", Lxpos);
     }
     if(!requiresMotion("LFY") && fabs(Ly) > .005){
