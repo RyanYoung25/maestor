@@ -73,18 +73,18 @@ void BalanceController::Balance(){
     double Lypos = LFy + Ly;
     // If too big go back
     if(fabs(Rx) > .015){
-        Rxpos = -Rxpos;
+        Rxpos = ((Rxpos > 0)-(Rxpos < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Ry) > .015){
-        Rypos = -Rypos;
+        Rypos = ((Rypos > 0)-(Rypos < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Lx) > .015){
-        Lxpos = -Lxpos;
+        Lxpos = ((Lxpos > 0)-(Lxpos < 0)) * -0.015;
     }
     if(fabs(Ly) > .015){
-        Lypos = -Lypos;
+        Lypos = ((Lypos > 0)-(Lypos < 0)) * -0.015;
     }
-    
+
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
     
