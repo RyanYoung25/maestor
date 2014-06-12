@@ -34,6 +34,7 @@ private:
     enum SupportPhase {LEFT_FOOT, RIGHT_FOOT, BOTH_FEET};
     bool initialized;
     double InitZmp[2]; // initial ZMP
+    double BaseDSP[2][2]; //offset baseline
     // Balance Information
     SupportPhase phase; 
     double zmp[6];
@@ -51,15 +52,26 @@ private:
     // Initialization check
     bool allComponentsFound();
     // Calculation methods
+    // Carried over from Robot Control. Get the property on joint named "name"
     double get(string name, string property);
+    // Carried over from Robot Control. Set the property on the joint named "name" as the value
     void set(string name, string property, double value);
+    // sets the interpolation offset for a joint. This value is added at each interpolation step, essentially changing the speed of the joint. 
+    // It is only used on meta joints not physical joints meaning that the physical joints will never interpolate too fast. This is a good thing
     void setOffset(string name, double offset);
+    // Tells you if you are standing on the Left foot, Right foot, or Both feet
     void getCurrentSupportPhase();
-    void DSPControl();
+    // I think it stands for Digital Signal Processing, none the less it generates the offsets for the X, Y, and Z coordinates.
+    // this is the key player in balancing 
+    void DSPControl(); 
     //void vibrationControl();
-    double DampingControl();
-    void ZMPInitialization();
+    // Not really used, controls the damping of the foot. Was used for gait generation but not anymore.
+    double DampingControl(); 
+    // Initialize the ZMP values and potentially some initial offsets for the ankle rolls. But we aren't there yet
+    void ZMPInitialization(); 
+    // Calculates the ZMP positions. These are then used in the DSP controller to calculate offsets
     void ZMPcalculation();
+    // Carried over from Robot Control. Checks to see if the is at it's goal position. If it isn't it requires motion
     bool requiresMotion(string name);
 public:
     BalanceController();
@@ -69,12 +81,11 @@ public:
     void initBalanceController(HuboState& theState);
     double getZMP(int value); // 0:X 1:Y  Filtered 
     bool isBalanced(); // Boolean value to say if the robot is balanced or not
+    void setBaseline();// Take the current values from the DSP control function and set those as the baseline zero. Future values are modified by this. 
     void Balance();    // move joints to balance the robot, stablize the zmp over the support polygon. 
-    // Balance will not drastically move the robot and will only move the legs that are involved in support phase. 
-    // This means that if the robot is moving the right foot up and the support phase is detected to be on the left foot
-    // the balance controller will only move the right ankle and hip treating the robot like an inverted pendulum where the 
-    // ankle is the pin. If we are in a double support phase the robot will move both to keep balanced. 
-    // Balance is a closed loop function where it only moves based off of the error from the sensor readings and the current values of the metajoints. 
+    // Balance has two differnt ways of controlling the joints, if the joint is in motion because someone else set it's position then the function will only
+    // alter the interpolation steps using the offsets it generates. If the joint is not moving then it attempts to balance it's self 
+    // by setting new positions based off of offsets and the current joint position.  
 
 
 };

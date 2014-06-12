@@ -21,7 +21,7 @@ BalanceController::BalanceController(){
     balanceComponents[5] = "LFZ"; 
     balanceComponents[6] = "RAT"; 
     balanceComponents[7] = "LAT"; 
-    balanceComponents[8] = "IMU";
+    balanceComponents[8] = "IMU"; 
 
     logfile.open("log.log.log");
 }
@@ -36,10 +36,10 @@ bool BalanceController::isBalanced(){
 
 void BalanceController::Balance(){
     getCurrentSupportPhase();
+    ZMPcalculation();
     DSPControl();
     DampingControl();
-    ZMPInitialization();
-    ZMPcalculation();
+
 
     logfile << "SupportPhase: " << phase << endl;
     logfile << "ZMP: X: " << zmp[0] << " Y: " << zmp[1] << endl;
@@ -67,26 +67,37 @@ void BalanceController::Balance(){
     double Lx = -1 * floor(ControlDSP[1][0]*1000) / 1000;
     double Ly = -1 * floor(ControlDSP[1][1]*1000) / 1000;
     // New position
-    double Rxpos = RFx + Rx;   
-    double Rypos = RFy + Ry;
-    double Lxpos = LFx + Lx;
-    double Lypos = LFy + Ly;
+    double Rxpos = RFx + Rx - BaseDSP[0][0];   
+    double Rypos = RFy + Ry - BaseDSP[0][1];
+    double Lxpos = LFx + Lx - BaseDSP[1][0];
+    double Lypos = LFy + Ly - BaseDSP[1][1];
 
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
     
-    if(!requiresMotion("RFX") && fabs(Rx) > .009){
+    if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
     }
     if(!requiresMotion("RFY") && fabs(Ry) > .005){
         BalanceController::set("RFY", "position", Rypos);
     }
-    if(!requiresMotion("LFX") && fabs(Lx) > .009){
+    if(!requiresMotion("LFX") && fabs(Lx) > .005){
         BalanceController::set("LFX", "position", Lxpos);
     }
     if(!requiresMotion("LFY") && fabs(Ly) > .005){
         BalanceController::set("LFY", "position", Lypos);
     }
+}
+
+void BalanceController::setBaseline(){
+    getCurrentSupportPhase();
+    ZMPcalculation();
+    DSPControl();
+
+    BaseDSP[0][0] = -1 * floor(ControlDSP[0][0]*1000) / 1000; 
+    BaseDSP[0][1] = -1 * floor(ControlDSP[0][1]*1000) / 1000;
+    BaseDSP[1][0] = -1 * floor(ControlDSP[1][0]*1000) / 1000;
+    BaseDSP[1][1] = -1 * floor(ControlDSP[1][1]*1000) / 1000;
 }
 
 void BalanceController::initBalanceController(HuboState& theState){
@@ -192,11 +203,7 @@ void BalanceController::ZMPcalculation(){
         zmp[2] = 0.0;
         zmp[3] = 0.0;
     }
-    else
-    {
-        //something really screwy happened or the robot is flying through the air... 
-        //generally bad :/
-    }
+
 
     for(int i=0 ; i<6 ; i++)
     {
@@ -410,6 +417,7 @@ double BalanceController::DampingControl(){
     else if(Damping[3] < -limitAngle) Damping[3] = -limitAngle;
 }
 
+// doesn't really do anything :( 
 void BalanceController::ZMPInitialization(){
     unsigned char i;
     float KI;

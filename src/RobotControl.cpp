@@ -564,6 +564,7 @@ void RobotControl::command(string name, string target){
         break;
     case BALANCEON:
         balanceOn = true;
+        balancer->setBaseline();
         break;
     case BALANCEOFF:
         balanceOn = false;
