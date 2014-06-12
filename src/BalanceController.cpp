@@ -61,17 +61,30 @@ void BalanceController::Balance(){
     double RFy = BalanceController::get("RFY", "position");
     double LFx = BalanceController::get("LFX", "position");
     double LFy = BalanceController::get("LFY", "position");
-    //rounded offsets
-    double Rx = -1 * floor(ControlDSP[0][0]*1000) / 1000; 
-    double Ry = -1 * floor(ControlDSP[0][1]*1000) / 1000;
-    double Lx = -1 * floor(ControlDSP[1][0]*1000) / 1000;
-    double Ly = -1 * floor(ControlDSP[1][1]*1000) / 1000;
+    //rounded offsets and adjusted 
+    double Rx = (-1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
+    double Ry = (-1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
+    double Lx = (-1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
+    double Ly = (-1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
     // New position
-    double Rxpos = RFx + Rx - BaseDSP[0][0];   
-    double Rypos = RFy + Ry - BaseDSP[0][1];
-    double Lxpos = LFx + Lx - BaseDSP[1][0];
-    double Lypos = LFy + Ly - BaseDSP[1][1];
-
+    double Rxpos = RFx + Rx;   
+    double Rypos = RFy + Ry;
+    double Lxpos = LFx + Lx;
+    double Lypos = LFy + Ly;
+    // If too big go back
+    if(fabs(Rx) > .015){
+        Rxpos = -Rxpos;
+    }
+    if(fabs(Ry) > .015){
+        Rypos = -Rypos;
+    }
+    if(fabs(Lx) > .015){
+        Lxpos = -Lxpos;
+    }
+    if(fabs(Ly) > .015){
+        Lypos = -Lypos;
+    }
+    
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
     
