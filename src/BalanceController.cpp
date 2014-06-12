@@ -73,20 +73,20 @@ void BalanceController::Balance(){
     double Lypos = LFy + Ly;
     // If too big go back
     if(fabs(Rx) > .015){
-        Rxpos = ((Rxpos > 0)-(Rxpos < 0)) * -0.015; // check the sign and flip it
+        Rx = ((Rx > 0)-(Rx < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Ry) > .015){
-        Rypos = ((Rypos > 0)-(Rypos < 0)) * -0.015; // check the sign and flip it
+        Ry = ((Ry > 0)-(Ry < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Lx) > .015){
-        Lxpos = ((Lxpos > 0)-(Lxpos < 0)) * -0.015;
+        Lxpos = ((Lx > 0)-(Lx < 0)) * -0.015;
     }
     if(fabs(Ly) > .015){
-        Lypos = ((Lypos > 0)-(Lypos < 0)) * -0.015;
+        Lypos = ((Ly > 0)-(Ly < 0)) * -0.015;
     }
 
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
-    cout << "Abs(Rx: " << abs(Rx) << " Ry: " << abs(Ry) << " Lx: " << abs(Lx) << " Ly: " << abs(Ly) << endl;
+    cout << "Abs(Rx: " << fabs(Rx) << " Ry: " << fabs(Ry) << " Lx: " << fabs(Lx) << " Ly: " << fabs(Ly) << endl;
     
     if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
