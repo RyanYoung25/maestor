@@ -62,10 +62,10 @@ void BalanceController::Balance(){
     double LFx = BalanceController::get("LFX", "position");
     double LFy = BalanceController::get("LFY", "position");
     //rounded offsets and adjusted 
-    double Rx = (-1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
-    double Ry = (-1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
-    double Lx = (-1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
-    double Ly = (-1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
+    double Rx = (1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
+    double Ry = (1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
+    double Lx = (1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
+    double Ly = (1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
     // New position
     double Rxpos = RFx + Rx;   
     double Rypos = RFy + Ry;
@@ -79,10 +79,10 @@ void BalanceController::Balance(){
         Ry = ((Ry > 0)-(Ry < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Lx) > .015){
-        Lxpos = ((Lx > 0)-(Lx < 0)) * -0.015;
+        Lxpos = ((Lx > 0)-(Lx < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Ly) > .015){
-        Lypos = ((Ly > 0)-(Ly < 0)) * -0.015;
+        Lypos = ((Ly > 0)-(Ly < 0)) * -0.015; // check the sign and flip it
     }
 
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
