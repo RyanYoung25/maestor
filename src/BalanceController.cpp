@@ -41,11 +41,11 @@ void BalanceController::Balance(){
     DampingControl();
 
 
-    logfile << "SupportPhase: " << phase << endl;
-    logfile << "ZMP: X: " << zmp[0] << " Y: " << zmp[1] << endl;
-    logfile << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
-    logfile << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
-    logfile << "Damping RAP: " << Damping[0] << " RAR: " << Damping[1] << " LAP: " << Damping[2] << " LAR: " << Damping[3] << endl;
+    // logfile << "SupportPhase: " << phase << endl;
+    // logfile << "ZMP: X: " << zmp[0] << " Y: " << zmp[1] << endl;
+    // logfile << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
+    // logfile << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
+    // logfile << "Damping RAP: " << Damping[0] << " RAR: " << Damping[1] << " LAP: " << Damping[2] << " LAR: " << Damping[3] << endl;
 
     cout << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
     cout << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
@@ -66,11 +66,6 @@ void BalanceController::Balance(){
     double Ry = (1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
     double Lx = (1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
     double Ly = (1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
-    // New position
-    double Rxpos = RFx + Rx;   
-    double Rypos = RFy + Ry;
-    double Lxpos = LFx + Lx;
-    double Lypos = LFy + Ly;
     // If too big go back
     if(fabs(Rx) > .015){
         Rx = ((Rx > 0)-(Rx < 0)) * -0.015; // check the sign and flip it
@@ -79,11 +74,19 @@ void BalanceController::Balance(){
         Ry = ((Ry > 0)-(Ry < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Lx) > .015){
-        Lxpos = ((Lx > 0)-(Lx < 0)) * -0.015; // check the sign and flip it
+        Lx = ((Lx > 0)-(Lx < 0)) * -0.015; // check the sign and flip it
     }
     if(fabs(Ly) > .015){
-        Lypos = ((Ly > 0)-(Ly < 0)) * -0.015; // check the sign and flip it
+        Ly = ((Ly > 0)-(Ly < 0)) * -0.015; // check the sign and flip it
     }
+
+    // New position
+    double Rxpos = RFx + Rx;   
+    double Rypos = RFy + Ry;
+    double Lxpos = LFx + Lx;
+    double Lypos = LFy + Ly;
+
+    logfile << RFx << " " << LFx << " " << RFy << " " << LFy << " " << Rx << " " << Lx << " " << Ry << " " << Ly << endl;
 
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << fabs(Rx) << " Ry: " << fabs(Ry) << " Lx: " << fabs(Lx) << " Ly: " << fabs(Ly) << endl;
