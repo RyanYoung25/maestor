@@ -62,23 +62,24 @@ void BalanceController::Balance(){
     double LFx = BalanceController::get("LFX", "position");
     double LFy = BalanceController::get("LFY", "position");
     //rounded offsets and adjusted 
-    double Rx = (1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
-    double Ry = (1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
-    double Lx = (1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
-    double Ly = (1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
+    double Rx = (-1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
+    double Ry = (-1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
+    double Lx = (-1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
+    double Ly = (-1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
     // If too big go back
     if(fabs(Rx) > .015){
-        Rx = ((Rx > 0)-(Rx < 0)) * -0.015; // check the sign and flip it
+        Rx = ((Rx > 0)-(Rx < 0)) * 0.015; // check the sign and cap it
     }
     if(fabs(Ry) > .015){
-        Ry = ((Ry > 0)-(Ry < 0)) * -0.015; // check the sign and flip it
+        Ry = ((Ry > 0)-(Ry < 0)) * 0.015; // check the sign and cap it
     }
     if(fabs(Lx) > .015){
-        Lx = ((Lx > 0)-(Lx < 0)) * -0.015; // check the sign and flip it
+        Lx = ((Lx > 0)-(Lx < 0)) * 0.015; // check the sign and cap it
     }
     if(fabs(Ly) > .015){
-        Ly = ((Ly > 0)-(Ly < 0)) * -0.015; // check the sign and flip it
+        Ly = ((Ly > 0)-(Ly < 0)) * 0.015; // check the sign and cap it
     }
+   
 
     // New position
     double Rxpos = RFx + Rx;   
@@ -90,7 +91,8 @@ void BalanceController::Balance(){
 
     cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
     cout << "Abs(Rx: " << fabs(Rx) << " Ry: " << fabs(Ry) << " Lx: " << fabs(Lx) << " Ly: " << fabs(Ly) << endl;
-    
+    cout << "ZMP X: " << zmp[0] << " ZMP Y: " << zmp[1] << endl; 
+
     if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
     }
@@ -174,11 +176,11 @@ void BalanceController::ZMPcalculation(){
     double Lx = BalanceController::get("LAT", "m_x");
     double Ly = BalanceController::get("LAT", "m_y");
     double Lz = BalanceController::get("LAT", "f_z");
-    double RAx = BalanceController::get("RFX", "position"); 
-    double RAy = BalanceController::get("RFY", "position");
+    double RAx = -1 * BalanceController::get("RFX", "position"); 
+    double RAy = -1 * BalanceController::get("RFY", "position");
     double RAz = BalanceController::get("RFZ", "position");
-    double LAx = BalanceController::get("LFX", "position");
-    double LAy = BalanceController::get("LFY", "position");
+    double LAx = -1 * BalanceController::get("LFX", "position");
+    double LAy = -1 * BalanceController::get("LFY", "position");
     double LAz = BalanceController::get("LFZ", "position");
 
     double totalMX;    // total moment in the x

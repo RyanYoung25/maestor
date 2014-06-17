@@ -41,6 +41,15 @@ def raiseLeg():
     robot.setProperties("RFZ LFZ", "position position", "-.52 -.485")
     waitForZ()
 
+def bounce():
+    for i in range(0, 5):
+        robot.setProperty("RFZ", "position", -.54)
+        robot.waitForJoint("RFZ")
+        robot.setProperty("RFZ", "position", -.52)
+        robot.waitForJoint("RFZ")
+    robot.setProperty("RFZ", "position", -.52)
+    robot.waitForJoint("RFZ")
+
 def lowerLeg():
     robot.setProperties("RFZ LFZ", "position position", "-.52 -.52")
     waitForZ()
@@ -64,7 +73,7 @@ def main():
     crouch()
     HipToLeft()
     raiseLeg()
-    time.sleep(5)
+    bounce()
     lowerLeg()
     HipToCenter()
     stand()
