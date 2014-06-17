@@ -28,9 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 RobotControl::RobotControl(){
 
-    std::cout << "Hey we are calling the constuctor" << std::endl;
-
-	RUN_TYPE = HARDWARE;
+   	RUN_TYPE = HARDWARE;
 
     commandChannel = CommandChannel::instance();
     referenceChannel = ReferenceChannel::instance();
@@ -38,29 +36,20 @@ RobotControl::RobotControl(){
     if(RUN_TYPE == SIMULATION){
         simChannels = SimChannels::instance();
     }
-    std::cout << "Made the ach channels" << std::endl;
-
 
     this->state = HuboState::instance();
 
-    std::cout << "Got the instance of HuboState" << std::endl;
-
 
     this->written = 0;
-    std::cout << "Is this the problem?" << std::endl;
     this->printNow = false;
     this->enableControl = false;
     this->delay = 0;
     this->interpolation = true;    //Interpret all commands as a final destination with given velocity.
     this->override = true;        //Force homing before allowing enabling. (currently disabled)
-    std::cout << "Hey all of the this inits are done" << std::endl;
-
+    this->balanceOn = false;
+    
     Names::initPropertyMap();
-    std::cout << "After Property map" << std::endl;
-
     Names::initCommandMap();
-
-    std::cout << "Init the maps" << std::endl;
 
 
     /*commands["Enable"] = ENABLE;
@@ -81,12 +70,16 @@ RobotControl::RobotControl(){
     tempOutput.open(logfile.str().c_str());
     power = new PowerControlBoard();
 
+    balancer = new BalanceController();
+    cout << "Made the balancer" << endl;
+
     frames = 0;
     trajStarted = false;
 }
   
 RobotControl::~RobotControl(){
     delete power;
+    delete balancer;
 }
 
 void RobotControl::updateHook(){
@@ -107,6 +100,9 @@ void RobotControl::updateHook(){
     RobotComponent* component = NULL;
 
     if (!components.empty()) {
+        if(balanceOn){
+            balancer->Balance();
+        }
         for (int i = 0; i < components.size(); i++){
             component = components[i];
             if(component == NULL){
@@ -143,7 +139,7 @@ void RobotControl::updateHook(){
 
                 } else if (interpolation){
                     component->get(INTERPOLATION_STEP, pos);
-                    power->addMotionPower(component->getName(), 200); //TODO: get the period
+                    power->addMotionPower(component->getName(), 1/PERIOD); //TODO: get the period
                     component->set(MOTION_TYPE, HUBO_REF_MODE_REF);
                 } else {
                     component->get(GOAL, pos);
@@ -168,13 +164,13 @@ void RobotControl::updateHook(){
                     startTrajectory(trajectories.getCurrentTriggers().front());
                     trajectories.getCurrentTriggers().pop();
                 }
-            }
+            }   
         }
         if (trajStarted)
             trajectories.advanceFrame();
     }
 
-    power->addMotionPower("IDLE", (1/200)); //TODO: get the period
+    power->addMotionPower("IDLE", PERIOD); //TODO: get the period
 
 
     //Write out a message if we have one
@@ -297,7 +293,9 @@ void RobotControl::initRobot(string path){
         path = getDefaultInitPath(CONFIG_PATH);
     }
     //@TODO: Check for file existence before initializing.
-    this->state->initHuboWithDefaults(path, 200);  //TODO: get the period
+    this->state->initHuboWithDefaults(path, 1/PERIOD);  //TODO: get the period
+
+    balancer->initBalanceController(*(this->state));
 
     if (this->state == NULL)
     {
@@ -305,7 +303,6 @@ void RobotControl::initRobot(string path){
     }
 
 }
-
 
 void RobotControl::set(string name, string property, double value){
     if (!state->nameExists(name)){
@@ -347,6 +344,7 @@ void RobotControl::setProperties(string names, string properties, string values)
 }
 
 double RobotControl::get(string name, string property){
+    
     if (!state->nameExists(name)){
         cout << "Error. No component with name " << name << " registered. Aborting." << endl;
         return 0;
@@ -561,6 +559,14 @@ void RobotControl::command(string name, string target){
     case UPDATE:
         //updateState();
         break;
+    case BALANCEON:
+        balanceOn = true;
+        balancer->setBaseline();
+        break;
+    case BALANCEOFF:
+        balanceOn = false;
+        break;
+
     }
 }
 
@@ -600,6 +606,11 @@ void RobotControl::setMode(string mode, bool value){
     } else {
         cout << "RobotControl does not have a mutable mode with name " << mode << "." << endl;
     }
+}
+
+void RobotControl::setPeriod(double period){
+    cout << "The period is: " << period << endl;
+    PERIOD = period;
 }
 
 bool RobotControl::setAlias(string name, string alias){

@@ -55,6 +55,7 @@ rosbuild_add_executable(${PROJECT_NAME}
     src/NeckRollPitch.cpp
     src/RobotComponent.cpp
     src/ArmMetaJoint.cpp
+    src/BalanceController.cpp
     include/Singleton.h)
 target_link_libraries(${PROJECT_NAME} ach)
 #target_link_libraries(example ${PROJECT_NAME})

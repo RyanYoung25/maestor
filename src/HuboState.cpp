@@ -71,7 +71,6 @@ void HuboState::initHuboWithDefaults(string path, double frequency){
     xml_node robot = doc.child("robot");
 
     //Loop through each board
-    cout << "Beginning to loop through each board" << endl;
     for (xml_node::iterator it = robot.begin(); it != robot.end(); it++) {
         xml_node node = *it;
         string type = node.attribute("type").as_string();       
@@ -86,7 +85,6 @@ void HuboState::initHuboWithDefaults(string path, double frequency){
                 delete component;
                 continue;
             }
-            cout << "Adding component: " << component->getName() << endl;
             motors.push_back(static_cast<HuboMotor*>(component));
 
         } else if (strcmp(type.c_str(), "FTSensor") == 0) {
@@ -304,7 +302,6 @@ bool HuboState::addMetaJointControllerFromXML(xml_node node, MetaJointController
 }
 
 void HuboState::reset(){
-    cout << "Going to reset" << endl;
     if (components.size() != 0) {
         for (Components::iterator it = components.begin(); it != components.end(); it++)
             delete (*it);
@@ -314,7 +311,6 @@ void HuboState::reset(){
             delete (*it);
     }
 
-    cout << "Did we make it past the ifs?" << endl;
     components.clear();
     motors.clear();
     controllers.clear();

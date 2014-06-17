@@ -46,6 +46,7 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
 ArmWristXYZ::~ArmWristXYZ() {}
 
 void ArmWristXYZ::setInverse(){
+
     cout << "Something is going on with the metajoint controller set Inverse" << endl;
     if (!allSet()){ //wait for all joints
         cout << "not all of the joints are ready" << endl; 
@@ -63,15 +64,16 @@ void ArmWristXYZ::setInverse(){
     }
     parameters[WRIST_Z]->get(INTERPOLATION_STEP, wrist_z);
 
+
     cout << "X: " << wrist_x << " Y: " << wrist_y << " Z: "  << wrist_z << endl;
 
     double shoulder_pitch = 0;
     double shoulder_roll = 0;
     double elbow_pitch = 0;
 
-    double radius = sqrt(wrist_x*wrist_x + wrist_y*wrist_y + wrist_z*wrist_z);
-    double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);
-    double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);
+    double radius = sqrt(wrist_x*wrist_x + wrist_y*wrist_y + wrist_z*wrist_z);   //line in 3d space
+    double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the upper arm
+    double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the lower arm
 
     cout << "Radius: " << radius << " Lower + Uppper: " << U+L << endl;
     if(radius > L + U || radius < ARM_MIN_REACH){
@@ -159,6 +161,7 @@ void ArmWristXYZ::getForward(){
     double zPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
 
     // Shoulder pitch reference frame axes do not match that of hubo's reference frame
+
     parameters[WRIST_X]->set(META_VALUE, xPos);
     parameters[WRIST_Y]->set(META_VALUE, yPos);
     parameters[WRIST_Z]->set(META_VALUE, zPos);

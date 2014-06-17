@@ -14,7 +14,7 @@ for serv in servList:
 for serv in maestorServs:
 	serviceArgs[serv] = rosservice.get_service_args(serv)
 
-f = open("maestorapi.py", 'w')
+f = open("/opt/ros/fuerte/stacks/maestor/console/maestorapi.py", 'w')
 
 #Begin writing the console dynamically. WOO
 

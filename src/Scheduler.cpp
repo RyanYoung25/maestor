@@ -33,6 +33,10 @@ double Scheduler::getPeriod(){
     return period / NSEC_PER_SECOND;
 }
 
+double Scheduler::getFrequency(){
+    return NSEC_PER_SECOND / period; 
+}
+
 timespec& Scheduler::getCurrentTime(){
     return currTime;
 }

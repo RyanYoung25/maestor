@@ -59,6 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SimChannels.h"
 #include "Trajectory.h"
 #include "TrajHandler.h"
+#include "BalanceController.h"
 
 using ros::NodeHandle;
 using std::queue;
@@ -87,6 +88,7 @@ public:
 
     void updateHook();
     void initRobot(string path);
+    void setPeriod(double period);
 
     //JOINT MOVEMENT API
     void set(string name, string property, double value);
@@ -103,6 +105,14 @@ public:
     double get(string name, string property);
     string getProperties(string name, string properties);
     void updateState();
+
+    // Feedback for walking
+    //double getZMP(int typeValue);
+    void DSPControl();
+    void vibrationControl();
+    double DampingControl();
+    void ZMPInitialization();
+
 
     // Parameter Commands
     void setMode(string mode, bool value);
@@ -130,6 +140,7 @@ private:
     
     HuboState *state;
     PowerControlBoard *power;
+    BalanceController *balancer;
 
     //map< string, vector<float> > gestures;
     map< string, COMMAND > commands;
@@ -144,11 +155,13 @@ private:
 
     int written;
     int frames;
+    double PERIOD;
     bool trajStarted, terminateTraj;
     bool printNow, enableControl;
     int delay;
     bool interpolation, override;
     bool RUN_TYPE;
+    bool balanceOn;
 
     //ros::NodeHandle nh;
 	bool maestro_run_type;

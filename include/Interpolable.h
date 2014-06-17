@@ -29,6 +29,9 @@ protected:
     int currStepCount;      //Step count of sinusoidal trajectory generation.
     int totalStepCount;     //Total step count of sinusoidal trajectory
 
+    // FeedBack Data
+    double offset;          //The offset to add to each interpolation step (Dangerous and needs a lot of testing)
+
     FourthOrderParams startParams;
     FourthOrderParams currParams;
 public:
@@ -36,8 +39,10 @@ public:
     virtual ~Interpolable();
 
     void setFrequency(double frequency);
+    bool setOffset(double offSet);
+    double getOffset();
 
-    double interpolate();
+    virtual double interpolate();
 
 };
 

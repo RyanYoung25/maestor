@@ -148,95 +148,95 @@ double interpolateSin(double error, double time){
     return ( error * .5 * (1.0 - cos( M_PI * time ) ) );
 }
 
-double interpolateSin1(double error, double time){
+double interpolateSin1(double error, double time){   //used for walking gait creation
     return ( error * (1.0 - cos( .5 * M_PI * time ) ) );
 }
 
-double interpolateSin2(double error, double time){
-    return ( error * ( -cos( .5 * M_PI * ( time + 1 ) ) ) );
-}
+// double interpolateSin2(double error, double time){
+//     return ( error * ( -cos( .5 * M_PI * ( time + 1 ) ) ) );
+// }
 
-double interpolateSin3(double error, double time){
-    return ( error * ( sin( .5 * M_PI * time ) ) );
-}
+// double interpolateSin3(double error, double time){
+//     return ( error * ( sin( .5 * M_PI * time ) ) );
+// }
 
-double interpolateSin4(double error, double time){
-    return ( error * ( time - ( sin( M_PI * time ) / M_PI ) ) );
-}
+// double interpolateSin4(double error, double time){
+//     return ( error * ( time - ( sin( M_PI * time ) / M_PI ) ) );
+// }
 
-double interpolateSin5(double error, double time){
-    return ( error * ( time + ( sin( M_PI * time ) / M_PI ) ) );
-}
+// double interpolateSin5(double error, double time){
+//     return ( error * ( time + ( sin( M_PI * time ) / M_PI ) ) );
+// }
 
-//Currently unimplemented. Depends on unknown variable JW_temp[6]
-double interpolateSin6(double error, double time){
-    return 0;
-}
+// //Currently unimplemented. Depends on unknown variable JW_temp[6]
+// double interpolateSin6(double error, double time){
+//     return 0;
+// }
 
-double interpolateSin7(double error, double currStepCount, double totalStepCount, double delay){
-    double tempMixTime = (currStepCount - delay) / (totalStepCount - delay);
-    double time = currStepCount / totalStepCount;
+// double interpolateSin7(double error, double currStepCount, double totalStepCount, double delay){
+//     double tempMixTime = (currStepCount - delay) / (totalStepCount - delay);
+//     double time = currStepCount / totalStepCount;
 
-    if(tempMixTime < 0)
-        tempMixTime = 0;
+//     if(tempMixTime < 0)
+//         tempMixTime = 0;
 
-    return interpolateSin4(error * 2, tempMixTime) - interpolateSin3(error, time);
-    //return ( error * 2.0f * (tempMixTime - sin(M_PI * tempMixTime) / M_PI ) ) - ( error * ( sin( 0.5 * M_PI * time ) ) ) );
-}
+//     return interpolateSin4(error * 2, tempMixTime) - interpolateSin3(error, time);
+//     //return ( error * 2.0f * (tempMixTime - sin(M_PI * tempMixTime) / M_PI ) ) - ( error * ( sin( 0.5 * M_PI * time ) ) ) );
+// }
 
-//Currently unimplemented. Depends on unknown variable JW_temp[6]
-double interpolateSin8(double error, double time){
-    return 0;
-}
+// //Currently unimplemented. Depends on unknown variable JW_temp[6]
+// double interpolateSin8(double error, double time){
+//     return 0;
+// }
 
-//Currently unimplemented. Depends on unknown variable JW_temp[6]
-double interpolateSin9(double error, double time){
-    return 0;
-}
+// //Currently unimplemented. Depends on unknown variable JW_temp[6]
+// double interpolateSin9(double error, double time){
+//     return 0;
+// }
 
-//Currently unimplemented. Depends on unknown variable JW_temp[6]
-double interpolateSin10(double error, double time){
-    return 0;
-}
+// //Currently unimplemented. Depends on unknown variable JW_temp[6]
+// double interpolateSin10(double error, double time){
+//     return 0;
+// }
 
-// Currently unimplemented. Depends on unknown variables UserData[0], UserData[1]
-double interpolateSin11(double error, double currStepCount, double totalStepCount, double delay){
-    /*
-    tempSidePeriod = (float)_walkingInfo[i][j].GoalTimeCount / 2.0f - _walkingInfo[i][j].UserData[1] / INT_TIME;
-    tempSideTime = (float)_walkingInfo[i][j].CurrentTimeCount / tempSidePeriod;
-    tempSideDelay = 2.0f*_walkingInfo[i][j].UserData[1] / INT_TIME/tempSidePeriod;
+// // Currently unimplemented. Depends on unknown variables UserData[0], UserData[1]
+// double interpolateSin11(double error, double currStepCount, double totalStepCount, double delay){
+    
+//     tempSidePeriod = (float)_walkingInfo[i][j].GoalTimeCount / 2.0f - _walkingInfo[i][j].UserData[1] / INT_TIME;
+//     tempSideTime = (float)_walkingInfo[i][j].CurrentTimeCount / tempSidePeriod;
+//     tempSideDelay = 2.0f*_walkingInfo[i][j].UserData[1] / INT_TIME/tempSidePeriod;
 
-    if(tempSideTime < 1.0f)
-        tempSideWalk = _walkingInfo[i][j].UserData[0] * 0.5f * (1.0f - cosf(PI * tempSideTime));
-    else if( tempSideTime < (1.0f + tempSideDelay) )
-        tempSideWalk = _walkingInfo[i][j].UserData[0];
-    else if( tempSideTime < (2.0f + tempSideDelay) )
-        tempSideWalk = _walkingInfo[i][j].UserData[0] * 0.5f * (1.0f + cosf(PI * (tempSideTime - 1.0f - tempSideDelay)));
-    else
-        tempSideWalk = 0.0f;
+//     if(tempSideTime < 1.0f)
+//         tempSideWalk = _walkingInfo[i][j].UserData[0] * 0.5f * (1.0f - cosf(PI * tempSideTime));
+//     else if( tempSideTime < (1.0f + tempSideDelay) )
+//         tempSideWalk = _walkingInfo[i][j].UserData[0];
+//     else if( tempSideTime < (2.0f + tempSideDelay) )
+//         tempSideWalk = _walkingInfo[i][j].UserData[0] * 0.5f * (1.0f + cosf(PI * (tempSideTime - 1.0f - tempSideDelay)));
+//     else
+//         tempSideWalk = 0.0f;
 
-    _walkingInfo[i][j].RefPatternCurrent = _walkingInfo[i][j].RefPatternInitial + _walkingInfo[i][j].RefPatternDelta * 0.5f * (1.0f - cosf(PI * tempTime)) + tempSideWalk;
-    */
-    return 0;
-}
+//     _walkingInfo[i][j].RefPatternCurrent = _walkingInfo[i][j].RefPatternInitial + _walkingInfo[i][j].RefPatternDelta * 0.5f * (1.0f - cosf(PI * tempTime)) + tempSideWalk;
+    
+//     return 0;
+// }
 
-// Currently unimplemented. Depends on unknown variables UserData[0], UserData[1]
-double interpolateSin12(double error, double time){
-    /*
-    tempSidePeriod = (float)_walkingInfo[i][j].GoalTimeCount/2.0f - _walkingInfo[i][j].UserData[1]/INT_TIME;
-    tempSideTime = (float)_walkingInfo[i][j].CurrentTimeCount/tempSidePeriod;
-    tempSideDelay = 2.0f*_walkingInfo[i][j].UserData[1]/INT_TIME/tempSidePeriod;
+// // Currently unimplemented. Depends on unknown variables UserData[0], UserData[1]
+// double interpolateSin12(double error, double time){
+//     /*
+//     tempSidePeriod = (float)_walkingInfo[i][j].GoalTimeCount/2.0f - _walkingInfo[i][j].UserData[1]/INT_TIME;
+//     tempSideTime = (float)_walkingInfo[i][j].CurrentTimeCount/tempSidePeriod;
+//     tempSideDelay = 2.0f*_walkingInfo[i][j].UserData[1]/INT_TIME/tempSidePeriod;
 
-    if(tempSideTime < 1.0f)
-        tempSideWalk = _walkingInfo[i][j].UserData[0]*0.5f*(1.0f-cosf(PI*tempSideTime));
-    else if( tempSideTime < (1.0f+tempSideDelay) )
-        tempSideWalk = _walkingInfo[i][j].UserData[0];
-    else if( tempSideTime < (2.0f+tempSideDelay) )
-        tempSideWalk = _walkingInfo[i][j].UserData[0]*0.5f*(1.0f+cosf(PI*(tempSideTime-1.0f-tempSideDelay)));
-    else
-        tempSideWalk = 0.0f;
+//     if(tempSideTime < 1.0f)
+//         tempSideWalk = _walkingInfo[i][j].UserData[0]*0.5f*(1.0f-cosf(PI*tempSideTime));
+//     else if( tempSideTime < (1.0f+tempSideDelay) )
+//         tempSideWalk = _walkingInfo[i][j].UserData[0];
+//     else if( tempSideTime < (2.0f+tempSideDelay) )
+//         tempSideWalk = _walkingInfo[i][j].UserData[0]*0.5f*(1.0f+cosf(PI*(tempSideTime-1.0f-tempSideDelay)));
+//     else
+//         tempSideWalk = 0.0f;
 
-    _walkingInfo[i][j].RefPatternCurrent = _walkingInfo[i][j].RefPatternInitial+_walkingInfo[i][j].RefPatternDelta*0.5f*(1.0f-cosf(PI*tempTime)) - tempSideWalk;
-    */
-    return 0;
-}
+//     _walkingInfo[i][j].RefPatternCurrent = _walkingInfo[i][j].RefPatternInitial+_walkingInfo[i][j].RefPatternDelta*0.5f*(1.0f-cosf(PI*tempTime)) - tempSideWalk;
+//     */
+//     return 0;
+// }
