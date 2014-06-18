@@ -10,12 +10,22 @@
 ArmMetaJoint::ArmMetaJoint(MetaJointController* controller): MetaJoint(controller){
     cout << "Arm Meta Joint was Made" << endl;
     this->controller = controller;
+    this->requiresMotion = true;
     currGoal = 0.0;
 }
 
 ArmMetaJoint::~ArmMetaJoint() {}
 
+bool ArmMetaJoint::hasUpdate(){
+    return requiresMotion;
+}
+
 bool ArmMetaJoint::get(PROPERTY property, double &value){
+    controller->getForward();
+    if (fabs(position - currGoal) < .0001){
+        requiresMotion = false;
+    }
+
     switch (property){
     case ENABLED:
         value = true;
@@ -24,11 +34,13 @@ bool ArmMetaJoint::get(PROPERTY property, double &value){
         value = currGoal;
         break;
     case INTERPOLATION_STEP:
-        if (!ready){
-            ready = true;
-            controller->setInverse();
-        } else
-            value = currGoal;
+        if(requiresMotion){
+            if (!ready){
+                ready = true;
+                controller->setInverse();
+            } else
+                value = currGoal;
+        }
         break;
     case POSITION:
         controller->getForward();
@@ -52,6 +64,10 @@ bool ArmMetaJoint::set(PROPERTY property, double value){
         break;
     case POSITION:
     case GOAL:
+        requiresMotion = true;
+        if(value == position){
+            break;
+        }
         currGoal = value;
         break;
     case VELOCITY:

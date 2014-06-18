@@ -49,13 +49,15 @@ LowerBodyLeg::~LowerBodyLeg() {}
 
 // Set foot posiion and orientation in hip yaw reference frame
 void LowerBodyLeg::setInverse(){
-    if (!allSet()) //wait for all joints
-        return;
+    //if (!allSet()) //wait for all joints
+        //return;
 
     double foot_x = 0;
     double foot_y = 0;
     double foot_z = 0;
     double foot_yaw = 0;
+
+    //getForward();
 
     parameters[FOOT_X]->get(INTERPOLATION_STEP, foot_x);
     parameters[FOOT_Y]->get(INTERPOLATION_STEP, foot_y);

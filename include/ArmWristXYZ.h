@@ -41,6 +41,7 @@ public:
     void getForward();
 
 private:
+    bool positionSet;
     bool isLeft;
     double SHOULDER_ROLL_LOWER;
     double SHOULDER_ROLL_UPPER;

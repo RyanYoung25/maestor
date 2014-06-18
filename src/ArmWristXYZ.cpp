@@ -47,15 +47,15 @@ ArmWristXYZ::~ArmWristXYZ() {}
 
 void ArmWristXYZ::setInverse(){
 
-    cout << "Something is going on with the metajoint controller set Inverse" << endl;
-    if (!allSet()){ //wait for all joints
-        cout << "not all of the joints are ready" << endl; 
-        return;
-    }
+    // if (!allSet()){ //wait for all joints
+    //     return;
+    // }
 
-    double wrist_x = 0.0;
-    double wrist_y = -0.08;
-    double wrist_z = -0.33;
+    //getForward();
+
+    double wrist_x = 0.0; //0.0;
+    double wrist_y = 0.0; //-0.08;
+    double wrist_z = 0.0; //-0.33;
 
     parameters[WRIST_X]->get(INTERPOLATION_STEP, wrist_x);
     parameters[WRIST_Y]->get(INTERPOLATION_STEP, wrist_y);

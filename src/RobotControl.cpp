@@ -105,10 +105,6 @@ void RobotControl::updateHook(){
         }
         for (int i = 0; i < components.size(); i++){
             component = components[i];
-            if(component == NULL){
-                cout << "Got a null component in here" << endl;
-                continue;
-            }
             double enabled;
             if (!component->get(ENABLED, enabled))
                 continue;

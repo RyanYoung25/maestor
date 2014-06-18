@@ -18,6 +18,7 @@ private:
     MetaJointController* controller;
     double position;
     bool ready;
+    bool requiresMotion;
 
 public:
     MetaJoint(MetaJointController* controller);
@@ -25,7 +26,6 @@ public:
 
     virtual bool get(PROPERTY property, double &value);
     virtual bool set(PROPERTY property, double value);
-
     virtual void setGoal(double pos);
 
 };
