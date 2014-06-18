@@ -18,7 +18,6 @@ private:
     MetaJointController* controller;
     double position;
     bool ready;
-    bool requiresMotion;
 
 public:
     MetaJoint(MetaJointController* controller);

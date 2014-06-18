@@ -59,6 +59,7 @@ public:
     void setHipRollXYZ(double foot_x, double foot_y, double foot_z, double foot_yaw);
 
 private:
+    void checkGoalsReached();
     bool globalFlag;
 };
 

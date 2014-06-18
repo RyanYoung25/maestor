@@ -46,10 +46,15 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
 ArmWristXYZ::~ArmWristXYZ() {}
 
 void ArmWristXYZ::setInverse(){
+    checkGoalsReached();
+    if(!updated){
+        unsetAll();
+        return;
+    }
 
-    // if (!allSet()){ //wait for all joints
-    //     return;
-    // }
+    if (!allSet()){ //wait for all joints
+        return;
+    }
 
     //getForward();
 
@@ -129,6 +134,19 @@ void ArmWristXYZ::setInverse(){
     controlledJoints[ELBOW_PITCH]->set(GOAL, elbow_pitch);
 
     unsetAll();
+}
+
+void ArmWristXYZ::checkGoalsReached(){
+    double pos;
+    double goal;
+    for(int i = 0; i < 3; i ++){
+        parameters[i]->get(POSITION, pos);
+        parameters[i]->get(GOAL, goal);
+        if(fabs(pos - goal) > .0001){
+            return;
+        }
+    }
+    goalsReached();
 }
 
 void ArmWristXYZ::getForward(){

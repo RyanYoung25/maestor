@@ -22,6 +22,7 @@ class MetaJointController {
 protected:
     vector<RobotComponent*> parameters;
     vector<RobotComponent*> controlledJoints;
+    bool updated;
 
 private:
     int NUM_PARAMETERS;
@@ -39,6 +40,9 @@ public:
 
     int getNumParameters();
     int getNumControlled();
+
+    void update();
+    void goalsReached();
 
     bool allSet();
     void unsetAll();

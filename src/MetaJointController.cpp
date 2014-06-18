@@ -12,7 +12,9 @@ MetaJointController::MetaJointController(int numParameters, int numControlled) {
     NUM_CONTROLLED = numControlled;
 }
 
-MetaJointController::~MetaJointController() {}
+MetaJointController::~MetaJointController() {
+    this->updated = true;
+}
 
 void MetaJointController::addParameter(RobotComponent* parameter){
     if (parameters.size() < NUM_PARAMETERS)
@@ -49,4 +51,11 @@ bool MetaJointController::allSet(){
 void MetaJointController::unsetAll(){
     for (int i = 0; i < parameters.size(); i++)
         parameters[i]->set(READY, false);
+}
+
+void MetaJointController::update(){
+    updated = true;
+}
+void MetaJointController::goalsReached(){
+    updated = false;
 }

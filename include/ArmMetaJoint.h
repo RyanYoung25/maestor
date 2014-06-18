@@ -18,7 +18,6 @@ private:
     MetaJointController* controller;
     double position;
     bool ready;
-    bool requiresMotion;
     double currGoal;
 
 public:
@@ -27,7 +26,6 @@ public:
 
     bool get(PROPERTY property, double &value);
     bool set(PROPERTY property, double value);
-    bool hasUpdate();
 
     void setGoal(double pos);
 

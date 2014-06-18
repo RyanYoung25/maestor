@@ -49,8 +49,14 @@ LowerBodyLeg::~LowerBodyLeg() {}
 
 // Set foot posiion and orientation in hip yaw reference frame
 void LowerBodyLeg::setInverse(){
-    //if (!allSet()) //wait for all joints
-        //return;
+    checkGoalsReached();
+    if(!updated){
+        unsetAll();
+        return;
+    }
+
+    if (!allSet()) //wait for all joints
+        return;
 
     double foot_x = 0;
     double foot_y = 0;
@@ -155,6 +161,19 @@ void LowerBodyLeg::setHipRollXYZ(double foot_x, double foot_y, double foot_z, do
     controlledJoints[KNEE_PITCH]->set(GOAL, knee_pitch);
     controlledJoints[ANKLE_PITCH]->set(GOAL, ankle_pitch);
     controlledJoints[ANKLE_ROLL]->set(GOAL, ankle_roll);
+}
+
+void LowerBodyLeg::checkGoalsReached(){
+    double pos;
+    double goal;
+    for(int i = 0; i < 6; i ++){
+        parameters[i]->get(POSITION, pos);
+        parameters[i]->get(GOAL, goal);
+        if(fabs(pos - goal) > .0001){
+            return;
+        }
+    }
+    goalsReached();
 }
 
 // Calculate position in hip roll reference frame from joint angles

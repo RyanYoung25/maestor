@@ -41,6 +41,7 @@ public:
     void getForward();
 
 private:
+    void checkGoalsReached();
     bool positionSet;
     bool isLeft;
     double SHOULDER_ROLL_LOWER;

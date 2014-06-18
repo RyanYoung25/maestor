@@ -11,17 +11,11 @@ MetaJoint::MetaJoint(MetaJointController* controller){
     this->controller = controller;
     this->position = 0;
     this->ready = false;
-    this->requiresMotion = true;
 }
 
 MetaJoint::~MetaJoint() {}
 
 bool MetaJoint::get(PROPERTY property, double &value){
-    controller->getForward();
-    if (fabs(position - currGoal) < .0001){
-        requiresMotion = false;
-    }
-
     switch (property){
     case ENABLED:
         value = true;
@@ -30,16 +24,15 @@ bool MetaJoint::get(PROPERTY property, double &value){
         value = this->currGoal;
         break;
     case INTERPOLATION_STEP:
-        if(requiresMotion){
-            if (!ready){
-                ready = true;
-                controller->setInverse();
-            } else{
-                value = interpolate();
-            }
+        if (!ready){
+            ready = true;
+            controller->setInverse();
+        } else{
+            value = interpolate();
         }
         break;
     case POSITION:
+        controller->getForward();
         value = position;
         break;
     case READY:
@@ -60,7 +53,7 @@ bool MetaJoint::set(PROPERTY property, double value){
         break;
     case POSITION:
     case GOAL:
-        requiresMotion = true;
+        controller->update();
         if (value == interStep){
             break;
         }
