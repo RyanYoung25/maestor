@@ -64,6 +64,28 @@ void LowerBodyLeg::setInverse(){
     double foot_yaw = 0;
 
     //getForward();
+    //Trying something out
+    double vel;
+
+    parameters[HIP_YAW]->get(VELOCITY, vel);
+    cout << "HY: " << vel << endl;
+    parameters[HIP_PITCH]->get(VELOCITY, vel);
+    cout << "HP: " << vel << endl;
+    parameters[HIP_ROLL]->get(VELOCITY, vel);
+    cout << "HR: " << vel << endl;
+    parameters[KNEE_PITCH]->get(VELOCITY, vel);
+    cout << "KP: " << vel << endl;
+    parameters[ANKLE_ROLL]->get(VELOCITY, vel);
+    cout << "AR: " << vel << endl;
+    parameters[ANKLE_PITCH]->get(VELOCITY, vel);
+    cout << "AP: " << vel << endl;
+
+    /*parameters[HIP_YAW]->set(VELOCITY, 0.02);
+    parameters[HIP_PITCH]->set(VELOCITY, 0.02);
+    parameters[HIP_ROLL]->set(VELOCITY, 0.02);
+    parameters[KNEE_PITCH]->set(VELOCITY, 0.02);
+    parameters[ANKLE_ROLL]->set(VELOCITY, 0.02);
+    parameters[ANKLE_PITCH]->set(VELOCITY, 0.02);*/
 
     parameters[FOOT_X]->get(INTERPOLATION_STEP, foot_x);
     parameters[FOOT_Y]->get(INTERPOLATION_STEP, foot_y);
@@ -169,9 +191,12 @@ void LowerBodyLeg::checkGoalsReached(){
     for(int i = 0; i < 6; i ++){
         parameters[i]->get(POSITION, pos);
         parameters[i]->get(GOAL, goal);
-        if(fabs(pos - goal) > .0001){
+        if(fabs(pos - goal) > .000001){
             return;
         }
+    }
+    for(int i = 0; i < 6; i ++){
+        parameters[i]->set(INTERPOLATION_STEP, 0);
     }
     goalsReached();
 }

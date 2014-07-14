@@ -66,7 +66,7 @@ RobotControl::RobotControl(){
     commands["ZeroAll"] = ZEROALL;*/
 
     ostringstream logfile;
-    logfile << LOG_PATH << "RobotControl.log";
+    logfile << "RobotControl.log";
     tempOutput.open(logfile.str().c_str());
     power = new PowerControlBoard();
 
@@ -141,6 +141,7 @@ void RobotControl::updateHook(){
                     component->get(GOAL, pos);
                 }
                 component->get(MOTION_TYPE, mode);
+                tempOutput << component->getName() << ": " << pos << endl;
                 referenceChannel->setReference(component->getName(), pos, (hubo_mode_type_t)mode);
                 string key(WRITE_KEY);
                 traj = trajectories.get(key);

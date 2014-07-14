@@ -7,6 +7,7 @@ void Names::initPropertyMap(){
     std::cout << "Called initPropertyMap" << std::endl;
     getProperties()["position"] = POSITION;
     getProperties()["goal"] = GOAL;
+    getProperties()["speed"] = SPEED;
     getProperties()["inter_step"] = INTERPOLATION_STEP;
     getProperties()["velocity"] = VELOCITY;
     getProperties()["goal_time"] = GOAL_TIME;
