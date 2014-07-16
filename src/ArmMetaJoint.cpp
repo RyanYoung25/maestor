@@ -65,6 +65,12 @@ bool ArmMetaJoint::set(PROPERTY property, double value){
     case READY:
         ready = (bool)value;
         break;
+    case INTERPOLATION_STEP:
+        currParams.valid = false;
+        startParams.valid = false;
+        totalStepCount = 0;
+        currStepCount = 0;
+        break;
     default:
         return false;
     }

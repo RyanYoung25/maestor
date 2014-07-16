@@ -37,6 +37,7 @@ public:
     ArmWristXYZ(bool left);
     virtual ~ArmWristXYZ();
 
+
     void setInverse();
     void getForward();
 
@@ -44,6 +45,7 @@ private:
     void checkGoalsReached();
     bool positionSet;
     bool isLeft;
+    bool jointsSet;
     double SHOULDER_ROLL_LOWER;
     double SHOULDER_ROLL_UPPER;
     double SR_OFFSET;

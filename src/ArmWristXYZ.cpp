@@ -32,6 +32,7 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
     SHOULDER_ROLL_LOWER = -2.61;
     SR_OFFSET = 0.2618;
     SR_IK_OFFSET = SR_OFFSET + atan(UPPER_ARM_X/UPPER_ARM_Z);
+    jointsSet = false;
     if(isLeft){
         SHOULDER_ROLL_UPPER = -SHOULDER_ROLL_LOWER;
         SHOULDER_ROLL_LOWER = -SHOULDER_ROLL_UPPER;
@@ -45,13 +46,18 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
 
 ArmWristXYZ::~ArmWristXYZ() {}
 
+
 void ArmWristXYZ::setInverse(){
-    checkGoalsReached();
+
+    if(jointsSet){
+        checkGoalsReached();
+    }
+
     if(!updated){
         unsetAll();
         return;
     }
-
+    
     if (!allSet()){ //wait for all joints
         return;
     }
@@ -132,6 +138,7 @@ void ArmWristXYZ::setInverse(){
     controlledJoints[SHOULDER_PITCH]->set(GOAL, shoulder_pitch);
     controlledJoints[SHOULDER_ROLL]->set(GOAL, shoulder_roll);
     controlledJoints[ELBOW_PITCH]->set(GOAL, elbow_pitch);
+    jointsSet = true;
 
     unsetAll();
 }
@@ -139,13 +146,15 @@ void ArmWristXYZ::setInverse(){
 void ArmWristXYZ::checkGoalsReached(){
     double pos;
     double goal;
-    for(int i = 0; i < 3; i ++){
-        parameters[i]->get(POSITION, pos);
-        parameters[i]->get(GOAL, goal);
-        if(fabs(pos - goal) > .0001){
+    for(int i = 0; i < 4; i ++){
+        controlledJoints[i]->get(POSITION, pos);
+        controlledJoints[i]->get(GOAL, goal);
+        if(fabs(pos - goal) > .001){
             return;
         }
     }
+    cout << "Joints set set to false" << endl;
+    jointsSet = false;
     goalsReached();
 }
 
@@ -174,9 +183,13 @@ void ArmWristXYZ::getForward(){
 
     //dem matrices 
 
-    double xPos = L*(cE*cP*cR + sE*(cP*sR*sY - sP*cY)) + UPPER_ARM_X*(sP*cY - cP*sR*sY) + UPPER_ARM_Z*cP*cR;
-    double yPos = L*(cE*sP*cR + sE*(sP*sR*sY + cP*cY)) - UPPER_ARM_X*(cP*cY + sP*sR*sY) + UPPER_ARM_Z*sP*cR;
-    double zPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
+    // double xPos = L*(cE*cP*cR + sE*(cP*sR*sY - sP*cY)) + UPPER_ARM_X*(sP*cY - cP*sR*sY) + UPPER_ARM_Z*cP*cR;
+    // double yPos = L*(cE*sP*cR + sE*(sP*sR*sY + cP*cY)) - UPPER_ARM_X*(cP*cY + sP*sR*sY) + UPPER_ARM_Z*sP*cR;
+    // double zPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
+
+    double zPos = -1*(L*(cE*cP*cR + sE*(cP*sR*sY - sP*cY)) + UPPER_ARM_X*(sP*cY - cP*sR*sY) + UPPER_ARM_Z*cP*cR);
+    double xPos = -1*(L*(cE*sP*cR + sE*(sP*sR*sY + cP*cY)) - UPPER_ARM_X*(cP*cY + sP*sR*sY) + UPPER_ARM_Z*sP*cR);
+    double yPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
 
     // Shoulder pitch reference frame axes do not match that of hubo's reference frame
 

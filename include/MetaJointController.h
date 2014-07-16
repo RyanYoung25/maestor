@@ -41,7 +41,7 @@ public:
     int getNumParameters();
     int getNumControlled();
 
-    void update();
+    virtual void update();
     void goalsReached();
 
     bool allSet();
