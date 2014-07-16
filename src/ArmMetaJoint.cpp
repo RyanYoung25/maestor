@@ -8,7 +8,6 @@
 #include "ArmMetaJoint.h"
 
 ArmMetaJoint::ArmMetaJoint(MetaJointController* controller): MetaJoint(controller){
-    cout << "Arm Meta Joint was Made" << endl;
     this->controller = controller;
     currGoal = 0.0;
 }

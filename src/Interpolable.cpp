@@ -45,8 +45,6 @@ double Interpolable::interpolate(){
             interStep = lastGoal + interpolateFourthOrder(currParams, time);
             startParams.valid = currParams.valid;
             currStepCount++;
-            std::cout << "totalStepCount is: " << totalStepCount << " currStepCount is: " << currStepCount <<  std::endl;
-            std::cout << "Fourthorder last goal plus interpolated is: " << interStep << std::endl;
             return interStep;
         }
         startParams.valid = false;

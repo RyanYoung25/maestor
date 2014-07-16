@@ -65,21 +65,6 @@ void LowerBodyLeg::setInverse(){
 
     //getForward();
     //Trying something out
-    double vel;
-
-    parameters[HIP_YAW]->get(VELOCITY, vel);
-    cout << "HY: " << vel << endl;
-    parameters[HIP_PITCH]->get(VELOCITY, vel);
-    cout << "HP: " << vel << endl;
-    parameters[HIP_ROLL]->get(VELOCITY, vel);
-    cout << "HR: " << vel << endl;
-    parameters[KNEE_PITCH]->get(VELOCITY, vel);
-    cout << "KP: " << vel << endl;
-    parameters[ANKLE_ROLL]->get(VELOCITY, vel);
-    cout << "AR: " << vel << endl;
-    parameters[ANKLE_PITCH]->get(VELOCITY, vel);
-    cout << "AP: " << vel << endl;
-
     /*parameters[HIP_YAW]->set(VELOCITY, 0.02);
     parameters[HIP_PITCH]->set(VELOCITY, 0.02);
     parameters[HIP_ROLL]->set(VELOCITY, 0.02);

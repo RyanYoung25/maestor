@@ -75,9 +75,6 @@ void ArmWristXYZ::setInverse(){
     }
     parameters[WRIST_Z]->get(INTERPOLATION_STEP, wrist_z);
 
-
-    cout << "X: " << wrist_x << " Y: " << wrist_y << " Z: "  << wrist_z << endl;
-
     double shoulder_pitch = 0;
     double shoulder_roll = 0;
     double elbow_pitch = 0;
@@ -86,7 +83,6 @@ void ArmWristXYZ::setInverse(){
     double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the upper arm
     double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the lower arm
 
-    cout << "Radius: " << radius << " Lower + Uppper: " << U+L << endl;
     if(radius > L + U || radius < ARM_MIN_REACH){
         cout << "Error: Position is out of arm's reach" << endl;
         unsetAll();
@@ -132,7 +128,6 @@ void ArmWristXYZ::setInverse(){
         return;
     }
 
-    cout << "Shoulder yaw: " << shoulder_yaw << " pitch: " << shoulder_pitch << " roll: " << shoulder_roll << endl;
 
     controlledJoints[SHOULDER_YAW]->set(GOAL, shoulder_yaw);
     controlledJoints[SHOULDER_PITCH]->set(GOAL, shoulder_pitch);
