@@ -47,8 +47,8 @@ void BalanceController::Balance(){
     // logfile << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
     // logfile << "Damping RAP: " << Damping[0] << " RAR: " << Damping[1] << " LAP: " << Damping[2] << " LAR: " << Damping[3] << endl;
 
-    cout << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
-    cout << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
+    // cout << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
+    // cout << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
 
     setOffset("RFX", ControlDSP[0][0]);
     setOffset("RFY", ControlDSP[0][1]);
@@ -89,9 +89,9 @@ void BalanceController::Balance(){
 
     logfile << RFx << " " << LFx << " " << RFy << " " << LFy << " " << Rx << " " << Lx << " " << Ry << " " << Ly << endl;
 
-    cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
-    cout << "Abs(Rx: " << fabs(Rx) << " Ry: " << fabs(Ry) << " Lx: " << fabs(Lx) << " Ly: " << fabs(Ly) << endl;
-    cout << "ZMP X: " << zmp[0] << " ZMP Y: " << zmp[1] << endl; 
+    // cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
+    // cout << "Abs(Rx: " << fabs(Rx) << " Ry: " << fabs(Ry) << " Lx: " << fabs(Lx) << " Ly: " << fabs(Ly) << endl;
+    // cout << "ZMP X: " << zmp[0] << " ZMP Y: " << zmp[1] << endl; 
 
     if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);

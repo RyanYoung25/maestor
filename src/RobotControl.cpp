@@ -342,6 +342,23 @@ void RobotControl::setProperties(string names, string properties, string values)
 
 double RobotControl::get(string name, string property){
     
+    double result = 0;
+
+    if(name.compare("ZMP") == 0){
+        if(property.compare("X") == 0){
+            result = balancer->getZMP(0);
+        }
+        else if (property.compare("Y") == 0){
+            result = balancer->getZMP(1);
+        }
+        else{
+            cout << "Error getting property " << property << " of component " << name << endl;
+            return 0;
+        }
+        return result;
+    }
+
+
     if (!state->nameExists(name)){
         cout << "Error. No component with name " << name << " registered. Aborting." << endl;
         return 0;
@@ -353,8 +370,6 @@ double RobotControl::get(string name, string property){
         cout << "Error. No property with name " << property << " registered. Aborting." << endl;
         return 0;
     }
-
-    double result = 0;
 
     if (!state->getComponent(name)->get(properties[property], result)){
         cout << "Error getting property " << property << " of component " << name << endl;
@@ -669,5 +684,5 @@ bool RobotControl::requiresMotion(string name){
         return false;
     }
 
-    return fabs(step - goal) > .00001;
+    return fabs(step - goal) > .001;
 }
