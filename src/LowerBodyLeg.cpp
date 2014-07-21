@@ -176,7 +176,7 @@ void LowerBodyLeg::checkGoalsReached(){
     for(int i = 0; i < 6; i ++){
         parameters[i]->get(POSITION, pos);
         parameters[i]->get(GOAL, goal);
-        if(fabs(pos - goal) > .000001){
+        if(fabs(pos - goal) > .001){
             return;
         }
     }

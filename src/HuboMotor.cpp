@@ -73,7 +73,6 @@ bool HuboMotor::set(PROPERTY property, double value){
             totalStepCount = currStepCount + (totalTime(newVia, value, currVel/frequency, interVel) * frequency);
             //totalStepCount = (fabs(interStep - startParams.ths) + fabs(startParams.thf - interStep) + fabs(value - startParams.thf)) * frequency / interVel;
             //Having the start velocity be the current velocity really isn't supported mathematically... :/ but it's not blowing up.
-            //It's blowing up now. And I think this is the problem.
             currParams = initFourthOrder( startParams.ths, currVel/frequency, newVia, currStepCount, value, totalStepCount );
         }
 
