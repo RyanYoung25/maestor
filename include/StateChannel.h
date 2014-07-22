@@ -24,6 +24,11 @@
 #define FT_LW 1
 #define FT_RA 2
 #define FT_LA 3
+
+#ifndef HUBO_FT_COUNT
+#define HUBO_FT_COUNT 4
+#endif
+
 #define LEFT_IMU 0
 #define RIGHT_IMU 1
 #define BODY_IMU 2
@@ -50,16 +55,17 @@ private:
 
 protected:
     StateChannel();
-
+    ~StateChannel();
 
 public:
 
-    ~StateChannel();
-
     void load();
     bool getMotorProperty(string &name, PROPERTY property, double& result);
+    bool getMotorProperty(int board, PROPERTY property, double& result);
     bool getIMUProperty(string &name, PROPERTY property, double& result);
+    bool getIMUProperty(int board, PROPERTY property, double& result);
     bool getFTProperty(string &name, PROPERTY property, double& result);
+    bool getFTProperty(int board, PROPERTY property, double& result);
 };
 
 #endif /* STATECHANNEL_H_ */

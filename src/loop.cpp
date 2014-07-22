@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
     //Init the node
     NodeHandle n; //Fully initializes the node
     Scheduler timer(FREQ_200HZ);
+    robot.setPeriod(1.0/timer.getFrequency());
     ServiceServer srv = n.advertiseService("fib", &fib);
     ServiceServer Initsrv = n.advertiseService("initRobot", &initRobot);
     ServiceServer SPsrv = n.advertiseService("setProperties", &setProperties);
@@ -63,9 +64,7 @@ void setRealtime(){
 
 bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &res)
 {
-    std::cout << "init was called" << endl;
     robot.initRobot(req.path);
-    std::cout << "init was run, about to return" << endl;
     return true;
 
 }

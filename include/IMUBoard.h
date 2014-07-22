@@ -27,32 +27,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IMUBOARD_H
 #define IMUBOARD_H
 
+#include "RobotComponent.h"
 #include <string>
+#include <iostream>
 
+using std::cout;
+using std::endl;
 using std::string;
 
-class IMUBoard {
+class IMUBoard : public RobotComponent {
+private:
+    int boardNum;
 
-    private:
-        string name;
+public:
+    IMUBoard();
 
-        double xAcc, yAcc, zAcc;
-        double xRot, yRot;
+    bool get(PROPERTY property, double &value);
+    bool set(PROPERTY property, double value);
 
-    public:
-
-        IMUBoard();
-        IMUBoard(string name);
-   
-        string getName();
-        double getXAcc();
-        double getYAcc();
-        double getZAcc();
-        double getXRot();
-        double getYRot();
-
-        void update(double xAcc, double yAcc, double zAcc, double xRot, double yRot);
-        void setName(string name);
+    void setBoardNum(int boardNum);
 };
 
 

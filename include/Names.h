@@ -27,24 +27,71 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _NAMES_H
 #define _NAMES_H
 
+#include <map>
+#include <string>
+#include <iostream>
+
+using std::map;
+using std::string;
+using std::cout;
+using std::endl;
+
 enum PROPERTY {
-    POSITION, GOAL, VELOCITY, MOTION_TYPE, TEMPERATURE, CURRENT, HOMED, ZEROED, ENABLED,
+    POSITION, GOAL, INTERPOLATION_STEP, VELOCITY, SPEED, GOAL_TIME, MOTION_TYPE, TEMPERATURE, CURRENT, HOMED, ZEROED, ENABLED,
     ERRORED, JAM_ERROR, PWM_SATURATED_ERROR, BIG_ERROR, ENC_ERROR, DRIVE_FAULT_ERROR,
     POS_MIN_ERROR, POS_MAX_ERROR, VELOCITY_ERROR, ACCELERATION_ERROR, TEMP_ERROR,
     X_ACCEL, Y_ACCEL, Z_ACCEL, X_ROTAT, Y_ROTAT,
     M_X, M_Y, F_Z,
     POWER,
+    META_VALUE, READY,
     NONE
 };
 
 enum COMMAND {
-	ENABLE, ENABLEALL,
-	DISABLE, DISABLEALL,
-	RESET, RESETALL,
-	HOME, HOMEALL,
-	INITSENSORS,
-	UPDATE, ZERO, 
-    ZEROALL,
+    ENABLE, ENABLEALL,
+    DISABLE, DISABLEALL,
+    RESET, RESETALL,
+    HOME, HOMEALL,
+    INITSENSORS,
+    UPDATE, ZERO,
+    ZEROALL, BALANCEON,
+    BALANCEOFF
 };
+
+
+
+class Names {
+public:
+
+    typedef map< string, PROPERTY > Properties;
+    typedef map< string, COMMAND > Commands;
+
+    static void initPropertyMap();
+    static void initCommandMap();
+    static bool setAlias(string name, string alias);
+    static Properties & getProps(){
+        return getProperties();
+    }
+    static Commands & getComms(){
+        return getCommands();
+    }
+
+    static string getName(PROPERTY &property);
+    static string getName(COMMAND &command);
+
+private:
+
+
+    static Properties & getProperties(){
+        static Properties properties;
+        return properties;
+    }
+    static Commands & getCommands(){
+        static Commands commands;
+        return commands;
+    }
+
+};
+
 
 #endif

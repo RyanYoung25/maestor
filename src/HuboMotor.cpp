@@ -27,187 +27,147 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "HuboMotor.h"
 
 HuboMotor::HuboMotor(){
-
-    currGoal = 0;
-    interStep = 0;
-    interVel = .3; //Default 1/3 of a radian per second.
-    mode = HUBO_REF_MODE_REF_FILTER;
-
-    currVel = 0;
-    currPos = 0;
-    currCurrent = 0;
-    currTemp = 0;
-    frequency = 0;
+    mode = HUBO_REF_MODE_REF;
 
     enabled = false;
-    homed = false;
-    zeroed = false;
+    boardNum = -1;
 }
 
-HuboMotor::HuboMotor(const HuboMotor& rhs){
+HuboMotor::~HuboMotor(){};
 
-    //NEW_DATA
-    this->name = rhs.name;
-    this->currGoal = rhs.currGoal;
-    this->interStep = rhs.interStep;
-    this->interVel = rhs.interVel;
-    this->mode = rhs.mode;
+bool HuboMotor::set(PROPERTY property, double value){
 
-    this->currVel = rhs.currVel;
-    this->currPos = rhs.currPos;
-    this->currCurrent = rhs.currCurrent;
-    this->currTemp = rhs.currTemp;
+    switch (property){
+    case POSITION:
+    case GOAL:
+        if (value == interStep)
+            break;
 
-    this->enabled = rhs.enabled;
-    this->homed = rhs.homed;
-    this->zeroed = rhs.zeroed;
+        double currVel;
+        get(VELOCITY, currVel);
+        /*
+        if ((value > interStep && currVel < 0) || (value < interStep && currVel > 0)){
+            cout << "Switching Directions for " << this->getName() << "  currVel: " << currVel << "  currStep: " << currStepCount << "  interStep: " << interStep << endl;
+        }
+        */
+
+        if (!startParams.valid){
+            currStepCount = 0;
+            totalStepCount = totalTime(interStep, value, currVel/frequency, interVel) * frequency;
+            if (totalStepCount > 1 && fabs(value - interStep) < (interVel/frequency)){
+                cout << "Anomaly detected! " << totalStepCount << endl;
+            }
+
+            if (totalStepCount > 0) {
+                startParams = initFourthOrder(interStep, currVel / frequency, (value + interStep)/2, (double)totalStepCount / 2, value, totalStepCount);
+                currParams = startParams;
+            }
+
+            lastGoal = interStep;
+        } else if (currStepCount != currParams.tv) {
+
+            //William finds this to be questionable methodology due to the difference between predicted step and real encoder position
+            //I swear, Will, I have a reason for this!
+            double newVia = (startParams.ths + interpolateFourthOrder(currParams, currStepCount));
+
+            totalStepCount = currStepCount + (totalTime(newVia, value, currVel/frequency, interVel) * frequency);
+            //totalStepCount = (fabs(interStep - startParams.ths) + fabs(startParams.thf - interStep) + fabs(value - startParams.thf)) * frequency / interVel;
+            //Having the start velocity be the current velocity really isn't supported mathematically... :/ but it's not blowing up.
+            currParams = initFourthOrder( startParams.ths, currVel/frequency, newVia, currStepCount, value, totalStepCount );
+        }
+
+        currGoal = value;
+
+        break;
+    case INTERPOLATION_STEP:
+        interStep = value;
+        currParams.valid = false;
+        startParams.valid = false;
+        break;
+    case VELOCITY:
+        if (value != 0)
+            interVel = value;
+        break;
+    case GOAL_TIME:
+        currStepCount = 0;
+        totalStepCount = (int) (value * (frequency / 1000) );
+        break;
+    case MOTION_TYPE:
+        switch ((int)value) {
+        case HUBO_REF_MODE_REF:
+        case HUBO_REF_MODE_REF_FILTER:
+        case HUBO_REF_MODE_COMPLIANT:
+        case HUBO_REF_MODE_ENC_FILTER:
+        case HUBO_REF_MODE_REFX:
+            mode = ((hubo_mode_type_t)value);
+            break;
+        default:
+            cout << "Motion type " << value << " not recognized." << endl;
+            return false;
+        }
+        break;
+    case ENABLED:
+        enabled = (bool)value;
+        break;
+    }
+    return true;
 }
 
-bool HuboMotor::requiresMotion(){
-    return currGoal != interStep;
-}
+bool HuboMotor::get(PROPERTY property, double& value){
 
-void HuboMotor::setMode(Mode mode){
-    this->mode = mode;
-}
-
-double HuboMotor::interpolate(){
-    if (frequency == 0) return interStep; //If the frequency is 0, no motion occurs.
-
-    const float LEAP_PERCENTAGE = .5;
-    const double MIN_STEP = .00001;
-    const double MAX_STEP = interVel/frequency; //Radians per second, divided by our operating frequency.
-
-    double error = currGoal - interStep;
-    if (error == 0)
-        return currGoal;
-    double output = currGoal;
-
-    if((fabs(error) > MIN_STEP)){
-        output = (LEAP_PERCENTAGE * error);
-
-        if(fabs(output) > MAX_STEP)
-            output = output < 0 ? -MAX_STEP : MAX_STEP;
-
-    } else
-        output = error;
-
-    output += interStep;
-    interStep = output;
-    return interStep;
-}
-
-void HuboMotor::setName(string &name){
-    this->name = name;
-}
-
-void HuboMotor::setGoalPosition(double rads){
-    currGoal = rads;
-}
-
-void HuboMotor::setInterVelocity(double omega){
-    interVel = omega;
-}
-
-void HuboMotor::setFrequency(double frequency){
-    this->frequency = frequency;
-}
-
-void HuboMotor::update(double position, double velocity, double temperature, double current, bool homed, int errors){
-    currPos = position;
-    currVel = velocity;
-    currTemp = temperature;
-    currCurrent = current;
-    this->homed = homed;
-    this->errors = errors;
-}
-
-void HuboMotor::setEnabled(bool enabled){
-    this->enabled = enabled;
-    //interStep = currGoal; //If we have recently changed from non-interpolation to interpolation, the step MUST be updated.
-}
-
-void HuboMotor::setInterStep(double rads){
-    //This method should ONLY be used when switching control mode to interpolation.
-    //The argument to this method should be the current actual position of the motor.
-    this->interStep = rads;
-}
-
-void HuboMotor::setZeroed(bool zeroed){
-    this->zeroed = zeroed;
-}
-
-string& HuboMotor::getName(){
-    return name;
-}
-
-double HuboMotor::getGoalPosition(){
-    return currGoal;
-}
-
-double HuboMotor::getPosition(){
-    return currPos;
-}
-
-double HuboMotor::getInterStep(){
-    return interStep;
-}
-
-double HuboMotor::getVelocity(){
-    return currVel;
-}
-
-double HuboMotor::getTemperature(){
-    return currTemp;
-}
-
-double HuboMotor::getCurrent(){
-    return currCurrent;
-}
-
-bool HuboMotor::isEnabled(){
-    return enabled;
-}
-
-bool HuboMotor::isHomed(){
-    return homed;
-}
-
-bool HuboMotor::isZeroed(){
-    return zeroed;
-}
-
-bool HuboMotor::hasError(){
-    return errors != 0;
-}
-
-bool HuboMotor::hasError(PROPERTY error){
-    switch (error){
+    switch (property){
+    case GOAL:
+        value = currGoal;
+        break;
+    case INTERPOLATION_STEP:
+        value = interpolate();
+        break;
+    case GOAL_TIME:
+        value = (totalStepCount * 1000) / frequency;
+        break;
+    case MOTION_TYPE:
+        value = mode;
+        break;
+    case ENABLED:
+        value = enabled;
+    case SPEED:
+        value = interVel;
+        break;
+    case POSITION:
+    case VELOCITY:
+    case TEMPERATURE:
+    case CURRENT:
+    case HOMED:
+    case ERRORED:
     case JAM_ERROR:
-        return (bool)(errors & 0x200);  // 1000000000
     case PWM_SATURATED_ERROR:
-        return (bool)(errors & 0x100);  // 0100000000
     case BIG_ERROR:
-        return (bool)(errors & 0x80);   // 0010000000
     case ENC_ERROR:
-        return (bool)(errors & 0x40);   // 0001000000
     case DRIVE_FAULT_ERROR:
-        return (bool)(errors & 0x20);   // 0000100000
     case POS_MIN_ERROR:
-        return (bool)(errors & 0x10);   // 0000010000
     case POS_MAX_ERROR:
-        return (bool)(errors & 0x8);    // 0000001000
     case VELOCITY_ERROR:
-        return (bool)(errors & 0x4);    // 0000000100
     case ACCELERATION_ERROR:
-        return (bool)(errors & 0x2);    // 0000000010
     case TEMP_ERROR:
-        return (bool)(errors & 0x1);    // 0000000001
+        // Chooses whether to use the name of the board or the board number to request the property from the state channel
+        // Prints an error if the request fails
+        if ( ( boardNum != -1 ? !stateChannel->getMotorProperty(boardNum, property, value) : !stateChannel->getMotorProperty(getName(), property, value) ) ){
+            cout << "Error getting " << Names::getName(property) << " from " << getName() << endl;
+            return false;
+        }
+        break;
     default:
         return false;
     }
+
+    return true;
 }
 
-HuboMotor::Mode HuboMotor::getMode(){
-    return mode;
+bool HuboMotor::requiresMotion(){
+    return interStep != currGoal;
+    //return fabs(interStep - currGoal) > .00001;
+}
+
+void HuboMotor::setBoardNum(int boardNum){
+    this->boardNum = boardNum;
 }

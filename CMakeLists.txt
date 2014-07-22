@@ -45,6 +45,17 @@ rosbuild_add_executable(${PROJECT_NAME}
     src/ReferenceChannel.cpp 
     src/StateChannel.cpp 
     src/SimChannels.cpp
+    src/ArmWristXYZ.cpp
+    src/Interpolable.cpp
+    src/Interpolation.cpp
+    src/LowerBodyLeg.cpp
+    src/MetaJointController.cpp
+    src/MetaJoint.cpp
+    src/Names.cpp
+    src/NeckRollPitch.cpp
+    src/RobotComponent.cpp
+    src/ArmMetaJoint.cpp
+    src/BalanceController.cpp
     include/Singleton.h)
 target_link_libraries(${PROJECT_NAME} ach)
 #target_link_libraries(example ${PROJECT_NAME})
