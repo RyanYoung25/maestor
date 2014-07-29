@@ -14,21 +14,39 @@
 \pagebreak
 \section{Introduction}
 
-This repository contains the MAchine and Environment Software Translation Over Ros (MAESTOR) software project.
-Included are install scripts to generate the execution environment required for MAESTOR, 
-as well as an install script to generate the execution environment for virtualization and visualization of the HUBO robot.\\
-\noindent\\
+This repository contains the MAchine and Environment Software Translation Over Ros (MAESTOR) software project. Included are install scripts to generate the execution environment required for MAESTOR, as well as an install script to generate the execution environment for virtualization and visualization of the HUBO robot.\\
+
+MAESTOR was designed to be an easy to use rapid prototyping tool for developing movements on the humanoid robot HUBO. MAESTOR allows you to visualize code in simulation and execute the same code on real hardware. One of the ways that you can create movements on the robot is by making simple to write python scripts that can be powerful enough to create complex movements even walking. MAESTOR is a great development tool for integrating external sensors with HUBO thanks to it using ROS as a communication bus. This user manual will help walk you through using MAESTOR so you can begin to get started on your own scripts and projects.\\ 
+
+\noindent
 All examples of commands to run are centred and in italics for example:
 \begin{center}
 \textit{ls -a}
 \end{center}
 
 \section{Software Requirements}
+For MAESTOR to run properly you must have all of the following:
+\begin{itemize}
+	\item Ubuntu 12.04 LTS
+	\item ROS Fuerte
+	\item OpenRAVE (ROS stack)
+	\item hubo-ach
+	\item OpenHubo
+\end{itemize}
 
-- Ubuntu 12.04 LTS\\
-- ROS Fuerte\\
-- OpenRAVE (ROS stack)
-
+\begin{description}
+	\item[Ubuntu 12.04 LTS] \hfill \\
+		Ubuntu 12.04 is the operating system that we built MAESTOR for. \\
+	\item[ROS Fuerte] \hfill \\
+		ROS Fuerte is the Robot Operating System that allows us to communicate using TCP packets to different nodes. MAESTOR is a ROS package and also uses ROS for all of its service communication. \\
+		
+	\item [OpenRAVE (ROS stack)] \hfill \\
+		OpenRAVE is used for visualizing the robot in simulation and also providing the physics in simulation. 
+	\item [hubo-ach]\hfill \\
+		hubo-ach is how we communicate to the can boards to pass can messages to the motor boards.
+	\item [OpenHubo]	\hfill \\
+		OpenHubo is an OpenRAVE extension that simulates HUBO specifically. 
+\end{description}
 \section{Installation}
 
 Installation scripts exist to install dependencies such as ROS, OpenRAVE, Hubo-Ach and OpenHUBO.
@@ -43,7 +61,7 @@ Pay strict attention to permissions for all scripts. Some require root access an
 \pagebreak
 \subsection{Install Packages Independently}
 
-The install all script just calls each of these scripts individually. If there are errors when using the install all script it is recommended to install each package using these install scripts in this order.  
+The install all script just calls each of these scripts individually. If there are errors when using the install all script it is recommended to install each package using these install scripts in this order or you can install only the packages you need.  
 
 Installation of ROS:
 
@@ -71,12 +89,17 @@ Installation of the MAESTOR ROS pacakge:
 	\textit{./install-maestor.sh}
 \end{center}
 	
-\subsection{Installation note}
+\subsection{Testing Installation}
 
 After installation, it is recommended for the user to interact with these packages in a new terminal in order to ensure that environment variables are properly loaded. If any errors occur, please reboot the operating system and try again,to confirm that the errors are not related to unloaded environment variables.
 
-If you have all of the dependencies and just want to install the MAESTOR ROS package you can run the install maestor script. 
+To test to see if everything is working run the command:
 
+\begin{center}
+	\textit{maestor sim-real}
+\end{center} 
+
+This will open up the full MAESTOR environment including ROS, OpenHUBO, and hubo-ach. If everything opens up without any errors then your software installed correctly. 
 	
 \section{Uninstallation}
 
@@ -91,79 +114,12 @@ Run:
 You will be prompted to uninstall each of the separate components installed by the install scripts. 
 NOTE: Using source to call the script is necessary because otherwise it will unable to read the OPENHUBO\_DIR environment variable.
 \pagebreak
-\section{Quick Start}
 
-If you want to get started immediately and read about the details of what you can do later, follow these steps:
-
-	- Run the maestor run script: 
-			\begin{center}
-				\textit{maestor (run type)}
-			\end{center}
-		For example, if running in simulation:
-            \begin{center}
-				\textit{maestor sim}
-		    \end{center}
-        or, on hardware:
-            \begin{center}
-				\textit{maestor real}
-			\end{center}
-		
-\noindent If you chose "real" as your run type:
-	
-		- A terminal should have opened on tty7 (This may be different if there are already processes running on these terminals.)
-		
-		- It is not required but it is highly recommended to open tty7 (Ctrl - Alt - F7) and make sure the hubo-ach console is running (It may require elevated privileges.)\\
-
-\noindent If you chose "sim" as your run type:
-		
-		- X Terminals should have opened with hubo ach, roscore and additional simulation windows. Hubo-Ach's terminal will require elevated privileges. Type your password to give them. 
-		
-		-On occasion one of the xterminals will be directly over top of the other. If this happens and the one running hubo-ach that needs elevated permissions is on the bottom, simply move the top one and give hubo-ach permission. \\
-		
-\noindent Once everything has finished starting up for both real and simulation, the terminal you started maestor in will be back in your control. 
-	
-\noindent To open the maestor console type the command:
-		\begin{center}
-			\textit{maestor console}
-		\end{center}
-
-This will give you a python console that has the maestor api and commands loaded. The function ls() will give you a list of all the functions you have available. Each console line starts with: $>>>$ like the python interpreter. 
-
-	-To begin controlling the robot or the simulation you must first initialize the robot:
-		
-		\begin{center}
-			\textit{initRobot("")}
-		\end{center}          
-		
-		The parameter is the path to a config file. Empty string is default
-
-	- Next the joints must be homed. This is especially important in hardware mode. Usually when operating HUBO you will have to reset joints and re-home a few times before you can enable the robot. You can home using the command:
-		
-		\begin{center}
-			\textit{command("HomeAll", "")}
-		\end{center}
-
-    - In order to move the joints they must be enabled. This can be done with the command EnableAll
-		\begin{center}
-			\textit{command("EnableAll", "")}
-		\end{center}
-		
-
-			
-	- From here the robot in hardware or simulation can move all of its joints. A simple test is to move the right arm up 
-		\begin{center}
-			\textit{setProperty("RSP", "position", -1)}
-		\end{center}
-		 
-		
-\noindent 
-The robot should move its arm up. From here you can begin to manipulate joints from the console using the setProperty function. A detailed guide listing the functionality is below in the How to use section.
-	
 \section{How to use}
 
 \subsection{Run}
 
-To run maestor, type the command maestor and an argument:
+To run MAESTOR, type the command maestor and an argument:
 
 Usage:
 \begin{center}
@@ -172,46 +128,46 @@ Usage:
 $<$Command$>$:
 	\begin{description}
 		\item[sim] \hfill \\
-		-Starts maestor with hubo-ach in simulation mode with physics
+		-Starts MAESTOR with hubo-ach in simulation mode with physics
 		\item[sim-real] \hfill \\
-		-Start maestor with hubo-ach in simulation mode without physics (Real time)
+		-Start MAESTOR with hubo-ach in simulation mode without physics (Real time)
 		\item[real] \hfill \\
-		-Starts maestor with hubo-ach in hardware mode
+		-Starts MAESTOR with hubo-ach in hardware mode
 		\item[console] \hfill \\ 
-		-Starts the maestor python console
+		-Starts the MAESTOR Python console
 		\item[kill] \hfill \\
-		-Kills maestor, hubo-ach, and roscore
+		-Kills MAESTOR, hubo-ach, and roscore
 		\item[script $<$scriptName$>$] \hfill \\
 		-Runs the python script that is located in the maestor/scripts/ directory with then name $<$scriptName$>$. The script must follow regular python conventions and end with .py as well as be in the correct directory.
 	\end{description}
 
-\noindent To actually run maestor you need to choose either the sim, sim-real, or real argument.\\
+\noindent To actually run MAESTOR you need to choose either the sim, sim-real, or real argument.\\
 
 \noindent The differences between each mode of operation are as follows:
 	\begin{description}
 		\item[sim] \hfill \\
-		-Hubo-Ach runs in simulation mode, and opens the openHubo simulation. Physics is enabled and the positions of motors can be retrieved. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran maestor from will also require elevated privileges after you give them to OpenRave.
+		-Hubo-Ach runs in simulation mode, and opens the openHubo simulation. Physics is enabled and the positions of motors can be retrieved. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran MAESTOR from will also require elevated privileges after you give them to OpenRave.
 		\item[sim-real] \hfill \\
-		-Hubo-Ach runs in simulation mode without physics. This option is meant for previewing intended robot motion, and should be much faster. You can not retrieve the positions of the motors with physics off. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran maestor from will also require elevated privileges after you give them to OpenRave.
+		-Hubo-Ach runs in simulation mode without physics. This option is meant for previewing intended robot motion, and should be much faster. You can not retrieve the positions of the motors with physics off. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran MAESTOR from will also require elevated privileges after you give them to OpenRave.
 		\item[real] \hfill \\ 
 		-Hubo-Ach runs in hardware mode. This option is meant for running MAESTOR on the actual robot. No simulation is opened and a hardware CAN interface is expected. Your terminal will immediately ask for your password then a bunch of text will appear over the password prompt. You can still type your password even though the text is appearing on screen and you need to. 
 	\end{description}
 	
-\noindent When MAESTOR is finished starting up the original terminal that you ran the MAESTOR command from will be back in your control. There are two suggested options for controlling MAESTOR once it is started. The first is opening up the MAESTOR console and the second is using the MAESTOR python module. Both ways are wrappers that allow you to make service calls over ROS. 
+\noindent When MAESTOR is finished starting up the original terminal that you ran the MAESTOR command from will be back in your control. There are two suggested options for controlling MAESTOR once it is started. The first is opening up the MAESTOR console and the second is using the MAESTOR Python module. Both ways are wrappers that allow you to make service calls over ROS. 
 
 \subsection{The Console}
 
-To open the maestor console type the command in a terminal:
+To open the MAESTOR console type the command in a terminal:
 	\begin{center}
 		\textit{maestor console}
 	\end{center}
-Once the console is open you will see a prompt that looks like a regular python interpreter prompt:
+Once the console is open you will see a prompt that looks like a regular Python interpreter prompt:
 
 	\begin{center}
 		$>>>$
 	\end{center}
 	
-In this prompt you can use any of the maestor functions by typing their names and any arguments they have. To close out of the console you can press ctrl-d when at a blank prompt. You can reopen the console at any time as long as maestor is running. You can find all of the functions that are available for use and their parameters in Table 1. The underlying workings for this console is a python script that makes direct ROS service calls and returns whatever they return. For more precise work and performing complex movements and tasks it is highly recommended to use the python module. 
+In this prompt you can use any of the MAESTOR functions by typing their names and any arguments they have. To close out of the console you can press ctrl-d when at a blank prompt. You can reopen the console at any time as long as MAESTOR is running. You can find all of the functions that are available for use and their parameters in Table 1. The underlying workings for this console is a Python script that makes direct ROS service calls and returns whatever they return. For more precise work and performing complex movements and tasks it is highly recommended to use the Python module. 
 
 
 \begin{center}
@@ -223,7 +179,7 @@ In this prompt you can use any of the maestor functions by typing their names an
 		setProperty($<$Joint$>$, $<$Property$>$, $<$Value$>$) 
 		& Set the $<$Property$>$ of the $<$Joint$>$ to the $<$Value$>$.  \\ \hline
 		loadTrajectory($<$Name$>$, $<$Path$>$, $<$Read$>$) 
-		& Load a trajectory into maestor with the name $<$Name$>$ from the $<$Path$>$. The $<$Read$>$ parameter is a boolean  where if it is true the file that is open is read from and if it's false the file is written to in a trajectory format.   \\ \hline
+		& Load a trajectory into MAESTOR with the name $<$Name$>$ from the $<$Path$>$. The $<$Read$>$ parameter is a boolean  where if it is true the file that is open is read from and if it's false the file is written to in a trajectory format.   \\ \hline
 		
 		command($<$Name$>$, $<$Target$>$) 
 		& Runs the command $<$Name$>$ with the option of $<$Target$>$ where Target is a joint or nothing. The list of all commands is below.  \\ \hline
@@ -270,11 +226,11 @@ In this prompt you can use any of the maestor functions by typing their names an
 
 \subsection{Python Module}
 
-To interact with MAESTOR using scripts or your own programs in python I recommend using the MAESTOR python module. The MAESTOR python module is contained in a file called Maestor.py that resides in the maestor/scripts/ directory. I strongly suggest saving scripts in this directory for convenience. If you save your files in a different directory you will either need to add Maestor.py to the PYTHONPATH or include Maestor.py in the directory that you save your script. 
+To interact with MAESTOR using scripts or your own programs in Python I recommend using the MAESTOR Python module. The MAESTOR Python module is contained in a file called Maestor.py that resides in the maestor/scripts/ directory. I strongly suggest saving scripts in this directory for convenience. If you save your files in a different directory you will either need to add Maestor.py to the PythonPATH or include Maestor.py in the directory that you save your script. 
 
 \subsubsection{Module Functionality}
 
-The MAESTOR python module is a class that you can import into your python script or project and create an object of. If you are familiar with ROS the  MAESTOR module creates a ROS node that is used for calling services on the MAESTOR node. If you aren't familiar with ROS you can use the MAESTOR module to avoid having to use it. The MAESTOR module allows you to use all of the functions that are listed in Table 1 and a one more that was added for convenience: 
+The MAESTOR Python module is a class that you can import into your Python script or project and create an object of. If you are familiar with ROS the  MAESTOR module creates a ROS node that is used for calling services on the MAESTOR node. If you aren't familiar with ROS you can use the MAESTOR module to avoid having to use it. The MAESTOR module allows you to use all of the functions that are listed in Table 1 and a one more that was added for convenience: 
 
 \begin{description}
 	\item[waitForJoint($<$Joint$>$)] \hfill \\
@@ -291,10 +247,10 @@ To create a script you can run directly, the script must be executable which can
 	\textit{chmod +x $<$scriptName$>$}
 \end{center}
 
-This command is not a part of MAESTOR but it gives all users on a system the permission to execute that file. For both running scripts directly and running them with the maestor command you need to have the proper shebang. An example of the python shebang is:
+This command is not a part of MAESTOR but it gives all users on a system the permission to execute that file. For both running scripts directly and running them with the maestor command you need to have the proper shebang. An example of the Python shebang is:
 
 \begin{center}
-	\#! usr/bin/env python
+	\#! usr/bin/env Python
 \end{center} 
 
 To import the maestor object from the MAESTOR module add this line to your script:
@@ -316,7 +272,7 @@ Where robot is any variable name you want. From there you can make all of the ca
 \end{center}
 
 \noindent \textbf{*NOTE*}\\
-\noindent Make sure that your script knows where the Maestor.py module file is. This can be done by either adding it to the python path or having a copy in the directory where your script is. If your script does not know where the Maestor.py module is it will return a lot of error messages.  
+\noindent Make sure that your script knows where the Maestor.py module file is. This can be done by either adding it to the Python path or having a copy in the directory where your script is. If your script does not know where the Maestor.py module is it will return a lot of error messages.  
 
 \subsubsection{Running Your Scripts}
 
@@ -339,10 +295,10 @@ Will run the script testure.py which is located in the maestor/scripts/ director
 	\textit{./$<$scriptName$>$}
 \end{center}
 
-Another alternative way of running this is using the python interpreter in non-interactive mode with the command:
+Another alternative way of running this is using the Python interpreter in non-interactive mode with the command:
 
 \begin{center}
-	\textit{python $<$scriptName$>$}
+	\textit{Python $<$scriptName$>$}
 \end{center}
 
 If you use the last method of running the scripts then you do not need to include the shebang nor does it have to be executable. Though it is usually good practice to do these things anyway for scripts. 
@@ -687,10 +643,78 @@ Once MAESTOR is started it will run continuously in the back ground as will all 
 	\end{center}
 
 	
-\section{External Sensors and Demos}
-	Because MAESTOR is built off of ROS services it can be used to integrate external sensors with controlling HUBO. A lot of the demos that we have made use this feature and I suggest taking a look at them if you want to get an idea of how it works. It usually consists of creating your own python scripts with a maestor object and another object that handles the external sensors. \\
+\section{Quick Start}
 
-To run hubo demos with maestor, download them from the github repositories: 
+If you want to get started immediately and read about the details of what you can do later, follow these steps:
+
+	- Run the MAESTOR run script: 
+			\begin{center}
+				\textit{maestor (run type)}
+			\end{center}
+		For example, if running in simulation:
+            \begin{center}
+				\textit{maestor sim}
+		    \end{center}
+        or, on hardware:
+            \begin{center}
+				\textit{maestor real}
+			\end{center}
+		
+\noindent If you chose "real" as your run type:
+	
+		- A terminal should have opened on tty7 (This may be different if there are already processes running on these terminals.)
+		
+		- It is not required but it is highly recommended to open tty7 (Ctrl - Alt - F7) and make sure the hubo-ach console is running (It may require elevated privileges.)\\
+
+\noindent If you chose "sim" as your run type:
+		
+		- X Terminals should have opened with hubo ach, roscore and additional simulation windows. Hubo-Ach's terminal will require elevated privileges. Type your password to give them. 
+		
+		-On occasion one of the xterminals will be directly over top of the other. If this happens and the one running hubo-ach that needs elevated permissions is on the bottom, simply move the top one and give hubo-ach permission. \\
+		
+\noindent Once everything has finished starting up for both real and simulation, the terminal you started MAESTOR in will be back in your control. 
+	
+\noindent To open the MAESTOR console type the command:
+		\begin{center}
+			\textit{maestor console}
+		\end{center}
+
+This will give you a python console that has the MAESTOR api and commands loaded. The function ls() will give you a list of all the functions you have available. Each console line starts with: $>>>$ like the Python Interpreter. 
+
+	-To begin controlling the robot or the simulation you must first initialize the robot:
+		
+		\begin{center}
+			\textit{initRobot("")}
+		\end{center}          
+		
+		The parameter is the path to a config file. Empty string is default
+
+	- Next the joints must be homed. This is especially important in hardware mode. Usually when operating HUBO you will have to reset joints and re-home a few times before you can enable the robot. You can home using the command:
+		
+		\begin{center}
+			\textit{command("HomeAll", "")}
+		\end{center}
+
+    - In order to move the joints they must be enabled. This can be done with the command EnableAll
+		\begin{center}
+			\textit{command("EnableAll", "")}
+		\end{center}
+		
+
+			
+	- From here the robot in hardware or simulation can move all of its joints. A simple test is to move the right arm up 
+		\begin{center}
+			\textit{setProperty("RSP", "position", -1)}
+		\end{center}
+		 
+		
+\noindent 
+The robot should move its arm up. From here you can begin to manipulate joints from the console using the setProperty function. A detailed guide listing the functionality is below in the How to use section.
+	
+\section{External Sensors and Demos}
+	Because MAESTOR is built off of ROS services it can be used to integrate external sensors with controlling HUBO. A lot of the demos that we have made use this feature and I suggest taking a look at them if you want to get an idea of how it works. It usually consists of creating your own Python scripts with a maestor object and another object that handles the external sensors. \\
+
+To run hubo demos with MAESTOR, download them from the github repositories: 
 
 	\begin{flushleft}
 		https://github.com/RyanYoung25/FaceTrackingWaistDemo

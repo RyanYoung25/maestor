@@ -26,6 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "RobotControl.h"
 
+/**
+ * Creates the Robot Control object. This initializes a lot of the important variables but it does not
+ * fully inititalize MAESTOR.
+ */
 RobotControl::RobotControl(){
 
    	RUN_TYPE = HARDWARE;
@@ -76,12 +80,20 @@ RobotControl::RobotControl(){
     frames = 0;
     trajStarted = false;
 }
-  
+
+/**
+ * Cleans up the Robot Control object.
+ */
 RobotControl::~RobotControl(){
     delete power;
     delete balancer;
 }
 
+
+/**
+ * UpdateHook is the main function that gets called at the update frequency. This is where all of the 
+ * state changes are applied. 
+ */
 void RobotControl::updateHook(){
     if (state == NULL)
         return;
@@ -176,39 +188,89 @@ void RobotControl::updateHook(){
     //usleep(delay);
 }
 
+/**
+ * Sets the run type to simulation. Used when MAESTOR is operated in simulation mode
+ */
 void RobotControl::setSimType(){
     simChannels = SimChannels::instance();
     RUN_TYPE = SIMULATION;
 }
 
+/**
+ * Loads a trajectory into maestor. 
+ * @param  name The name of the trajectory to load into maestor
+ * @param  path The path to the trajectory to be loaded
+ * @param  read When read is true we read from the trajectory, false we write to it
+ * @return      true on succcess
+ */
 bool RobotControl::loadTrajectory(string name, string path, bool read){
     return trajectories.loadTrajectory(name, path, read);
 }
 
+/**
+ * Ignore the column from the trajectory
+ * @param  name The name of the trajcetory
+ * @param  col  the name of the column to ignore
+ * @return      true on success
+ */
 bool RobotControl::ignoreFrom(string name, string col){
     return trajectories.ignoreFrom(name, col);
 }
 
+/**
+ * Ignore all of the columns from the trajectory 
+ * @param  name name of the trajectory
+ * @return      true on success
+ */
 bool RobotControl::ignoreAllFrom(string name){
     return trajectories.ignoreAllFrom(name);
 }
 
+/**
+ * unignore the column from the trajectory
+ * @param  name name of the trajectory 
+ * @param  col  name of the column
+ * @return      true on success
+ */
 bool RobotControl::unignoreFrom(string name, string col){
     return trajectories.unignoreFrom(name, col);
 }
 
+/**
+ * unignore all the columns from the trajectory
+ * @param  name name of the traj
+ * @return      true on success
+ */
 bool RobotControl::unignoreAllFrom(string name){
     return trajectories.unignoreAllFrom(name);
 }
 
+/**
+ * Set the trigger to start another trajectory at the target of the first one. 
+ * @param  name   Name of the first trajectory.
+ * @param  frame  The frame to start the next trajectory on
+ * @param  target The next trajectory to play
+ * @return        True on success
+ */
 bool RobotControl::setTrigger(string name, int frame, string target){
     return trajectories.setTrigger(name, frame, target);
 }
 
+/**
+ * Extend the trajectory that is all ready loaded by the trajectory that 
+ * is located at the path specified. 
+ * @param  name Name of the loaded trajectory
+ * @param  path The path to the trajectory that you want at the end of the first
+ * @return      True on success
+ */
 bool RobotControl::extendTrajectory(string name, string path){
     return trajectories.extendTrajectory(name, path);
 }
 
+/**
+ * Start a loaded trajectory. 
+ * @param name The name of the trajectory to start. 
+ */
 void RobotControl::startTrajectory(string name){
     Trajectory* traj = NULL;
 
@@ -262,11 +324,20 @@ void RobotControl::startTrajectory(string name){
     trajectories.startTrajectory(name);
 }
 
+/**
+ * Stop a trajectory that is running. 
+ * @param name Name of the trajectory to stop. 
+ */
 void RobotControl::stopTrajectory(string name){
     trajectories.stopTrajectory(name);
     trajStarted = trajectories.hasRunning();
 }
 
+/**
+ * Get the initial config file path
+ * @param  path the path to the file containing the path to the config file
+ * @return      returns the path to the config file
+ */
 string RobotControl::getDefaultInitPath(string path){
     ifstream is;
     is.open(path.c_str());
@@ -284,14 +355,18 @@ string RobotControl::getDefaultInitPath(string path){
     return temp;
 }
 
+/**
+ * Initialize the MAESTOR system by creating all of the robot components that are loaded from 
+ * an XML configuration file. Empty string defaults to the default config path. 
+ * @param path The path to the xml config file
+ */
 void RobotControl::initRobot(string path){
     if (strcmp(path.c_str(), "") == 0)
     {
         path = getDefaultInitPath(CONFIG_PATH);
     }
-    //@TODO: Check for file existence before initializing.
-    this->state->initHuboWithDefaults(path, 1/PERIOD);  //TODO: get the period
-
+    
+    this->state->initHuboWithDefaults(path, 1/PERIOD);  
     balancer->initBalanceController(*(this->state));
 
     if (this->state == NULL)
@@ -301,6 +376,12 @@ void RobotControl::initRobot(string path){
 
 }
 
+/**
+ * This is the set properties method. It sets a components property to the value. 
+ * @param name     The name of the robot component
+ * @param property Name of the property to be set
+ * @param value    Value to set to the property
+ */
 void RobotControl::set(string name, string property, double value){
     if (!state->nameExists(name)){
         cout << "Error. No component with name " << name << " registered. Aborting." << endl;
@@ -320,6 +401,13 @@ void RobotControl::set(string name, string property, double value){
     }
 }
 
+/**
+ * Set multiple properties on multiple robot components to multiple values. There must be an equal number
+ * of robot components, properties, and values for the function to work properly. 
+ * @param names      Space delimited string of robot component names
+ * @param properties Space delimited string of properties
+ * @param values     Space delimited string of values
+ */
 void RobotControl::setProperties(string names, string properties, string values){
     vector<string> namesList = splitFields(names);
     vector<string> propertiesList = splitFields(properties);
@@ -340,6 +428,12 @@ void RobotControl::setProperties(string names, string properties, string values)
     }
 }
 
+/**
+ * Get the value of a property for a specific robot componenet
+ * @param  name     Name of the robot component
+ * @param  property Name of the property
+ * @return          Value of the property for that robot component
+ */
 double RobotControl::get(string name, string property){
     
     double result = 0;
@@ -383,6 +477,12 @@ double RobotControl::get(string name, string property){
 
 }
 
+/**
+ * Get multiple properties for a given robot component. 
+ * @param  name       Name of the robot component
+ * @param  properties Space delimited string of properties
+ * @return            A space delimited string of values for each property it found
+ */
 string RobotControl::getProperties(string name, string properties) {
     vector<string> propertyList = splitFields(properties);
     ostringstream values;
@@ -398,6 +498,11 @@ string RobotControl::getProperties(string name, string properties) {
     return values.str();
 }
 
+/**
+ * Run the command that is passed in. If it has a joint target run it on that joint. 
+ * @param name   Name of the command to run
+ * @param target Optional Joint target
+ */
 void RobotControl::command(string name, string target){
     Commands commands = Names::getComms();
     RobotComponent* component = NULL;
@@ -582,9 +687,12 @@ void RobotControl::command(string name, string target){
     }
 }
 
-
-
-
+/**
+ * Set the mode of MAESTOR. This can be used to turn interpolation off. This was deemed hazardous so it
+ * was taken out of the ROS service list. Proceed with caution. 
+ * @param mode  the only mode is interpolation
+ * @param value on or off
+ */
 void RobotControl::setMode(string mode, bool value){
     Components components = state->getComponents();
 //    Motors motors = state->getMotorMap();
@@ -620,11 +728,20 @@ void RobotControl::setMode(string mode, bool value){
     }
 }
 
+/**
+ * Set the period for MAESTOR
+ * @param period the period in seconds
+ */
 void RobotControl::setPeriod(double period){
-    cout << "The period is: " << period << endl;
     PERIOD = period;
 }
 
+/**
+ * Set an alias for a robot component or command
+ * @param  name  Name of the robot component or command
+ * @param  alias alias to add
+ * @return       True on success
+ */
 bool RobotControl::setAlias(string name, string alias){
     bool res = Names::setAlias(name, alias);
     if(res == true){
@@ -633,6 +750,11 @@ bool RobotControl::setAlias(string name, string alias){
     return state->setAlias(name, alias);
 }
 
+/**
+ * Convience method to split a string into it's fields
+ * @param input The string to split
+ * @return      A vector of each field
+ */
 vector<string> RobotControl::splitFields(string input){
     vector<string> output;
     int whitespaceType = 0;
@@ -668,10 +790,20 @@ vector<string> RobotControl::splitFields(string input){
     return output;
 }
 
+/**
+ * Set a delay
+ * @param us The delay in microseconds
+ */
 void RobotControl::setDelay(int us){
     this->delay = us;
 }
 
+/**
+ * Check if a joint is at its goal. If it is at its goal it does 
+ * not require motion otherwise it does
+ * @param  name Joint to check
+ * @return      True if the joint is not at its goal False if it is. 
+ */
 bool RobotControl::requiresMotion(string name){
     RobotComponent* component = state->getComponent(name);
     if (component == NULL){
