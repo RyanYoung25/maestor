@@ -10,8 +10,6 @@
 #	install-hubo-ach.sh
 #	install-openHubo.sh
 #
-# Author: Solis Knight
-# Date: July 2013
 #
 
 # Change directory to the script's directory
@@ -27,7 +25,7 @@ echo "Version $VERSION"
 echo ""
 
 DEPENDENCY_DIRS=""
-DEPENDENCY_FILES="install-maestor.sh install-fuerte.sh install-hubo-ach.sh install-openHubo.sh"
+DEPENDENCY_FILES="install-maestor.sh install-ros-fuerte.sh install-hubo-ach.sh install-openHubo.sh"
 BLACKLISTED_DIRS=""
 BLACKLISTED_FILES=""
 

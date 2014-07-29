@@ -84,8 +84,9 @@ bool HuboMotor::set(PROPERTY property, double value){
         currParams.valid = false;
         startParams.valid = false;
         break;
+    case SPEED:
     case VELOCITY:
-        if (value != 0)
+        if (value > 0)
             interVel = value;
         break;
     case GOAL_TIME:

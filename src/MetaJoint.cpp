@@ -82,8 +82,10 @@ bool MetaJoint::set(PROPERTY property, double value){
         }
         currGoal = value;
         break;
+    case SPEED:
     case VELOCITY:
-        interVel = value;
+        if (value > 0)
+            interVel = value;
         break;
     case READY:
         ready = (bool)value;
