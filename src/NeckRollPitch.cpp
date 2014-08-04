@@ -1,8 +1,7 @@
-/*
- * NeckRollPitch.cpp
- *
- *  Created on: Mar 4, 2014
- *      Author: solisknight
+/**
+ * The neck roll and pitch meta joint. This allows you to set 
+ * the NKP and NKR joints and have them work in the expected way. 
+ * This assumes that hubo ach is configured correctly to allow the neck to be commanded correctly.
  */
 
 #include "NeckRollPitch.h"
@@ -19,10 +18,20 @@ const int NeckRollPitch::NECK1 = 0;
 const int NeckRollPitch::NECK2 = 1;
 
 
+/**
+ * Constructor extended as a meta joint controller
+ */
 NeckRollPitch::NeckRollPitch() : MetaJointController(NUM_PARAMETERS, NUM_CONTROLLED) {}
 
+/**
+ * Destructor
+ */
 NeckRollPitch::~NeckRollPitch() {}
 
+/**
+ * Calculate and set the inverse for all of the controlled joints based off
+ * of the meta joints positions. 
+ */
 void NeckRollPitch::setInverse(){
     if (!allSet())
         return;
@@ -38,13 +47,15 @@ void NeckRollPitch::setInverse(){
     double NK2pos = ((.378874 * roll) + (.322581 * pitch)) * 2 * M_PI;
 
     controlledJoints[NECK1]->set(GOAL, NK1pos);
-    //controlledJoints[NECK1]->set(GOAL_TIME, 2000.0);
     controlledJoints[NECK2]->set(GOAL, NK2pos);
-    //controlledJoints[NECK2]->set(GOAL_TIME, 2000.0);
 
     unsetAll();
 }
 
+/**
+ * Get the forward position of the meta joints based off of the positions of the 
+ * controlled joints
+ */
 void NeckRollPitch::getForward(){
     double NK1pos = 0;
     double NK2pos = 0;

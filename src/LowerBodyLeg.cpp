@@ -1,8 +1,8 @@
-/*
- * LowerBodyLeg.cpp
+/**
+ * The Leg metajoint controller. This is where the inverse kinematics and controlling
+ * of the regular joints is done. It is also where the Forward kinematics is done. 
  *
- *  Created on: Mar 5, 2014
- *      Author: solisknight
+ * Both the Inverse Kinemeatics and Forward Kinematics were taken from RAINBOW 
  */
 
 #include "../include/LowerBodyLeg.h"
@@ -41,13 +41,24 @@ const double LowerBodyLeg::ANKLE_ROLL_UPPER = .19;
 const double LowerBodyLeg::ANKLE_ROLL_LOWER = -.19;
 
 
+/**
+ * Create a LowerBodyLeg object and use parameter to specify if it is using a 
+ * global reference frame. (Usually is not)
+ *
+ * @param global    True if using a global reference frame
+ */
 LowerBodyLeg::LowerBodyLeg(bool global) : MetaJointController(NUM_PARAMETERS, NUM_CONTROLLED) {
     globalFlag = global;
 }
 
+/**
+ * Destructor
+ */
 LowerBodyLeg::~LowerBodyLeg() {}
 
-// Set foot posiion and orientation in hip yaw reference frame
+/**
+ * Set foot posiion and orientation based off of where the metajoint, X Y and Z, were set. 
+ */
 void LowerBodyLeg::setInverse(){
     checkGoalsReached();
     if(!updated){
@@ -62,15 +73,6 @@ void LowerBodyLeg::setInverse(){
     double foot_y = 0;
     double foot_z = 0;
     double foot_yaw = 0;
-
-    //getForward();
-    //Trying something out
-    /*parameters[HIP_YAW]->set(VELOCITY, 0.02);
-    parameters[HIP_PITCH]->set(VELOCITY, 0.02);
-    parameters[HIP_ROLL]->set(VELOCITY, 0.02);
-    parameters[KNEE_PITCH]->set(VELOCITY, 0.02);
-    parameters[ANKLE_ROLL]->set(VELOCITY, 0.02);
-    parameters[ANKLE_PITCH]->set(VELOCITY, 0.02);*/
 
     parameters[FOOT_X]->get(INTERPOLATION_STEP, foot_x);
     parameters[FOOT_Y]->get(INTERPOLATION_STEP, foot_y);
@@ -87,8 +89,9 @@ void LowerBodyLeg::setInverse(){
 
     unsetAll();
 }
-
-// Get foot posiion in hip yaw reference frame forward kinematics based on joint angles
+/**
+ * Get foot position using forward kinematics based on joint angles
+ */
 void LowerBodyLeg::getForward(){
     vector<double> v = getHipRollXYZ();
     
@@ -99,21 +102,26 @@ void LowerBodyLeg::getForward(){
         parameters[FOOT_X]->set(META_VALUE, cos(hip_yaw)*v[0] - sin(hip_yaw)*v[1]);
         parameters[FOOT_Y]->set(META_VALUE, sin(hip_yaw)*v[0] - cos(hip_yaw)*v[1]);
         parameters[FOOT_Z]->set(META_VALUE, v[2]);
-        //cout << "x: " << cos(hip_yaw)*v[0] - sin(hip_yaw)*v[1] << " y: " << sin(hip_yaw)*v[0] - cos(hip_yaw)*v[1] << " z: " << v[2] << endl;
     }
     else{
 
         parameters[FOOT_X]->set(META_VALUE, v[0]); 
         parameters[FOOT_Y]->set(META_VALUE, v[1]);
         parameters[FOOT_Z]->set(META_VALUE, v[2]);
-        //cout << "x: " << v[0] << " y: " << v[1] << " z: " << v[2] << endl;
     }
 
 }
 
-// Calculate joint angles to achieve desired position in hip roll reference fram
+/**
+ * Calculate joint angles to achieve desired position in hip roll reference frame and
+ * set them 
+ * 
+ * @param foot_x   The X value of the foot
+ * @param foot_y   The Y value of the foot
+ * @param foot_z   The Z value of the foot
+ * @param foot_yaw The Yaw of the foot
+ */
 void LowerBodyLeg::setHipRollXYZ(double foot_x, double foot_y, double foot_z, double foot_yaw){
-    //cout << foot_x << " " << foot_y << " " << foot_z << endl;
     double foot_roll    = 0;
     double foot_pitch   = 0;
 
@@ -170,6 +178,10 @@ void LowerBodyLeg::setHipRollXYZ(double foot_x, double foot_y, double foot_z, do
     controlledJoints[ANKLE_ROLL]->set(GOAL, ankle_roll);
 }
 
+/**
+ * Check to see if the leg still needs to move, if not give the control of
+ * all the joints back to the user. 
+ */
 void LowerBodyLeg::checkGoalsReached(){
     double pos;
     double goal;
@@ -186,7 +198,12 @@ void LowerBodyLeg::checkGoalsReached(){
     goalsReached();
 }
 
-// Calculate position in hip roll reference frame from joint angles
+/**
+ * Calculate position in hip roll reference frame from joint angles, 
+ * this is the forward kinematics
+ *
+ * @return  A vector of the forward kinematics values
+ */
 vector<double> LowerBodyLeg::getHipRollXYZ(){
     double R = 0; // Hip roll
     double P = 0; // Hip pitch

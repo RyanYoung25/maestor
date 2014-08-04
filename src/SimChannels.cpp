@@ -1,5 +1,12 @@
+/**
+ * The simulation ACH channel. 
+ */
+
 #include "../include/SimChannels.h"
 
+/**
+ * Open up the ACH simulation channels. 
+ */
 SimChannels::SimChannels(){
 	memset(&H_virtual, 0, sizeof(H_virtual));
     
@@ -12,8 +19,14 @@ SimChannels::SimChannels(){
         std::cerr << "Error! From Sim Channel failed with state " << r << std::endl;
 }
 
+/**
+ * Destructor
+ */
 SimChannels::~SimChannels(){}
 
+/**
+ * Load the simulation channel
+ */
 void SimChannels::load(){
 	size_t fs;
 	memset( &H_virtual, 0, sizeof(H_virtual));

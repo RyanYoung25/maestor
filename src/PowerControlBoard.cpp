@@ -26,6 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "PowerControlBoard.h"
 
+/**
+ * The power control board constructor. Allows you to calculate consumed power on the robot.
+ */
 PowerControlBoard::PowerControlBoard(){
 
     powerLookup.open(LOOKUP_TABLE_PATH);
@@ -39,14 +42,29 @@ PowerControlBoard::PowerControlBoard(){
 
 }
 
+/**
+ * Set the initial power consumed
+ * @param initialPower [The initial power consumed
+ */
 void PowerControlBoard::setInitialPower(double initialPower){
-    powerUsed = initialPower;
+    powerUsed = initialPower
 }
 
+/**
+ * Get the total power that has been used so far
+ * @return The total power that has been used
+ */
 double PowerControlBoard::getTotalPowerUsed(){
     return powerUsed;
 }
 
+/**
+ * Add the power a joint used from a start time to an end time
+ * @param  joint The joint that used the power
+ * @param  from  The start time
+ * @param  to    The end time
+ * @return       True on success
+ */
 bool PowerControlBoard::addMotionPower(string joint, double from, double to){
 
     string line;
@@ -72,6 +90,11 @@ bool PowerControlBoard::addMotionPower(string joint, double from, double to){
     return false;
 }
 
+/**
+ * Add the power a joint used over a certian period
+ * @param joint  The joint that was used
+ * @param period The period of time it was used
+ */
 void PowerControlBoard::addMotionPower(string joint, double period){
     if (a_nought.count(joint) == 1)
         powerUsed += a_nought[joint] * period;

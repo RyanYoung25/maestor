@@ -1,12 +1,9 @@
-/*
- * Interpolable.cpp
- *
- *  Created on: Mar 18, 2014
- *      Author: solisknight
- */
-
 #include "Interpolable.h"
 
+/**
+ * Create an Interpolable object. This is mostly a class that objects 
+ * that can interpolate inherit from. 
+ */
 Interpolable::Interpolable() {
     currGoal = 0;
     interStep = 0;
@@ -23,10 +20,16 @@ Interpolable::Interpolable() {
     memset(&currParams, 0, sizeof(currParams));
 }
 
+/**
+ * Destructor
+ */
 Interpolable::~Interpolable() {
 }
 
-
+/**
+ * Run one interpolation step. 
+ * @return The next interpolated value
+ */
 double Interpolable::interpolate(){
     double error = 0;
     double velocity = 0;
@@ -34,13 +37,6 @@ double Interpolable::interpolate(){
     if (totalStepCount != 0) {
 
         if (totalStepCount > currStepCount){
-            /*
-            error = currGoal - lastGoal;
-            time = (double)currStepCount / (double)totalStepCount;
-
-            interStep = lastGoal + interpolateSin(error, time);
-            currStepCount++;
-            return interStep;*/
             time = currStepCount;
             interStep = lastGoal + interpolateFourthOrder(currParams, time);
             startParams.valid = currParams.valid;
@@ -67,66 +63,29 @@ double Interpolable::interpolate(){
     return interStep;
 }
 
+/**
+ * Set the frequency
+ * @param frequency The new frequency
+ */
 void Interpolable::setFrequency(double frequency){
     this->frequency = frequency;
 }
 
+/**
+ * Set the interpolation offset
+ * @param  offSet The offset to set
+ * @return        True if it was successful 
+ */
 bool Interpolable::setOffset(double offSet){
     offset = offSet;
     return true;
 }
 
+/**
+ * Get the offset
+ * @return the offset
+ */
 double Interpolable::getOffset()
 {
     return offset;
 }
-
-/*
-double HuboMotor::interpolate(){
-    if (totalStepCount != 0)
-        return interpolateSin();
-    return interpolateTrap();
-}*/
-
-/*
-
-double HuboMotor::interpolateTrap(){
-    if (frequency == 0) return interStep; //If the frequency is 0, no motion occurs.
-
-    const float LEAP_PERCENTAGE = .5;
-    const double MIN_STEP = .00001;
-    const double MAX_STEP = interVel/frequency; //Radians per second, divided by our operating frequency.
-
-    double error = currGoal - interStep;
-    if (error == 0)
-        return currGoal;
-    double output = currGoal;
-
-    if((fabs(error) > MIN_STEP)){
-        output = (LEAP_PERCENTAGE * error);
-
-        if(fabs(output) > MAX_STEP)
-            output = output < 0 ? -MAX_STEP : MAX_STEP;
-
-    } else
-        output = error;
-
-    output += interStep;
-    interStep = output;
-    return interStep;
-}
-
-double HuboMotor::interpolateSin(){
-    if (totalStepCount == currStepCount){
-        totalStepCount = 0;
-        currStepCount = 0;
-        return interpolateTrap();
-    }
-    //double error = currGoal - lastGoal;
-    //double time = M_PI / totalStepCount * currStepCount;
-
-    interStep = (lastGoal) + ( (currGoal - lastGoal) * .5 * (1.0 - cos( M_PI / totalStepCount * currStepCount ) ) );
-    currStepCount++;
-    return interStep;
-}
-*/

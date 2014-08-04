@@ -1,5 +1,5 @@
 /*
- * TrajHandler.cpp
+ * The class that handles all of the trajectories
  *
  *  Created on: Feb 4, 2014
  *      Author: solisknight
@@ -7,14 +7,27 @@
 
 #include "TrajHandler.h"
 
+/**
+ * Create the Trajectory Handler object
+ */
 TrajHandler::TrajHandler() {}
 
+/**
+ * Clean up the trajectory handler object
+ */
 TrajHandler::~TrajHandler() {
     TrajectoryMap::iterator it;
     for (it = loaded.begin(); it != loaded.end(); it++)
         delete it->second;
 }
 
+/**
+ * Load a trajectory into MAESTOR
+ * @param  name The name to give the trajectory that you load
+ * @param  path The path to the file that contains the trajectory data
+ * @param  read Flag that if is true reads the file, if false it write to it. 
+ * @return      True on success
+ */
 bool TrajHandler::loadTrajectory(const string& name, const string& path, bool read){
     if (!running.empty()){
         cout << "Error. A trajectory is currently running. Please stop it first." << endl;
@@ -38,6 +51,12 @@ bool TrajHandler::loadTrajectory(const string& name, const string& path, bool re
     return false;
 }
 
+/**
+ * Ignore a joint column from a specified trajectory 
+ * @param  name The name of the trajectory to ignore the joint in
+ * @param  col  The joint to ignore in the trajectory
+ * @return      True on success
+ */
 bool TrajHandler::ignoreFrom(const string& name, const string& col){
     if (loaded.count(name) != 1){
         cout << "A trajectory with name " << name << " is not loaded." << endl;
@@ -47,6 +66,11 @@ bool TrajHandler::ignoreFrom(const string& name, const string& col){
     return true;
 }
 
+/**
+ * Ignore all of the joints in a trajectory
+ * @param  name The name of the trajectory. 
+ * @return      True on success
+ */
 bool TrajHandler::ignoreAllFrom(const string& name){
     if (loaded.count(name) != 1)
         return false;
@@ -58,6 +82,12 @@ bool TrajHandler::ignoreAllFrom(const string& name){
     return true;
 }
 
+/**
+ * Unignore a joint column from a specified trajectory
+ * @param  name The name the trajectory to ignore the joint in
+ * @param  col  The name of the joint to ignore in the trajectory 
+ * @return      True on success
+ */
 bool TrajHandler::unignoreFrom(const string& name, const string& col){
     if (loaded.count(name) != 1){
         cout << "A trajectory with name " << name << " is not loaded." << endl;
@@ -78,6 +108,14 @@ bool TrajHandler::unignoreAllFrom(const string& name){
     return true;
 }
 
+/**
+ * Set a trigger to start another trajectory at a specified frame in the first 
+ * trajectory. 
+ * @param  traj   The first trajectory where the trigger will be set
+ * @param  frame  The frame to trigger the second trajectory
+ * @param  target The second trajectory that will be played at the trigger point
+ * @return        True on success
+ */
 bool TrajHandler::setTrigger(const string &traj, int frame, const string& target){
     if (loaded.count(traj) != 1){
         cout << "No trajectory with name " << traj << " is loaded." << endl;
@@ -95,6 +133,12 @@ bool TrajHandler::setTrigger(const string &traj, int frame, const string& target
 
 }
 
+/**
+ * Extend a loaded trajectory by the contents of a trajectory file
+ * @param  name The loaded trajectory to extend 
+ * @param  path The path to the extension file
+ * @return      True on success
+ */
 bool TrajHandler::extendTrajectory(const string& name, const string& path){
     if (!running.empty()){
         cout << "Error. A trajectory has been started. Please stop it first." << endl;
@@ -109,6 +153,10 @@ bool TrajHandler::extendTrajectory(const string& name, const string& path){
     return loaded[name]->extendTrajectory(path);
 }
 
+/**
+ * Start the trajectory
+ * @param name The trajectory to start
+ */
 void TrajHandler::startTrajectory(const string& name){
     Trajectory* traj = NULL;
 
@@ -160,6 +208,10 @@ void TrajHandler::startTrajectory(const string& name){
     running.push_back(name);
 }
 
+/**
+ * Stop the trajectory
+ * @param traj The trajectory to stop as a Trajectory object 
+ */
 void TrajHandler::stopTrajectory(Trajectory* traj){
     for(TrajectoryMap::iterator it = loaded.begin(); it != loaded.end(); it++){
         if (it->second == traj){
@@ -170,6 +222,10 @@ void TrajHandler::stopTrajectory(Trajectory* traj){
     }
 }
 
+/**
+ * Stop a trajectory. This takes the name of the trajectory as a name.
+ * @param name The name of the trajectory to stop 
+ */
 void TrajHandler::stopTrajectory(const string& name){
     if (loaded.count(name) != 1){
         cout << "Trajectory " << name << " does not exist." << endl;
@@ -190,6 +246,9 @@ void TrajHandler::stopTrajectory(const string& name){
     }
 }
 
+/**
+ * Advance a frame on the current running trajectory 
+ */
 void TrajHandler::advanceFrame(){
     for (int i = 0; i < running.size(); i++){
         if (!loaded[running[i]]->advanceFrame()){
@@ -207,30 +266,54 @@ void TrajHandler::advanceFrame(){
     }
 }
 
+/**
+ * Returns true if there is a running trajectory
+ * @return True if there is a trajectory running
+ */
 bool TrajHandler::hasRunning(){
     return !running.empty();
 }
 
+/**
+ * Get a trajectory object from the name of the trajectory that is loaded
+ * @param  name Name of the loaded trajectory
+ * @return      The trajectory object 
+ */
 Trajectory* TrajHandler::get(const string& name){
     if (loaded.count(name) == 1)
         return loaded[name];
     return NULL;
 }
 
+/**
+ * Return a trajectory that is currently operating a specific joint
+ * @param  col The name of the joint that is being operated 
+ * @return     Trajectory object that was running
+ */
 Trajectory* TrajHandler::inRunning(const string& col){
     if (cache.count(col) == 1)
         return cache[col];
     return NULL;
 }
 
+/**
+ * Return all of the running trajectoies
+ */
 const vector< string >& TrajHandler::getRunning(){
     return running;
 }
 
+/**
+ * Return all of the triggers
+ */
 queue< string >& TrajHandler::getCurrentTriggers(){
     return triggers;
 }
 
+/**
+ * Add a trajectory to the cache
+ * @param traj The trajectory to add to the cache
+ */
 void TrajHandler::addToCache(Trajectory* traj){
     if (traj->read_only()){
         Header header = traj->getHeader();
@@ -241,6 +324,10 @@ void TrajHandler::addToCache(Trajectory* traj){
         cache[WRITE_KEY] = traj;
 }
 
+/**
+ * Remove a trajectory from the cache
+ * @param traj The trajectory object to remove to the cache
+ */
 void TrajHandler::removeFromCache(Trajectory* traj){
     for (TrajectoryMap::iterator it = cache.begin(); it != cache.end(); it++){
         if (it->second == traj)

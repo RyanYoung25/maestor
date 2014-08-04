@@ -64,7 +64,6 @@ private:
     // I think it stands for Digital Signal Processing, none the less it generates the offsets for the X, Y, and Z coordinates.
     // this is the key player in balancing 
     void DSPControl(); 
-    //void vibrationControl();
     // Not really used, controls the damping of the foot. Was used for gait generation but not anymore.
     double DampingControl(); 
     // Initialize the ZMP values and potentially some initial offsets for the ankle rolls. But we aren't there yet
@@ -79,8 +78,7 @@ public:
 
     // Retrive all of the components that we need to monitor and control inorder to keep balanced. 
     void initBalanceController(HuboState& theState);
-    double getZMP(int value); // 0:X 1:Y  Filtered 
-    bool isBalanced(); // Boolean value to say if the robot is balanced or not
+    double getZMP(int value); // 0:X 1:Y  Filtered
     void setBaseline();// Take the current values from the DSP control function and set those as the baseline zero. Future values are modified by this. 
     void Balance();    // move joints to balance the robot, stablize the zmp over the support polygon. 
     // Balance has two differnt ways of controlling the joints, if the joint is in motion because someone else set it's position then the function will only

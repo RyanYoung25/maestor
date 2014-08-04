@@ -45,7 +45,7 @@ RobotControl::RobotControl(){
 
 
     this->written = 0;
-    this->printNow = false;
+    this->printNow = false
     this->enableControl = false;
     this->delay = 0;
     this->interpolation = true;    //Interpret all commands as a final destination with given velocity.
@@ -54,20 +54,6 @@ RobotControl::RobotControl(){
     
     Names::initPropertyMap();
     Names::initCommandMap();
-
-
-    /*commands["Enable"] = ENABLE;
-    commands["EnableAll"] = ENABLEALL;
-    commands["Disable"] = DISABLE;
-    commands["DisableAll"] = DISABLEALL;
-    commands["ResetJoint"] = RESET;
-    commands["ResetAll"] = RESETALL;
-    commands["Home"] = HOME;
-    commands["HomeAll"] = HOMEALL;
-    commands["InitializeSensors"] = INITSENSORS;
-    commands["Update"] = UPDATE;
-    commands["Zero"] = ZERO;
-    commands["ZeroAll"] = ZEROALL;*/
 
     ostringstream logfile;
     logfile << "RobotControl.log";
@@ -106,8 +92,6 @@ void RobotControl::updateHook(){
     trajStarted = trajectories.hasRunning();
 
     Components components = state->getComponents();
-    //Boards boards = state->getBoards();
-    //Motors motors = state->getMotorMap();
     Trajectory* traj = NULL;
     RobotComponent* component = NULL;
 
@@ -138,7 +122,7 @@ void RobotControl::updateHook(){
                     component->set(MOTION_TYPE, HUBO_REF_MODE_REF);
                     if (!traj->nextPosition(component->getName(), pos) && !traj->hasNext()){
                         cout << "Reading of trajectory positions has terminated." << endl << "> ";
-                        cout.flush(); // Fixing flushing issue with the deployer, maybe....
+                        cout.flush(); 
                         trajectories.stopTrajectory(traj);
                         trajStarted = trajectories.hasRunning();
                     }
@@ -147,7 +131,7 @@ void RobotControl::updateHook(){
 
                 } else if (interpolation){
                     component->get(INTERPOLATION_STEP, pos);
-                    power->addMotionPower(component->getName(), 1/PERIOD); //TODO: get the period
+                    power->addMotionPower(component->getName(), 1/PERIOD); 
                     component->set(MOTION_TYPE, HUBO_REF_MODE_REF);
                 } else {
                     component->get(GOAL, pos);
@@ -179,13 +163,11 @@ void RobotControl::updateHook(){
             trajectories.advanceFrame();
     }
 
-    power->addMotionPower("IDLE", PERIOD); //TODO: get the period
+    power->addMotionPower("IDLE", PERIOD); 
 
 
     //Write out a message if we have one
     referenceChannel->update();
-
-    //usleep(delay);
 }
 
 /**
@@ -472,8 +454,6 @@ double RobotControl::get(string name, string property){
 
     return result;
 
-//    else if (name.compare("PWR") == 0){
-//        return power->getTotalPowerUsed();
 
 }
 
@@ -539,14 +519,6 @@ void RobotControl::command(string name, string target){
         component->set(GOAL, pos);
 
         component->set(ENABLED, true);
-        /*
-        if (RUN_TYPE == HARDWARE && !motor->isHomed()){
-            cout << "Warning! Motor " << target << " has not yet been homed. Skipping enabling of this motor." << endl;
-            return;
-        }
-        if (RUN_TYPE == HARDWARE)
-            motor->setGoalPosition(motor->getPosition());
-            */
 
         break;
     case ENABLEALL:
@@ -559,14 +531,6 @@ void RobotControl::command(string name, string target){
         for (Motors::const_iterator it = state->getMotors().begin(); it != state->getMotors().end(); it++){
             component = *it;
 
-            /*
-            if (RUN_TYPE == HARDWARE && !motor->isHomed()){
-                cout << "Warning! Motor " << motor->getName() << " has not yet been homed. Skipping enabling of this motor." << endl;
-                continue;
-            }
-            if (RUN_TYPE == HARDWARE)
-                motor->setGoalPosition(motor->getPosition());
-            */
             component->get(POSITION, temp);
             component->set(GOAL, temp);
             component->set(ENABLED, true);
@@ -649,7 +613,6 @@ void RobotControl::command(string name, string target){
             (*it)->set(GOAL, 0);
 
         break;
-        //TODO: Find a way to pause for a length of time here.
     case INITSENSORS:
 
         if (!this->commandChannel->initializeSensors()){
@@ -674,7 +637,6 @@ void RobotControl::command(string name, string target){
             (*it)->set(GOAL, 0);
         break;
     case UPDATE:
-        //updateState();
         break;
     case BALANCEON:
         balanceOn = true;
@@ -695,7 +657,6 @@ void RobotControl::command(string name, string target){
  */
 void RobotControl::setMode(string mode, bool value){
     Components components = state->getComponents();
-//    Motors motors = state->getMotorMap();
     RobotComponent* component = NULL;
     HuboMotor* motor = NULL;
 

@@ -1,7 +1,14 @@
 #include "loop.h"
 
 RobotControl robot;
-
+/**
+ * The main method that starts MAESTOR! This is where the ros node is made and all of the 
+ * services are advertised. There are also wrappers in here for all of the service methods that 
+ * link up to the ones that are in RobotControl. 
+ * @param  argc Number of arguments
+ * @param  argv Argument array
+ * @return      0 when it shuts down
+ */
 int main(int argc, char **argv) {
     ros::init(argc, argv, "Maestor"); 
     setRealtime();
@@ -13,7 +20,6 @@ int main(int argc, char **argv) {
         if(strcmp(argv[1], "sim") == 0)
         {
             //If simulation set the runtime to sim
-            //cout << "Setting mode to simulation" << endl;
             robot.setSimType();
         }
     }
@@ -39,7 +45,6 @@ int main(int argc, char **argv) {
 
     ServiceServer SetPropsrv = n.advertiseService("setProperty", &setProperty);
 
-    //std::cout << "Services are set up, entering main loop" << endl;
     while (ros::ok()) {
         ros::spinOnce();
         robot.updateHook();
@@ -49,6 +54,9 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+/**
+ * Give us a real time priority 
+ */
 void setRealtime(){
     // Taken from hubo-ach/src/hubo-daemonizer.c
 
@@ -62,6 +70,12 @@ void setRealtime(){
     }
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &res)
 {
     robot.initRobot(req.path);
@@ -69,6 +83,12 @@ bool initRobot(maestor::initRobot::Request &req, maestor::initRobot::Response &r
 
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool setProperties(maestor::setProperties::Request &req, maestor::setProperties::Response &res)
 {
     robot.setProperties(req.names, req.properties, req.values);
@@ -76,20 +96,39 @@ bool setProperties(maestor::setProperties::Request &req, maestor::setProperties:
 }
 
 // Control Commands
+
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool command(maestor::command::Request &req, maestor::command::Response &res)
 {
     robot.command(req.name, req.target);
     return true;
 }
-//bool handleMessage(MaestroCommand message);
 
 // Feedback Commands
+
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool requiresMotion(maestor::requiresMotion::Request &req, maestor::requiresMotion::Response &res)
 {
     res.requiresMotion = robot.requiresMotion(req.name);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool getProperties(maestor::getProperties::Request &req, maestor::getProperties::Response &res)
 {
     res.properties = robot.getProperties(req.name, req.properties);
@@ -97,60 +136,121 @@ bool getProperties(maestor::getProperties::Request &req, maestor::getProperties:
 }
 
 // Trajectory Commands
+
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool loadTrajectory(maestor::loadTrajectory::Request &req, maestor::loadTrajectory::Response &res)
 {
     res.success = robot.loadTrajectory(req.name, req.path, req.read);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool ignoreFrom(maestor::ignoreFrom::Request &req, maestor::ignoreFrom::Response &res)
 {
     res.success = robot.ignoreFrom(req.name, req.col);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool ignoreAllFrom(maestor::ignoreAllFrom::Request &req, maestor::ignoreAllFrom::Response &res)
 {
     res.success = robot.ignoreAllFrom(req.name);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool unignoreFrom(maestor::unignoreFrom::Request &req, maestor::unignoreFrom::Response &res)
 {
     res.success = robot.unignoreFrom(req.name, req.col);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool unignoreAllFrom(maestor::unignoreAllFrom::Request &req, maestor::unignoreAllFrom::Response &res)
 {
     res.success = robot.unignoreAllFrom(req.name);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool setTrigger(maestor::setTrigger::Request &req, maestor::setTrigger::Response &res)
 {
     res.success = robot.setTrigger(req.name, req.frame, req.target);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool extendTrajectory(maestor::extendTrajectory::Request &req, maestor::extendTrajectory::Response &res)
 {
     res.success = robot.extendTrajectory(req.name, req.path);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool startTrajectory(maestor::startTrajectory::Request &req, maestor::startTrajectory::Response &res)
 {
     robot.startTrajectory(req.name);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool stopTrajectory(maestor::stopTrajectory::Request &req, maestor::stopTrajectory::Response &res)
 {
     robot.stopTrajectory(req.name);
     return true;
 }
 
+/**
+ * Wrapper
+ * @param  req The ROS request service part
+ * @param  res The ROS response service part
+ * @return     True
+ */
 bool setProperty(maestor::setProperty::Request &req, maestor::setProperty::Response &res)
 {
     robot.set(req.name, req.property, req.value);

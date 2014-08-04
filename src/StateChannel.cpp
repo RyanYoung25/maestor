@@ -1,12 +1,9 @@
-/*
- * StateChannel.cpp
- *
- *  Created on: Oct 17, 2013
- *      Author: maestro
+/**
+ *  The ACH State Channel. This is used to get all of the robot information from hubo-ach. 
  */
 
 #include "StateChannel.h"
-
+//The array of all the joint names
 const char *StateChannel::urdf_joint_names[] = {
         "WST", "NKY", "NK1", "NK2",
         "LSP", "LSR", "LSY", "LEB", "LWY", "LWR", "LWP",
@@ -19,6 +16,11 @@ const char *StateChannel::urdf_joint_names[] = {
         "LF1", "LF2", "LF3", "LF4", "LF5",
         "unknown1", "unknown2", "unknown3", "unknown4", "unknown5", "unknown6", "unknown7", "unknown8"};
 
+/**
+ * Look up a joint's index by it's joint name
+ * @param  joint Joint name
+ * @return       index of the joint in hubo-ach
+ */
 int StateChannel::indexLookup(string &joint) {
     if (joint.length() != 3)
         return -1;
@@ -31,6 +33,9 @@ int StateChannel::indexLookup(string &joint) {
     return best_match;
 }
 
+/**
+ * Constructor to open up the state channel. 
+ */
 StateChannel::StateChannel() {
     errored = false;
     int r = ach_open(&huboStateChannel, HUBO_CHAN_STATE_NAME, NULL);
@@ -40,8 +45,14 @@ StateChannel::StateChannel() {
     }
 }
 
+/**
+ * Destructor 
+ */
 StateChannel::~StateChannel() { }
 
+/**
+ * Load up the state channel. This reads everything off of the channel each time.
+ */
 void StateChannel::load(){
     if (errored)
         return;
@@ -66,6 +77,16 @@ void StateChannel::load(){
     currentReference = temp;
 }
 
+/**
+ * Get a motor property off of the state channel data. This is a wraper to the real 
+ * getMotorProperty that takes an integer board number. This takes a string joint
+ * name. 
+ * 
+ * @param  name     Joint name
+ * @param  property The property to get
+ * @param  result   A pointer to store the result in. 
+ * @return          True on success
+ */
 bool StateChannel::getMotorProperty(string &name, PROPERTY property, double &result){
     if (errored)
         return false;
@@ -73,6 +94,15 @@ bool StateChannel::getMotorProperty(string &name, PROPERTY property, double &res
     return getMotorProperty(indexLookup(name), property, result);
 }
 
+/**
+ * The real getMotorProperty that gets the motor property off of the state channel data. This takes
+ * a board number instead of a name because hubo-ach doesn't deal with joint names. 
+ * 
+ * @param  board    The board number of the joint that you want to access
+ * @param  property The property you want to get 
+ * @param  result   A pointer to store the result in
+ * @return          True on success
+ */
 bool StateChannel::getMotorProperty(int board, PROPERTY property, double &result){
     if (errored || board < 0 || board >= HUBO_JOINT_COUNT)
         return false;
@@ -147,6 +177,14 @@ bool StateChannel::getMotorProperty(int board, PROPERTY property, double &result
     return true;
 }
 
+/**
+ * Get the property off of an IMU rather than a joint. This is a wrapper for the one that takes
+ * the board number. This takes a name for the IMU. 
+ * @param  name     Name of the IMU
+ * @param  property The property that you want to get 
+ * @param  result   A pointer to store the result in
+ * @return          True on success
+ */
 bool StateChannel::getIMUProperty(string &name, PROPERTY property, double& result){
     if (errored)
         return false;
@@ -162,6 +200,14 @@ bool StateChannel::getIMUProperty(string &name, PROPERTY property, double& resul
     return getIMUProperty(index, property, result);
 }
 
+/**
+ * Get the property off of an IMU. This one takes the board number and is the function that 
+ * reads from the state data. 
+ * @param  board    Board number of the IMU 
+ * @param  property Property that you want to get
+ * @param  result   A pointer to store the result in 
+ * @return          True on success
+ */
 bool StateChannel::getIMUProperty(int board, PROPERTY property, double& result){
     if (errored || board < 0 || board >= HUBO_IMU_COUNT)
         return false;
@@ -188,6 +234,15 @@ bool StateChannel::getIMUProperty(int board, PROPERTY property, double& result){
     return true;
 }
 
+/**
+ * Get the property of a Force Torque sensor. This one is a wrapper for the function
+ * that takes the board number. 
+ * 
+ * @param  name     Name of the FT sensor
+ * @param  property Property that you want to get
+ * @param  result   A pointer to store the result in. 
+ * @return          True on success
+ */
 bool StateChannel::getFTProperty(string &name, PROPERTY property, double& result){
     if (errored)
         return false;
@@ -205,6 +260,15 @@ bool StateChannel::getFTProperty(string &name, PROPERTY property, double& result
     return getFTProperty(index, property, result);
 }
 
+/**
+ * Get the property of a Force Torque sensor. This is the one that actually 
+ * accesses the state data. It takes a board number instead of a string name. 
+ * 
+ * @param  board    Board number of the FT sensor
+ * @param  property Property that you want to get
+ * @param  result   A pointer to store the result in
+ * @return          True on success
+ */
 bool StateChannel::getFTProperty(int board, PROPERTY property, double& result){
     if (errored || board < 0 || board >= HUBO_FT_COUNT)
         return false;

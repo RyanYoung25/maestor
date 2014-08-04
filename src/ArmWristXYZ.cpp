@@ -1,3 +1,9 @@
+/**
+ * The arm meta joint controller. This uses a simpilfied 
+ * Arm inverse kinematics that John Maloney derived. He worked
+ * really hard on it and deserves a ton of credit for it. 
+ */
+
 #include "../include/ArmWristXYZ.h"
 
 const int ArmWristXYZ::NUM_PARAMETERS = 3;
@@ -26,6 +32,10 @@ const double ArmWristXYZ::SHOULDER_PITCH_LOWER = -2.96;
 const double ArmWristXYZ::ELBOW_PITCH_UPPER = .2;
 const double ArmWristXYZ::ELBOW_PITCH_LOWER = -2.3;
 
+/**
+ * Create an Arm metajoint controller object and pass in a boolean flag if  
+ * it is a left arm. 
+ */
 ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CONTROLLED) {
     isLeft = left;
     SHOULDER_ROLL_UPPER = .59;
@@ -44,9 +54,15 @@ ArmWristXYZ::ArmWristXYZ(bool left) : MetaJointController(NUM_PARAMETERS, NUM_CO
     }
 }
 
+/**
+ * Destructor
+ */
 ArmWristXYZ::~ArmWristXYZ() {}
 
-
+/**
+ * Set the inverse of the arms. This calculates the inverse kinematics of 
+ * the controlled joints based off of the X Y and Z meta joints. 
+ */
 void ArmWristXYZ::setInverse(){
 
     if(jointsSet){
@@ -62,11 +78,10 @@ void ArmWristXYZ::setInverse(){
         return;
     }
 
-    //getForward();
-
-    double wrist_x = 0.0; //0.0;
-    double wrist_y = 0.0; //-0.08;
-    double wrist_z = 0.0; //-0.33;
+   
+    double wrist_x = 0.0; 
+    double wrist_y = 0.0; 
+    double wrist_z = 0.0; 
 
     parameters[WRIST_X]->get(INTERPOLATION_STEP, wrist_x);
     parameters[WRIST_Y]->get(INTERPOLATION_STEP, wrist_y);
@@ -80,8 +95,8 @@ void ArmWristXYZ::setInverse(){
     double elbow_pitch = 0;
 
     double radius = sqrt(wrist_x*wrist_x + wrist_y*wrist_y + wrist_z*wrist_z);   //line in 3d space
-    double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the upper arm
-    double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Lenght of the lower arm
+    double U = sqrt(UPPER_ARM_X*UPPER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Length of the upper arm
+    double L = sqrt(LOWER_ARM_X*LOWER_ARM_X + UPPER_ARM_Z*UPPER_ARM_Z);          //Length of the lower arm
 
     if(radius > L + U || radius < ARM_MIN_REACH){
         cout << "Error: Position is out of arm's reach" << endl;
@@ -138,6 +153,10 @@ void ArmWristXYZ::setInverse(){
     unsetAll();
 }
 
+/**
+ * Check to see if the arm joints made it to their goals. 
+ * If they did we don't need to control them until we are updated. 
+ */
 void ArmWristXYZ::checkGoalsReached(){
     double pos;
     double goal;
@@ -153,6 +172,10 @@ void ArmWristXYZ::checkGoalsReached(){
     goalsReached();
 }
 
+/**
+ * Calculate the forward kinematics based off of the controlled
+ * joints positions. Might have a small bug. 
+ */
 void ArmWristXYZ::getForward(){
     double P = 0;
     double R = 0;
@@ -176,12 +199,6 @@ void ArmWristXYZ::getForward(){
     double cY= cos(Y);
     double cE= cos(E);
 
-    //dem matrices 
-
-    // double xPos = L*(cE*cP*cR + sE*(cP*sR*sY - sP*cY)) + UPPER_ARM_X*(sP*cY - cP*sR*sY) + UPPER_ARM_Z*cP*cR;
-    // double yPos = L*(cE*sP*cR + sE*(sP*sR*sY + cP*cY)) - UPPER_ARM_X*(cP*cY + sP*sR*sY) + UPPER_ARM_Z*sP*cR;
-    // double zPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
-
     double zPos = -1*(L*(cE*cP*cR + sE*(cP*sR*sY - sP*cY)) + UPPER_ARM_X*(sP*cY - cP*sR*sY) + UPPER_ARM_Z*cP*cR);
     double xPos = -1*(L*(cE*sP*cR + sE*(sP*sR*sY + cP*cY)) - UPPER_ARM_X*(cP*cY + sP*sR*sY) + UPPER_ARM_Z*sP*cR);
     double yPos = L*(cE*sR - sE*cR*sY) + UPPER_ARM_X*cR*sY + UPPER_ARM_Z*sR;
@@ -191,5 +208,4 @@ void ArmWristXYZ::getForward(){
     parameters[WRIST_X]->set(META_VALUE, xPos);
     parameters[WRIST_Y]->set(META_VALUE, yPos);
     parameters[WRIST_Z]->set(META_VALUE, zPos);
-    //cout << -yPos << " " << zPos << " " << -xPos << endl;
 }

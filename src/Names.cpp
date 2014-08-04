@@ -1,8 +1,13 @@
+/**
+ * All of the names of properties and commands that we use in MAESTOR
+ * They are all consolidated in here so we don't have a lot of repetition 
+ * and so we can use aliases 
+ */
 #include "Names.h"
 
-//Names::Properties Names::getProperties();
-//Names::Commands Names::getCommands();
-
+/**
+ * Initialize all of the properties
+ */
 void Names::initPropertyMap(){
     std::cout << "Called initPropertyMap" << std::endl;
     getProperties()["position"] = POSITION;
@@ -39,6 +44,9 @@ void Names::initPropertyMap(){
     getProperties()["ready"] = READY;
 }
 
+/**
+ * Initialize all of the commands
+ */
 void Names::initCommandMap(){
     getCommands()["Enable"] = ENABLE;
     getCommands()["EnableAll"] = ENABLEALL;
@@ -56,6 +64,12 @@ void Names::initCommandMap(){
     getCommands()["BalanceOff"] = BALANCEOFF;
 }
 
+/**
+ * Set an alias for a command or property
+ * @param  name  The original command or property
+ * @param  alias The alias to replace it with 
+ * @return       True on success
+ */
 bool Names::setAlias(string name, string alias){
     if (getProperties().count(name) == 1 && getProperties().count(alias) == 0) {
         getProperties()[alias] = getProperties()[name];
@@ -67,6 +81,11 @@ bool Names::setAlias(string name, string alias){
     return false;
 }
 
+/**
+ * Get the string name of a property from it's enum
+ * @param  property The enum version of the property
+ * @return          The string representation of the property
+ */
 string Names::getName(PROPERTY &property){
     for (Properties::iterator it = getProperties().begin(); it != getProperties().end(); it++){
         if (it->second == property)
@@ -75,6 +94,11 @@ string Names::getName(PROPERTY &property){
     return "NULL PROPERTY";
 }
 
+/**
+ * Get the string name of a command from it's enum
+ * @param  command The enum version of the command
+ * @return          The string representation of the command
+ */
 string Names::getName(COMMAND &command){
     for (Commands::iterator it = getCommands().begin(); it != getCommands().end(); it++){
         if (it->second == command)
