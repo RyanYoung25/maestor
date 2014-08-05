@@ -50,6 +50,15 @@ For MAESTOR to run properly you must have all of the following:
 	\item [OpenHubo]	\hfill \\
 		OpenHubo is an OpenRAVE extension that simulates HUBO specifically. 
 \end{description}
+
+\section{Software Overview}
+\begin{center}
+	\includegraphics[scale=.75]{Highlevel}
+\end{center}
+
+\noindent
+MAESTOR is a ROS node that allows advertises ROS services that allows it to interact with other ROS nodes. MAESTOR manipulates the robot of simulation by using the program Hubo-Ach. Hubo-Ach and MAESTOR communicate through shared memory files called ACH channels. Hubo-Ach can operate in either Hardware mode, on a real robot, or in simulation mode using the OpenRAVE extension OpenHubo to simulate Hubo. When operating on hardware Hubo-Ach communicates using the CAN bus on the robot and uses CAN to talk to the motor boards. In simulation Hubo-Ach uses Ach channels to communicate with the simulation. MAESTOR provides access to all of this through ROS and allows more functional joint control with included interpolation functions, inverse kinematics, balancing and more. 
+
 \section{Installation}
 
 Installation scripts exist to install dependencies such as ROS, OpenRAVE, Hubo-Ach and OpenHUBO.
@@ -170,62 +179,7 @@ Once the console is open you will see a prompt that looks like a regular Python 
 		$>>>$
 	\end{center}
 	
-In this prompt you can use any of the MAESTOR functions by typing their names and any arguments they have. To close out of the console you can press ctrl-d when at a blank prompt. You can reopen the console at any time as long as MAESTOR is running. You can find all of the functions that are available for use and their parameters in Table 1. The underlying workings for this console is a Python script that makes direct ROS service calls and returns whatever they return. For more precise work and performing complex movements and tasks it is highly recommended to use the Python module. 
-
-
-\begin{center}
-	\begin{tabular}{| l | p{8cm}|}
-		\hline
-		\multicolumn{2}{ | c |}{Table 1} \\
-		\hline
-		\textbf{Function} & \textbf{Description}\\ \hline
-		setProperty($<$Joint$>$, $<$Property$>$, $<$Value$>$) 
-		& Set the $<$Property$>$ of the $<$Joint$>$ to the $<$Value$>$.  \\ \hline
-		loadTrajectory($<$Name$>$, $<$Path$>$, $<$Read$>$) 
-		& Load a trajectory into MAESTOR with the name $<$Name$>$ from the $<$Path$>$. The $<$Read$>$ parameter is a boolean  where if it is true the file that is open is read from and if it's false the file is written to in a trajectory format.   \\ \hline
-		
-		command($<$Name$>$, $<$Target$>$) 
-		& Runs the command $<$Name$>$ with the option of $<$Target$>$ where Target is a joint or nothing. The list of all commands is below.  \\ \hline
-		
-		setProperties($<$Joints$>$, $<$Properties$>$, $<$Values$>$) 
-		& Sets multiple properties on multiple joints to different values. $<$Joints$>$, $<$Properties$>$, and $<$Values$>$ each must have the same number of sections that are delimited by white space.  \\ \hline
-		
-		unignoreFrom($<$Traj$>$, $<$Joint$>$) 
-		& Unignore the $<$Joint$>$ column from the trajectory named $<$Traj$>$  \\ \hline
-		
-		requiresMotion($<$Joint$>$) 
-		& Returns True if $<$Joint$>$ is not at its goal position  \\ \hline
-		
-		getProperties($<$Joint$>$, $<$Properties$>$) 
-		& Get the value of specified properties on the joint $<$Joint$>$. $<$Properties$>$ can be a string of properties delimited by spaces.  \\ \hline
-		
-		ignoreAllFrom($<$Traj$>$) 
-		& Ignore all of the joint columns in the trajectory named $<$Traj$>$  \\ \hline
-		
-		initRobot($<$Path$>$) 
-		& Initialize the robot with the init file specified by $<$Path$>$. The empty string "" denotes the default path.  \\ \hline
-		
-		startTrajectory($<$Traj$>$) 
-		& Starts the trajectory with the name $<$Traj$>$  \\ \hline
-		
-		ignoreFrom($<$Traj$>$, $<$Joint$>$) 
-		& Ignore the $<$Joint$>$ column from the trajectory named $<$Traj$>$  \\ \hline
-		
-		setTrigger($<$Traj$>$, $<$Frame$>$, $<$TargetTraj$>$)
-		& Sets a trigger at the $<$Frame$>$ in $<$Traj$>$ to stop executing $<$Traj$>$ and begin executing $<$TargetTraj$>$  \\ \hline
-		
-		unignoreAllFrom($<$Traj$>$)
-		& Unignore all of the joint columns in the trajectory named $<$Traj$>$   \\ \hline
-		
-		extendTrajectory($<$Traj$>$, $<$Path$>$)
-		& Appends the trajectory located at $<$Path$>$ to the end of the loaded trajectory $<$Traj$>$  \\ \hline
-		
-		stopTrajectory($<$Traj$>$)
-		& Stops executing the trajectory $<$Traj$>$  \\ \hline
-	
-	\end{tabular}
-\end{center}
-\pagebreak
+In this prompt you can use any of the MAESTOR functions by typing their names and any arguments they have. To close out of the console you can press ctrl-d when at a blank prompt. You can reopen the console at any time as long as MAESTOR is running. You can find all of the functions that are available for use and their parameters in the table under the functionality section titled MAESTOR Functions. The underlying workings for this console is a Python script that makes direct ROS service calls and returns whatever they return. For more precise work and performing complex movements and tasks it is highly recommended to use the Python module. 
 
 \subsection{Python Module}
 
@@ -233,7 +187,7 @@ To interact with MAESTOR using scripts or your own programs in Python I recommen
 
 \subsubsection{Module Functionality}
 
-The MAESTOR Python module is a class that you can import into your Python script or project and create an object of. If you are familiar with ROS the  MAESTOR module creates a ROS node that is used for calling services on the MAESTOR node. If you aren't familiar with ROS you can use the MAESTOR module to avoid having to use it. The MAESTOR module allows you to use all of the functions that are listed in Table 1 and a one more that was added for convenience: 
+The MAESTOR Python module is a class that you can import into your Python script or project and create an object of. If you are familiar with ROS the  MAESTOR module creates a ROS node that is used for calling services on the MAESTOR node. If you aren't familiar with ROS you can use the MAESTOR module to avoid having to use it. The MAESTOR module allows you to use all of the functions that are listed in the MAESTOR functions table and a one more that was added for convenience: 
 
 \begin{description}
 	\item[waitForJoint($<$Joint$>$)] \hfill \\
@@ -306,11 +260,68 @@ Another alternative way of running this is using the Python interpreter in non-i
 
 If you use the last method of running the scripts then you do not need to include the shebang nor does it have to be executable. Though it is usually good practice to do these things anyway for scripts. 
 
-\subsection{Commands and Properties}
+\subsection{Functionality}
 
-A lot of how MAESTOR operates is through the use of commands and setting and getting properties. This section will talk about all of the different commands that can be run using the command function and all of the properties that you can get and set on joints. 
+MAESTOR provides different functions through ROS services that can be called through ROS nodes, the MAESTOR console, or using the MAESTOR Python Module. Below is a table of all of the functions that MAESTOR offers and a description of them. 
+
+\begin{center}
+	\begin{tabular}{| l | p{8cm}|}
+		\hline
+		\multicolumn{2}{ | c |}{MAESTOR Functions} \\
+		\hline
+		\textbf{Function} & \textbf{Description}\\ \hline
+		setProperty($<$Joint$>$, $<$Property$>$, $<$Value$>$) 
+		& Set the $<$Property$>$ of the $<$Joint$>$ to the $<$Value$>$.  \\ \hline
+		loadTrajectory($<$Name$>$, $<$Path$>$, $<$Read$>$) 
+		& Load a trajectory into MAESTOR with the name $<$Name$>$ from the $<$Path$>$. The $<$Read$>$ parameter is a boolean  where if it is true the file that is open is read from and if it's false the file is written to in a trajectory format.   \\ \hline
+		
+		command($<$Name$>$, $<$Target$>$) 
+		& Runs the command $<$Name$>$ with the option of $<$Target$>$ where Target is a joint or nothing. The list of all commands is below.  \\ \hline
+		
+		setProperties($<$Joints$>$, $<$Properties$>$, $<$Values$>$) 
+		& Sets multiple properties on multiple joints to different values. $<$Joints$>$, $<$Properties$>$, and $<$Values$>$ each must have the same number of sections that are delimited by white space.  \\ \hline
+		
+		unignoreFrom($<$Traj$>$, $<$Joint$>$) 
+		& Unignore the $<$Joint$>$ column from the trajectory named $<$Traj$>$  \\ \hline
+		
+		requiresMotion($<$Joint$>$) 
+		& Returns True if $<$Joint$>$ is not at its goal position  \\ \hline
+		
+		getProperties($<$Joint$>$, $<$Properties$>$) 
+		& Get the value of specified properties on the joint $<$Joint$>$. $<$Properties$>$ can be a string of properties delimited by spaces.  \\ \hline
+		
+		ignoreAllFrom($<$Traj$>$) 
+		& Ignore all of the joint columns in the trajectory named $<$Traj$>$  \\ \hline
+		
+		initRobot($<$Path$>$) 
+		& Initialize the robot with the init file specified by $<$Path$>$. The empty string "" denotes the default path.  \\ \hline
+		
+		startTrajectory($<$Traj$>$) 
+		& Starts the trajectory with the name $<$Traj$>$  \\ \hline
+		
+		ignoreFrom($<$Traj$>$, $<$Joint$>$) 
+		& Ignore the $<$Joint$>$ column from the trajectory named $<$Traj$>$  \\ \hline
+		
+		setTrigger($<$Traj$>$, $<$Frame$>$, $<$TargetTraj$>$)
+		& Sets a trigger at the $<$Frame$>$ in $<$Traj$>$ to stop executing $<$Traj$>$ and begin executing $<$TargetTraj$>$  \\ \hline
+		
+		unignoreAllFrom($<$Traj$>$)
+		& Unignore all of the joint columns in the trajectory named $<$Traj$>$   \\ \hline
+		
+		extendTrajectory($<$Traj$>$, $<$Path$>$)
+		& Appends the trajectory located at $<$Path$>$ to the end of the loaded trajectory $<$Traj$>$  \\ \hline
+		
+		stopTrajectory($<$Traj$>$)
+		& Stops executing the trajectory $<$Traj$>$  \\ \hline
+	
+	\end{tabular}
+\end{center}
+
+\pagebreak 
 
 \subsubsection{Commands}
+
+A lot of how MAESTOR operates is through the use of commands and setting and getting properties. This section will talk about all of the different commands that can be run using the command function and all of the properties that you can get and set on joints.\\
 
 MAESTOR commands can be run using the function: 
 
@@ -327,7 +338,7 @@ Where $<$Command$>$ can be a number of different commands where some have a targ
 \begin{center}
 	\begin{tabular}{| l | l | p{8cm}|}
 	\hline 
-	\multicolumn{3}{ | c |}{Table 2}\\ \hline
+	\multicolumn{3}{ | c |}{Commands}\\ \hline
 	\textbf{Command} & \textbf{Target} & \textbf{Description}\\ \hline
 	
 	Enable & $<$Joint$>$ & Enables the joint named $<$Joint$>$\\ \hline
@@ -391,7 +402,7 @@ For the functions getProperties, setProperty, and setProperties MAESTOR either s
 \begin{center}
 	\begin{longtable}{| l | l | p{7cm} |}
 		\hline 
-		\multicolumn{3}{ | c |}{Table 3}\\ \hline
+		\multicolumn{3}{ | c |}{Properties}\\ \hline
 		\textbf{Property} & \textbf{Components} & \textbf{Description}\\ \hline
 		
 		position & Joints, Meta Joints & The current encoder read position of the joint\\ \hline
@@ -400,7 +411,7 @@ For the functions getProperties, setProperty, and setProperties MAESTOR either s
 		
 		speed & Joints, Meta Joints & The current set speed for interpolation\\ \hline
 		
-		inter\_step & Joints, Meta Joints & The current interpolation step.\textbf{***} \\ \hline
+		inter\_step & Joints, Meta Joints & The current interpolation step.\textbf{*** *WARNING*} \\ \hline
 		
 		velocity & Joints, Meta Joints & The current moving speed of the joint as read from the encoder \\ \hline
 		
@@ -458,7 +469,7 @@ For the functions getProperties, setProperty, and setProperties MAESTOR either s
 	\end{longtable}
 \end{center}
 
-\textbf{***} I do not recommend manipulating the interpolation step in any way. This could cause serious harm to the robot but may be useful in some operations. Use with extreme caution. 
+\textbf{*** WARNING:} Manipulating the interpolation step in any way may cause the robot to skip an interpolation step. The interpolation step is generated using a fourth order polynomial whose coefficients are calculated when the position is set. Manipulating an interpolation step could cause serious harm to the robot because that is the number that is sent to the motor boards. If it is required to manipulate the interpolation use extreme caution in operation. 
 
 \subsection{Initialization}
 
@@ -506,7 +517,7 @@ From here you are fully initialized and are ready to control the robot. I recomm
 
 \subsection{Meta Joints}
 
-MAESTOR handles its implementation of inverse kinematics by using something called Meta Joints. Meta Joints are special robot components then control a group of regular joints. For example the Right Foot Meta Joints manipulate all of the joints in the right leg. MAESTOR has implementation for Forward and Inverse Kinematics for the legs and a simplified Forward and Inverse Kinematics for the arms. Both implementations of the Inverse kinematics are done using geometry not inverse solvers so they are reasonably quick. 
+MAESTOR handles its implementation of inverse kinematics by using an abstraction that we call Meta Joints. Meta Joints are special robot components then control a group of regular joints. For example the Right Foot Meta Joints manipulate all of the joints in the right leg. MAESTOR has implementation for Forward and Inverse Kinematics for the legs and a simplified Forward and Inverse Kinematics for the arms. Both implementations of the Inverse kinematics are done using geometry not inverse solvers so they are reasonably quick. 
 
 \begin{description}
 	\item[Foot Meta Joints]
