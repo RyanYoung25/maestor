@@ -47,7 +47,7 @@ PowerControlBoard::PowerControlBoard(){
  * @param initialPower [The initial power consumed
  */
 void PowerControlBoard::setInitialPower(double initialPower){
-    powerUsed = initialPower
+    powerUsed = initialPower;
 }
 
 /**
