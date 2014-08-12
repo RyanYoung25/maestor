@@ -45,7 +45,7 @@ RobotControl::RobotControl(){
 
 
     this->written = 0;
-    this->printNow = false
+    this->printNow = false;
     this->enableControl = false;
     this->delay = 0;
     this->interpolation = true;    //Interpret all commands as a final destination with given velocity.
