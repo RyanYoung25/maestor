@@ -41,7 +41,7 @@ if [[ $? != 0 ]]; then exit $BLACKLIST_VIOLATED; fi
 echo "Dependencies satisfied."
 if [[ $? != 0 ]]; then exit $?; fi
 echo "Installing Hubo-ACH..."
-sudo bash install-hubo-ach.sh -y
+sudo bash install-hubo-ach.sh 
 echo "Installing ROS..."
 sudo bash install-ros-fuerte.sh -y
 sudo bash install-openrave.sh -y
