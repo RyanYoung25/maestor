@@ -27,25 +27,47 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MotorBoard.h"
 #include <iostream>
 
+/**
+ * Create a motorboard object
+ */
 MotorBoard::MotorBoard(){
     MotorBoard(DEFAULT_CHANNELS);
 }
 
+/**
+ * Create a motor board with a specified number of channels
+ *
+ * @param channels  The number of channels to make on the motor board
+ */
 MotorBoard::MotorBoard(int channels){
     this->motors = vector<HuboMotor*>(channels);
     this->channels = channels;
 }
 
+/**
+ * Make a motor board from a motor board reference
+ *
+ * @param rhs   The motor board reference
+ */
 MotorBoard::MotorBoard(const MotorBoard& rhs){
     this->channels = rhs.channels;
     this->motors = rhs.motors;
 }
 
+/**
+ * Add a motor to the motorboard
+ * @param motor   The motor to add
+ * @param channel The channel to add it to
+ */
 void MotorBoard::addMotor(HuboMotor* motor, int channel){
     //std::cout << "added motor to position: " << &(this->motors[channel]) << std::endl;
     this->motors[channel] = motor; 
 }
 
+/**
+ * Remove a motor from the motor board
+ * @param motor The motor to remove
+ */
 void MotorBoard::removeMotor(HuboMotor* motor){
     for (int i = 0; i < this->channels; i++){
         if (this->motors[i] == motor){
@@ -54,24 +76,46 @@ void MotorBoard::removeMotor(HuboMotor* motor){
     }  
 }
 
+/**
+ * Remove a motor from the motor board by it's channel number
+ * @param channel The channel number of the motor to remove
+ */
 void MotorBoard::removeMotor(int channel){
     this->motors[channel] = NULL;
 }
 
+/**
+ * Get the motor by it's channel number
+ * @param  channel The channel number 
+ * @return         The motor that corresponds to that channel
+ */
 HuboMotor* MotorBoard::getMotorByChannel(int channel){
     return this->motors[channel];
 }
 
+/**
+ * Get the number of channels on the motor board
+ * @return The number of channels on the board
+ */
 int MotorBoard::getNumChannels(){
     return channels;
 }
 
+/**
+ * Check if any motors on the board require motion. If they do return true
+ * @return True if motors on the board require motion
+ */
 bool MotorBoard::requiresMotion(){
     for (int i = 0; i < channels; i++)
         if (motors[i]->requiresMotion()) return true;
     return false;
 }
 
+/**
+ * Check if a particular motor on the board requires motion 
+ * @param  channel The channel of the motor
+ * @return         True if the motor requires motion
+ */
 bool MotorBoard::requiresMotion(int channel){
     assert(channel < channels);
     return motors[channel]->requiresMotion();

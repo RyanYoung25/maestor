@@ -1,12 +1,15 @@
-/*
- * Trajectory.cpp
- *
- *  Created on: Sep 23, 2013
- *      Author: maestro
+/**
+ * A trajectory object. This stores all of the frames of a trajectory that is loaded
+ * and allows you to do opertations on them.
  */
 
 #include "Trajectory.h"
 
+/**
+ * Create a trajectory object from a file or open a file to be written to if read is false. 
+ * @param   baseFile    The file to open and either read or write to
+ * @param   read        Flag to specify if the file it to be written to or read from
+ */
 Trajectory::Trajectory(const string &baseFile, bool read){
     bufferIndex = 0;
     frame = 0;
@@ -46,6 +49,9 @@ Trajectory::Trajectory(const string &baseFile, bool read){
     }
 }
 
+/**
+ * Clean up after the trajectory object is destructed 
+ */
 Trajectory::~Trajectory(){
     for (int i = 0; i < files.size(); i++){
         if (files[i]){
@@ -55,6 +61,12 @@ Trajectory::~Trajectory(){
     }
 }
 
+/**
+ * Extend an already loaded trajectory by the contents of a trajectory file at the specified location. 
+ * 
+ * @param  filename The file that has the trajectory information you want to have at the end of the current trajectory
+ * @return          True on success
+ */
 bool Trajectory::extendTrajectory(const string &filename){
     if (!open || !read)
         return false;
@@ -119,6 +131,11 @@ bool Trajectory::extendTrajectory(const string &filename){
     return true;
 }
 
+/**
+ * Go to the starting position and load it for a joint
+ * @param  joint The joint you want the starting position of
+ * @return       The starting position of the joint
+ */
 double Trajectory::startPosition(const string &joint){
     if (files.size() == 0)
         return 0;
@@ -134,6 +151,12 @@ double Trajectory::startPosition(const string &joint){
     return 0;
 }
 
+/**
+ * Get the next position for a joint
+ * @param  joint    The joint you want the position of
+ * @param  position A pointer to store the position of the joint
+ * @return          True on success
+ */
 bool Trajectory::nextPosition(const string &joint, double &position){
     if (!open || files.size() <= currentWSV)
         return false;
@@ -150,9 +173,12 @@ bool Trajectory::nextPosition(const string &joint, double &position){
     else
         file->buffer()[bufferIndex][file->header()[joint]] = position;
     return true;
-    //TODO: Find a better way.
 }
 
+/**
+ * Advance a frame in the trajectory 
+ * @return True on success
+ */
 bool Trajectory::advanceFrame(){
     if (!open || files.size() <= currentWSV)
         return false;
@@ -198,18 +224,37 @@ bool Trajectory::advanceFrame(){
     return true;
 }
 
+/**
+ * See if the trajectory is open
+ * @return If the the trajectory is open
+ */
 bool Trajectory::is_open(){
     return open;
 }
 
+/**
+ * See if the trajectory is in read mode
+ * @return If the trajectory is in read mode
+ */
 bool Trajectory::read_only(){
     return read;
 }
 
+/**
+ * Get the current frame
+ * @return The current frame
+ */
 int Trajectory::getFrame(){
     return frame;
 }
 
+/**
+ * Add a trigger to this trajectory to begin another trajectory at the frame
+ * number. 
+ * @param  frame  The frame to cause the trigger at
+ * @param  target The target to play at the frame
+ * @return        True on success. 
+ */
 bool Trajectory::addTrigger(int frame, const string &target){
     if (triggers.count(frame) != 0)
         return false;
@@ -217,6 +262,11 @@ bool Trajectory::addTrigger(int frame, const string &target){
     return true;
 }
 
+/**
+ * Get the triggered trajectory if there is a trigger set
+ * @param  target A pointer to store the name of the next trigger trajectory
+ * @return        True if there is a trigger or false if there isn't 
+ */
 bool Trajectory::getTrigger(string& target){
     if (triggers.count(frame) == 0)
         return false;
@@ -224,10 +274,19 @@ bool Trajectory::getTrigger(string& target){
     return true;
 }
 
+/**
+ * Return true of the trajectory has a next line
+ * @return True if there is a next line
+ */
 bool Trajectory::hasNext(){
     return files.size() > currentWSV && currentWSV != files.size() - 1;
 }
 
+/**
+ * Check to see if a joint exists in this trajectory
+ * @param  joint The joint to check for existance of
+ * @return       True if the joint is in the trajectory
+ */
 bool Trajectory::contains(const string& joint){
     if (files.size() <= currentWSV)
         return false;
@@ -238,10 +297,18 @@ bool Trajectory::contains(const string& joint){
     return file->header().count(joint) == 1 && !disabledJoints.count(joint) == 1;
 }
 
+/**
+ * Disable a joint in the trajectory
+ * @param joint The joint to disable
+ */
 void Trajectory::disableJoint(const string& joint){
     disabledJoints.insert(joint);
 }
 
+/**
+ * Enable a joint in the trajectory
+ * @param joint The joint to enable
+ */
 void Trajectory::enableJoint(const string& joint){
     set<string>::iterator it = disabledJoints.find(joint);
 
@@ -249,6 +316,10 @@ void Trajectory::enableJoint(const string& joint){
         disabledJoints.erase(it);
 }
 
+/**
+ * Reset the trajectory
+ * @return True on success
+ */
 bool Trajectory::reset(){
     if (files.size() <= currentWSV){
         cout << "Error! Resetting trajectory past its list of trajectories. Aborting." << endl;
@@ -284,7 +355,10 @@ bool Trajectory::reset(){
     return open;
 }
 
-
+/**
+ * Set the header of the trajectory
+ * @param header The header as a string
+ */
 void Trajectory::setHeader(const string& header){
     if (!files[currentWSV] || files[currentWSV]->readOnly())
         return;
@@ -293,6 +367,10 @@ void Trajectory::setHeader(const string& header){
     files[currentWSV]->storeHeader();
 }
 
+/**
+ * Set the header of the trajectory
+ * @param header The header as a struct
+ */
 void Trajectory::setHeader(const Header& header){
     if (!files[currentWSV] || files[currentWSV]->readOnly())
         return;
@@ -301,6 +379,10 @@ void Trajectory::setHeader(const Header& header){
     files[currentWSV]->storeHeader();
 }
 
+/**
+ * Get the joint header from the trajectory
+ * @return The joint header as a structure
+ */
 const Trajectory::Header& Trajectory::getHeader(){
     if (files[currentWSV])
         return files[currentWSV]->orderedHeader();
@@ -308,6 +390,9 @@ const Trajectory::Header& Trajectory::getHeader(){
     return temp;
 }
 
+/**
+ * Prepare the frame to be written to the file
+ */
 void Trajectory::prepareFrame(){
     WSVFile* file = files[currentWSV];
     if (!open || read || !file || file->errored() )

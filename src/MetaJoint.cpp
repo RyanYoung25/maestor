@@ -1,20 +1,31 @@
-/*
- * MetaJoint.cpp
- *
- *  Created on: Mar 4, 2014
- *      Author: solisknight
+/**
+ * A metajoint object. This is extended by ArmMetaJoint but for all 
+ * the other metajoints in MAESTOR they are objects of this class
  */
 
 #include "MetaJoint.h"
 
+/**
+ * Create a metajoint and tell it it's controller
+ */
 MetaJoint::MetaJoint(MetaJointController* controller){
     this->controller = controller;
     this->position = 0;
     this->ready = false;
 }
 
+/**
+ * Destructor
+ */
 MetaJoint::~MetaJoint() {}
 
+/**
+ * Get the property of this metajoint. Store it in the pointer that is passed in. 
+ * 
+ * @param  property The property that you want to ask about
+ * @param  value    A pointer to store the result in
+ * @return          True on success
+ */
 bool MetaJoint::get(PROPERTY property, double &value){
     switch (property){
     case ENABLED:
@@ -47,6 +58,13 @@ bool MetaJoint::get(PROPERTY property, double &value){
     return true;
 }
 
+/**
+ * Set the property of this metajoint to the value passed in
+ * 
+ * @param  property The property to set
+ * @param  value    The value to set it to
+ * @return          True on success
+ */
 bool MetaJoint::set(PROPERTY property, double value){
     double currVel;
     double newVia;
@@ -82,8 +100,10 @@ bool MetaJoint::set(PROPERTY property, double value){
         }
         currGoal = value;
         break;
+    case SPEED:
     case VELOCITY:
-        interVel = value;
+        if (value > 0)
+            interVel = value;
         break;
     case READY:
         ready = (bool)value;
@@ -100,6 +120,10 @@ bool MetaJoint::set(PROPERTY property, double value){
     return true;
 }
 
+/**
+ * Set the goal and everything to that position
+ * @param pos The position to set it all to
+ */
 void MetaJoint::setGoal(double pos){
     currGoal = pos;
     interStep = pos;

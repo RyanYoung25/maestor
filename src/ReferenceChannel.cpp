@@ -1,12 +1,13 @@
-/*
- * ReferenceChannel.cpp
- *
- *  Created on: Oct 17, 2013
- *      Author: maestro
+/**
+ * The hubo-ach Reference Ach channel. This is where we set joint references for hubo-ach 
+ * to command the joint to. 
  */
 
 #include "../include/ReferenceChannel.h"
 
+/**
+ * list of all the joints 
+ */
 const char *ReferenceChannel::urdf_joint_names[] = {
         "WST", "NKY", "NK1", "NK2",
         "LSP", "LSR", "LSY", "LEB", "LWY", "LWR", "LWP",
@@ -19,6 +20,9 @@ const char *ReferenceChannel::urdf_joint_names[] = {
         "LF1", "LF2", "LF3", "LF4", "LF5",
         "unknown1", "unknown2", "unknown3", "unknown4", "unknown5", "unknown6", "unknown7", "unknown8"};
 
+/**
+ * Constructor that initializes the ach channel
+ */
 ReferenceChannel::ReferenceChannel() {
     errored = false;
 
@@ -30,8 +34,16 @@ ReferenceChannel::ReferenceChannel() {
 
 }
 
+/**
+ * Destructor
+ */
 ReferenceChannel::~ReferenceChannel() {}
 
+/**
+ * Look up the index of a joint from the name of the joint
+ * @param  joint Name of the joint
+ * @return       The index of the joint
+ */
 int ReferenceChannel::indexLookup(string &joint) {
     if (joint.length() != 3)
         return -1;
@@ -44,6 +56,9 @@ int ReferenceChannel::indexLookup(string &joint) {
     return best_match;
 }
 
+/**
+ * Load the reference channel
+ */
 void ReferenceChannel::load(){
     if (errored) return;
     Reference temp;
@@ -66,6 +81,13 @@ void ReferenceChannel::load(){
     currentReference = temp;
 }
 
+/**
+ * Set the reference of a joint to a position in radians
+ * 
+ * @param joint The joint to set 
+ * @param rad   The position in radians
+ * @param mode  The mode of joint operation
+ */
 void ReferenceChannel::setReference(string &joint, double rad, Mode mode){
 	if (errored) return;
 	int index = indexLookup(joint);
@@ -75,6 +97,9 @@ void ReferenceChannel::setReference(string &joint, double rad, Mode mode){
     }
 }
 
+/**
+ * Update the reference channel
+ */
 void ReferenceChannel::update(){
     if (errored) return;
     ach_put(&huboReferenceChannel, &currentReference, sizeof(currentReference));

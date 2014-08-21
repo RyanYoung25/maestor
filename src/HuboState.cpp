@@ -26,12 +26,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "HuboState.h"
 
+/**
+ * Constructor for the hubo state. The Hubo state is what manages all of the robot components
+ */
 HuboState::HuboState(){}
 
+/**
+ * Destructor for HuboState
+ */
 HuboState::~HuboState(){
     reset();
 }
 
+/**
+ * Set an alias for a component name. 
+ * @param  name  The name of the RobotComponent
+ * @param  alias The alias to have for the RobotComponent
+ * @return       True on success. 
+ */
 bool HuboState::setAlias(string name, string alias){
     if (!nameExists(name) || nameExists(alias)){
         cout << "Alias " << alias << "Already exists. returning false" << endl;
@@ -43,24 +55,47 @@ bool HuboState::setAlias(string name, string alias){
     return true;
 }
 
+/**
+ * Check to see if the name exists in the hubo state
+ * @param  name The name to check for existance
+ * @return      True if the name exists
+ */
 bool HuboState::nameExists(string name){
     return index.count(name) == 1;
 }
 
+/**
+ * Get the robot component with the specified name
+ * @param  name Name of the robot component
+ * @return      The Robot component object
+ */
 RobotComponent* HuboState::getComponent(string name){
     if (nameExists(name))
         return index[name];
     return NULL;
 }
 
+/**
+ * Get all of the components in the hubo state
+ * @return All of the components
+ */
 const HuboState::Components& HuboState::getComponents(){
     return components;
 }
 
+/**
+ * Get all of the motors in the hubo state
+ * @return All of the motors in the Hubo state
+ */
 const HuboState::Motors& HuboState::getMotors(){
     return motors;
 }
 
+/**
+ * Initialize hubo with the default values as specified by an xml configuartion file
+ * @param path      Path to the config file
+ * @param frequency Frequency MAESTOR operates at
+ */
 void HuboState::initHuboWithDefaults(string path, double frequency){
     xml_document doc;
     if (!doc.load_file(path.c_str())){
@@ -140,6 +175,13 @@ void HuboState::initHuboWithDefaults(string path, double frequency){
     }
 }
 
+/**
+ * Make a hubo motor from an xml node
+ * @param  node      The xml node to read 
+ * @param  component The end result motor component memory address
+ * @param  frequency The operating frequency 
+ * @return           The component
+ */
 RobotComponent* HuboState::HuboMotorFromXML(xml_node node, HuboMotor* component, double frequency){
     if (!node.attribute("boardNum").empty())
         component->setBoardNum(node.attribute("boardNum").as_int());
@@ -155,6 +197,12 @@ RobotComponent* HuboState::HuboMotorFromXML(xml_node node, HuboMotor* component,
     return component;
 }
 
+/**
+ * Create a Force Torque sensors from an XML node
+ * @param  node      The node to read from 
+ * @param  component The allocated memory for the force torque board
+ * @return           The robot componet 
+ */
 RobotComponent* HuboState::FTSensorFromXML(xml_node node, FTSensorBoard* component){
     if (!node.attribute("boardNum").empty())
         component->setBoardNum(node.attribute("boardNum").as_int());
@@ -168,6 +216,12 @@ RobotComponent* HuboState::FTSensorFromXML(xml_node node, FTSensorBoard* compone
     return component;
 }
 
+/**
+ * Create an IMU sensor from an XML node
+ * @param  node      The xml node to read
+ * @param  component The allocated IMU board memory pointer
+ * @return           The robot component
+ */
 RobotComponent* HuboState::IMUSensorFromXML(xml_node node, IMUBoard* component){
     if (!node.attribute("boardNum").empty())
         component->setBoardNum(node.attribute("boardNum").as_int());
@@ -181,6 +235,13 @@ RobotComponent* HuboState::IMUSensorFromXML(xml_node node, IMUBoard* component){
     return component;
 }
 
+/**
+ * Create a MetaJoint from an XML node 
+ * @param  node      The xml node to read
+ * @param  component The MetaJoint memory pointer
+ * @param  frequency The operating frequency
+ * @return           The robot component
+ */
 RobotComponent* HuboState::MetaJointFromXML(xml_node node, MetaJoint* component, double frequency){
     if (node.attribute("name").empty()){
         delete component;
@@ -196,6 +257,13 @@ RobotComponent* HuboState::MetaJointFromXML(xml_node node, MetaJoint* component,
     return component;
 }
 
+/**
+ * Make a robot component from the XML node
+ * @param  node      The node to read
+ * @param  component The component memory pointer
+ * @param  back      Boolean to signal if it should be in the back
+ * @return           True on success
+ */
 bool HuboState::addComponentFromXML(xml_node node, RobotComponent* component, bool back){
     if (nameExists(component->getName())){
         cout << "Skipping duplicate component with name " << component->getName() << endl;
@@ -226,6 +294,14 @@ bool HuboState::addComponentFromXML(xml_node node, RobotComponent* component, bo
     return true;
 }
 
+/**
+ * Add a metajoint controller from an XML node
+ * @param  node       The XML node to read
+ * @param  controller The Controller memory pointer
+ * @param  type       The type of metajoint controller it is
+ * @param  frequency  The operating frequency 
+ * @return            True on success
+ */
 bool HuboState::addMetaJointControllerFromXML(xml_node node, MetaJointController* controller, string type, double frequency){
     vector<RobotComponent*> parameters;
     vector<xml_node> parameterNodes; // I guess I need this for aliases.... ah well.
@@ -301,6 +377,9 @@ bool HuboState::addMetaJointControllerFromXML(xml_node node, MetaJointController
     return true;
 }
 
+/**
+ * Reset the hubo state
+ */
 void HuboState::reset(){
     if (components.size() != 0) {
         for (Components::iterator it = components.begin(); it != components.end(); it++)

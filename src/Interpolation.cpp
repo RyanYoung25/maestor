@@ -1,5 +1,11 @@
 #include "Interpolation.h"
 
+/**
+ * Perform trapazoidal interpolation at a certain velocity with some error
+ * @param  error    The error term
+ * @param  velocity The velocity
+ * @return          The trapazoidal interpolation step
+ */
 double interpolateTrap(double error, double velocity){
     static const double LEAP_PERCENTAGE = .5;
     static const double MIN_STEP = .0001;
@@ -23,7 +29,16 @@ double interpolateTrap(double error, double velocity){
  * x = 1/tf^2 * ( ( 5 ( ths - thf + tf*vs ) - 16 ( ths - thv + tf*vs ) - tf*vs ) )
  * w = 1/tf^3 * ( ( 32 ( ths - thv + tf*vs/2 ) - 14 ( ths - thf + tf*vs) + 3*tf*vs ) )
  * v = 2/tf^4 * ( ( 4 ( ths - thf + tfvs ) - 8 ( ths - thv + tf*vs/2 ) - 2*tf*vs ) )
-*/
+ */
+/**
+ * Initialize the Fourth order polynomial interpolation function parameters 
+ * @param  ths Theta start, the starting position
+ * @param  vs  Velocity start, the starting velocity
+ * @param  thv Theta via, the position of the via
+ * @param  thf Theta final, the position at the end
+ * @param  tf  Time final, The time it will take
+ * @return     The parameters for the fourth order function
+ */
 FourthOrderParams initFourthOrder(double ths, double vs, double thv, double thf, double tf ){
     struct FourthOrderParams params;
     memset(&params, 0, sizeof(params));
@@ -58,6 +73,16 @@ FourthOrderParams initFourthOrder(double ths, double vs, double thv, double thf,
     return params;
 }
 
+/**
+ * Initialize the Fourth order polynomial interpolation function parameters 
+ * @param  ths Theta start, the starting position
+ * @param  vs  Velocity start, the starting velocity
+ * @param  thv Theta via, the position of the via
+ * @param  tv  Time via, the time to get to the via
+ * @param  thf Theta final, the position at the end
+ * @param  tf  Time final, The time it will take
+ * @return     The parameters for the fourth order function
+ */
 FourthOrderParams initFourthOrder(double ths, double vs, double thv, double tv, double thf, double tf){
     struct FourthOrderParams params;
     memset(&params, 0, sizeof(params));
@@ -101,6 +126,14 @@ FourthOrderParams initFourthOrder(double ths, double vs, double thv, double tv, 
     return params;
 }
 
+/**
+ * The total time that it will take
+ * @param  start    Start point
+ * @param  end      End point
+ * @param  vs       staring velocity
+ * @param  interVel interpolation velocity
+ * @return          Returns the time it will take
+ */
 double totalTime(double start, double end, double vs, double interVel){
     double time = 0;
     double distance = 0;
@@ -113,22 +146,14 @@ double totalTime(double start, double end, double vs, double interVel){
     distance = start + ((vs * time) + (.5 * ACC * time * time));
 
     return time + fabs((end - distance) / interVel);
-    /*
-    if ( (vs > 0 && end - start < 0) || (vs < 0 && end - start > 0) ){
-        const double ACC = 1;
-        const double vf = 0;
-
-        time += fabs((vf - vs)/ACC);
-        distance = (vs * time) + (.5 * ACC * time * time);
-
-        time += fabs((end - distance) / interVel);
-        return time;
-    }
-    return fabs((end - start)/interVel);
-
-    return 0;*/
 }
 
+/**
+ * Performs one step of the fourth order interpolation
+ * @param  params The parameters for the fourth order interpolation 
+ * @param  time   The time step
+ * @return        The value of the interpolation step
+ */
 double interpolateFourthOrder(FourthOrderParams params, double time){
     if (!params.valid)
         return 0;
@@ -144,99 +169,22 @@ double interpolateFourthOrder(FourthOrderParams params, double time){
     return t4*params.a4 + t3*params.a3 + t2*params.a2 + t*params.a1;
 }
 
+/**
+ * Perform a step of sinusoidal interpolation  
+ * @param  error Error of the interpolation 
+ * @param  time  The time step
+ * @return       The value of the interpolation step 
+ */
 double interpolateSin(double error, double time){
     return ( error * .5 * (1.0 - cos( M_PI * time ) ) );
 }
 
+/**
+ * Perform a step of sinusoidal interpolation  
+ * @param  error Error of the interpolation 
+ * @param  time  The time step
+ * @return       The value of the interpolation step 
+ */
 double interpolateSin1(double error, double time){   //used for walking gait creation
     return ( error * (1.0 - cos( .5 * M_PI * time ) ) );
 }
-
-// double interpolateSin2(double error, double time){
-//     return ( error * ( -cos( .5 * M_PI * ( time + 1 ) ) ) );
-// }
-
-// double interpolateSin3(double error, double time){
-//     return ( error * ( sin( .5 * M_PI * time ) ) );
-// }
-
-// double interpolateSin4(double error, double time){
-//     return ( error * ( time - ( sin( M_PI * time ) / M_PI ) ) );
-// }
-
-// double interpolateSin5(double error, double time){
-//     return ( error * ( time + ( sin( M_PI * time ) / M_PI ) ) );
-// }
-
-// //Currently unimplemented. Depends on unknown variable JW_temp[6]
-// double interpolateSin6(double error, double time){
-//     return 0;
-// }
-
-// double interpolateSin7(double error, double currStepCount, double totalStepCount, double delay){
-//     double tempMixTime = (currStepCount - delay) / (totalStepCount - delay);
-//     double time = currStepCount / totalStepCount;
-
-//     if(tempMixTime < 0)
-//         tempMixTime = 0;
-
-//     return interpolateSin4(error * 2, tempMixTime) - interpolateSin3(error, time);
-//     //return ( error * 2.0f * (tempMixTime - sin(M_PI * tempMixTime) / M_PI ) ) - ( error * ( sin( 0.5 * M_PI * time ) ) ) );
-// }
-
-// //Currently unimplemented. Depends on unknown variable JW_temp[6]
-// double interpolateSin8(double error, double time){
-//     return 0;
-// }
-
-// //Currently unimplemented. Depends on unknown variable JW_temp[6]
-// double interpolateSin9(double error, double time){
-//     return 0;
-// }
-
-// //Currently unimplemented. Depends on unknown variable JW_temp[6]
-// double interpolateSin10(double error, double time){
-//     return 0;
-// }
-
-// // Currently unimplemented. Depends on unknown variables UserData[0], UserData[1]
-// double interpolateSin11(double error, double currStepCount, double totalStepCount, double delay){
-    
-//     tempSidePeriod = (float)_walkingInfo[i][j].GoalTimeCount / 2.0f - _walkingInfo[i][j].UserData[1] / INT_TIME;
-//     tempSideTime = (float)_walkingInfo[i][j].CurrentTimeCount / tempSidePeriod;
-//     tempSideDelay = 2.0f*_walkingInfo[i][j].UserData[1] / INT_TIME/tempSidePeriod;
-
-//     if(tempSideTime < 1.0f)
-//         tempSideWalk = _walkingInfo[i][j].UserData[0] * 0.5f * (1.0f - cosf(PI * tempSideTime));
-//     else if( tempSideTime < (1.0f + tempSideDelay) )
-//         tempSideWalk = _walkingInfo[i][j].UserData[0];
-//     else if( tempSideTime < (2.0f + tempSideDelay) )
-//         tempSideWalk = _walkingInfo[i][j].UserData[0] * 0.5f * (1.0f + cosf(PI * (tempSideTime - 1.0f - tempSideDelay)));
-//     else
-//         tempSideWalk = 0.0f;
-
-//     _walkingInfo[i][j].RefPatternCurrent = _walkingInfo[i][j].RefPatternInitial + _walkingInfo[i][j].RefPatternDelta * 0.5f * (1.0f - cosf(PI * tempTime)) + tempSideWalk;
-    
-//     return 0;
-// }
-
-// // Currently unimplemented. Depends on unknown variables UserData[0], UserData[1]
-// double interpolateSin12(double error, double time){
-//     /*
-//     tempSidePeriod = (float)_walkingInfo[i][j].GoalTimeCount/2.0f - _walkingInfo[i][j].UserData[1]/INT_TIME;
-//     tempSideTime = (float)_walkingInfo[i][j].CurrentTimeCount/tempSidePeriod;
-//     tempSideDelay = 2.0f*_walkingInfo[i][j].UserData[1]/INT_TIME/tempSidePeriod;
-
-//     if(tempSideTime < 1.0f)
-//         tempSideWalk = _walkingInfo[i][j].UserData[0]*0.5f*(1.0f-cosf(PI*tempSideTime));
-//     else if( tempSideTime < (1.0f+tempSideDelay) )
-//         tempSideWalk = _walkingInfo[i][j].UserData[0];
-//     else if( tempSideTime < (2.0f+tempSideDelay) )
-//         tempSideWalk = _walkingInfo[i][j].UserData[0]*0.5f*(1.0f+cosf(PI*(tempSideTime-1.0f-tempSideDelay)));
-//     else
-//         tempSideWalk = 0.0f;
-
-//     _walkingInfo[i][j].RefPatternCurrent = _walkingInfo[i][j].RefPatternInitial+_walkingInfo[i][j].RefPatternDelta*0.5f*(1.0f-cosf(PI*tempTime)) - tempSideWalk;
-//     */
-//     return 0;
-// }

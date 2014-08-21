@@ -2,7 +2,7 @@
  * ArmMetaJoint.h
  *
  *  Created on: Mar 4, 2014
- *      Author: solisknight
+ *      
  */
 
 #ifndef ARMMETAJOINT_H_

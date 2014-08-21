@@ -26,10 +26,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "FTSensorBoard.h"
 
+/**
+ * Create a Force Torque sensor board
+ */
 FTSensorBoard::FTSensorBoard(){
     boardNum = -1;
 }
 
+/**
+ * Get the property off of the force torque sensor. Directly from hubo ach. 
+ * @param  property The property to get
+ * @param  value    A pointer to store the value in 
+ * @return          True on success
+ */
 bool FTSensorBoard::get(PROPERTY property, double& value){
     switch (property){
     case M_X:
@@ -48,10 +57,21 @@ bool FTSensorBoard::get(PROPERTY property, double& value){
     return true;
 }
 
+/**
+ * Set a property on the force torque sensor. But there are none for you to set
+ * so you can't. :( sorry
+ * @param  property The property that you wanted to set. 
+ * @param  value    The value you wanted to set it to.
+ * @return          Sadness
+ */
 bool FTSensorBoard::set(PROPERTY property, double value){
     return false;
 }
 
+/**
+ * Set the board number of the FT board
+ * @param boardNum The number you want to set it to. 
+ */
 void FTSensorBoard::setBoardNum(int boardNum){
     this->boardNum = boardNum;
 }

@@ -26,10 +26,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "IMUBoard.h"
 
+/**
+ * Constructor for the IMU Board
+ */
 IMUBoard::IMUBoard(){
     boardNum = -1;
 }
 
+/**
+ * Get a property from this specific IMU board.
+ * @param  property The property to get
+ * @param  value    A pointer to store the value in 
+ * @return          True on success
+ */
 bool IMUBoard::get(PROPERTY property, double &value){
     switch (property){
     case X_ACCEL:
@@ -48,10 +57,20 @@ bool IMUBoard::get(PROPERTY property, double &value){
     return true;
 }
 
+/**
+ * There are no properties to set on an IMU but it needs to be here
+ * @param  property 
+ * @param  value    
+ * @return          False. Always
+ */
 bool IMUBoard::set(PROPERTY property, double value){
     return false;
 }
 
+/**
+ * Set the IMU board number
+ * @param boardNum The new number to set the IMU board number to
+ */
 void IMUBoard::setBoardNum(int boardNum){
     this->boardNum = boardNum;
 }

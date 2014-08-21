@@ -26,6 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "HuboMotor.h"
 
+/**
+ * Create a Hubo Motor object. This represents a hubo joint. It is the
+ * building block of all the joints of hubo. 
+ */
 HuboMotor::HuboMotor(){
     mode = HUBO_REF_MODE_REF;
 
@@ -33,8 +37,17 @@ HuboMotor::HuboMotor(){
     boardNum = -1;
 }
 
+/**
+ * Destructor 
+ */
 HuboMotor::~HuboMotor(){};
 
+/**
+ * Set the property of this hubo motor to a specific value
+ * @param  property The property to set 
+ * @param  value    The value to set the property to 
+ * @return          True on success
+ */
 bool HuboMotor::set(PROPERTY property, double value){
 
     switch (property){
@@ -45,12 +58,6 @@ bool HuboMotor::set(PROPERTY property, double value){
 
         double currVel;
         get(VELOCITY, currVel);
-        /*
-        if ((value > interStep && currVel < 0) || (value < interStep && currVel > 0)){
-            cout << "Switching Directions for " << this->getName() << "  currVel: " << currVel << "  currStep: " << currStepCount << "  interStep: " << interStep << endl;
-        }
-        */
-
         if (!startParams.valid){
             currStepCount = 0;
             totalStepCount = totalTime(interStep, value, currVel/frequency, interVel) * frequency;
@@ -66,13 +73,9 @@ bool HuboMotor::set(PROPERTY property, double value){
             lastGoal = interStep;
         } else if (currStepCount != currParams.tv) {
 
-            //William finds this to be questionable methodology due to the difference between predicted step and real encoder position
-            //I swear, Will, I have a reason for this!
             double newVia = (startParams.ths + interpolateFourthOrder(currParams, currStepCount));
 
             totalStepCount = currStepCount + (totalTime(newVia, value, currVel/frequency, interVel) * frequency);
-            //totalStepCount = (fabs(interStep - startParams.ths) + fabs(startParams.thf - interStep) + fabs(value - startParams.thf)) * frequency / interVel;
-            //Having the start velocity be the current velocity really isn't supported mathematically... :/ but it's not blowing up.
             currParams = initFourthOrder( startParams.ths, currVel/frequency, newVia, currStepCount, value, totalStepCount );
         }
 
@@ -84,8 +87,9 @@ bool HuboMotor::set(PROPERTY property, double value){
         currParams.valid = false;
         startParams.valid = false;
         break;
+    case SPEED:
     case VELOCITY:
-        if (value != 0)
+        if (value > 0)
             interVel = value;
         break;
     case GOAL_TIME:
@@ -113,6 +117,12 @@ bool HuboMotor::set(PROPERTY property, double value){
     return true;
 }
 
+/**
+ * Get the value of a property for this specific motor. 
+ * @param  property The property to get the value of 
+ * @param  value    A pointer that will be filled with the value of the property you queried 
+ * @return          True on success
+ */
 bool HuboMotor::get(PROPERTY property, double& value){
 
     switch (property){
@@ -163,11 +173,18 @@ bool HuboMotor::get(PROPERTY property, double& value){
     return true;
 }
 
+/**
+ * Returns true if the joint requires motion. I don't know if it is used...
+ * @return True if the joint is not at it's goal
+ */
 bool HuboMotor::requiresMotion(){
     return interStep != currGoal;
-    //return fabs(interStep - currGoal) > .00001;
 }
 
+/**
+ * Set the board number of this joint
+ * @param boardNum The board number to set it to
+ */
 void HuboMotor::setBoardNum(int boardNum){
     this->boardNum = boardNum;
 }

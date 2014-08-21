@@ -1,11 +1,14 @@
-/*
- * BalanceController.cpp
- *
- *  Created on: May 21, 2014
- *      Author: Ryan Young
+/**
+ * This is a balance controller object that handles hubo balancing. 
+ * A lot of it was taken directly from RAINBOW code but some things 
+ * needed to be changed or modifed to make it work. It's kinda sloppy
+ * but it gets the job done. If I can I will try to clean it up in the future. 
  */
 #include "BalanceController.h"
 
+/**
+ * Create a balance controller
+ */
 BalanceController::BalanceController(){
     dampingGain[0] = 0.2f;      dampingGain[3] = 0.2f;
     dampingGain[1] = 1.0f;      dampingGain[4] = 1.0f;
@@ -23,32 +26,22 @@ BalanceController::BalanceController(){
     balanceComponents[7] = "LAT"; 
     balanceComponents[8] = "IMU"; 
 
-    logfile.open("log.log.log");
 }
 
-BalanceController::~BalanceController(){
-    logfile.close();
-}
+/**
+ * Destructor
+ */
+BalanceController::~BalanceController(){}
 
-bool BalanceController::isBalanced(){
-    return true; // for now...
-}
-
+/**
+ * Turn try to Balance the robot. It calcluates the correct offsets 
+ * for standing on two feet and balancing the robot on uneven surfaces. 
+ */
 void BalanceController::Balance(){
     getCurrentSupportPhase();
     ZMPcalculation();
     DSPControl();
     DampingControl();
-
-
-    // logfile << "SupportPhase: " << phase << endl;
-    // logfile << "ZMP: X: " << zmp[0] << " Y: " << zmp[1] << endl;
-    // logfile << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
-    // logfile << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
-    // logfile << "Damping RAP: " << Damping[0] << " RAR: " << Damping[1] << " LAP: " << Damping[2] << " LAR: " << Damping[3] << endl;
-
-    // cout << "DSP Right: X: " << ControlDSP[0][0] << " Y: " << ControlDSP[0][1] << endl;
-    // cout << "DSP Left: X: " << ControlDSP[1][0] << " Y: " << ControlDSP[1][1] << endl;
 
     setOffset("RFX", ControlDSP[0][0]);
     setOffset("RFY", ControlDSP[0][1]);
@@ -87,12 +80,6 @@ void BalanceController::Balance(){
     double Lxpos = LFx + Lx;
     double Lypos = LFy + Ly;
 
-    logfile << RFx << " " << LFx << " " << RFy << " " << LFy << " " << Rx << " " << Lx << " " << Ry << " " << Ly << endl;
-
-    // cout << "Rx: " << Rx << " Ry: " << Ry << " Lx: " << Lx << " Ly: " << Ly << endl;
-    // cout << "Abs(Rx: " << fabs(Rx) << " Ry: " << fabs(Ry) << " Lx: " << fabs(Lx) << " Ly: " << fabs(Ly) << endl;
-    // cout << "ZMP X: " << zmp[0] << " ZMP Y: " << zmp[1] << endl; 
-
     if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
     }
@@ -107,6 +94,10 @@ void BalanceController::Balance(){
     }
 }
 
+/**
+ * Set a balance base line to get rid of the noise. This assumes
+ * you start balancing when the robot is balanced. 
+ */
 void BalanceController::setBaseline(){
     getCurrentSupportPhase();
     ZMPcalculation();
@@ -118,6 +109,11 @@ void BalanceController::setBaseline(){
     BaseDSP[1][1] = -1 * floor(ControlDSP[1][1]*1000) / 1000;
 }
 
+/**
+ * initialize the Balance controller. This needs a copy of the 
+ * state instance. 
+ * @param theState The state of the robot. 
+ */
 void BalanceController::initBalanceController(HuboState& theState){
 
     state = &theState; 
@@ -137,6 +133,10 @@ void BalanceController::initBalanceController(HuboState& theState){
     ZMPInitialization(); //Initialize the zmp
 }
 
+/**
+ * Look to see if all the needed balancing components are in the robot.
+ * @return True if all names existed. 
+ */
 bool BalanceController::allComponentsFound(){
     for(int i = 0; i < 9; i++)
     {
@@ -148,10 +148,18 @@ bool BalanceController::allComponentsFound(){
     return true; // All names existed
 }
 
+/**
+ * Return the Zero Moment point in either the X or Y direction. 
+ * @param  value 0 is the X direction and 1 is the Y direction
+ * @return       The zmp value
+ */
 double BalanceController::getZMP(int value){
     return filteredZMP[value];
 }
 
+/**
+ * Calculate the ZMP value
+ */
 void BalanceController::ZMPcalculation(){
     // Rx: Right x force component
     // Ry: Right y force component
@@ -230,12 +238,11 @@ void BalanceController::ZMPcalculation(){
     }
 }
 
+/**
+ * calculate the current support phase
+ */
 void BalanceController::getCurrentSupportPhase(){
-    double Rx = get("RAT", "m_x");
-    double Ry = get("RAT", "m_y");
     double Rz = get("RAT", "f_z");
-    double Lx = get("LAT", "m_x");
-    double Ly = get("LAT", "m_y");
     double Lz = get("LAT", "f_z");
 
     if(Rz > 30 && Lz > 30)
@@ -252,6 +259,11 @@ void BalanceController::getCurrentSupportPhase(){
     }
 }
 
+/**
+ * Set the offset of a joint to a value
+ * @param name   The joint to set the offset on
+ * @param offset The offset to set
+ */
 void BalanceController::setOffset(string name, double offset){
     if (!state->nameExists(name)){
         cout << "Error. No component with name " << name << " registered. Aborting." << endl;
@@ -309,6 +321,7 @@ void BalanceController::set(string name, string property, double value){
         return;
     }
 }
+
 /* just a little more code duplication. I'll try to fix it when I get something to work */
 bool BalanceController::requiresMotion(string name){
     RobotComponent* component = state->getComponent(name);
@@ -325,13 +338,17 @@ bool BalanceController::requiresMotion(string name){
     return fabs(step - goal) > .001;
 }
 
+/**
+ * Does the Digital Signal Processing of all the data it has. 
+ * This is what generates the offsets for the joints and does all of the math. 
+ * It was taken almost directly from RAINBOW. I removed some stuff we don't use.
+ */
 void BalanceController::DSPControl(){
 
     unsigned char i;
     unsigned char Command = 1;
     static float x1new[2] = {0.0f, 0.0f}, x2new[2] = {0.0f, 0.0f};
     static float x1[2] = {0.0f, 0.0f}, x2[2] = {0.0f, 0.0f};
-    //static long ControlTime = (long)(_time/5);
     float delZMP[2] = {zmp[0]+InitZmp[0], zmp[1]+InitZmp[1]};
     static float gainOveriding = 0.0f;
     float controlOutput[2];
@@ -361,6 +378,10 @@ void BalanceController::DSPControl(){
     if(gainOveriding > 1.0) gainOveriding = 1.0;
 }
 
+/**
+ * Damping control from rainbow. This isn't used. 
+ * @return nothing. Oops! 
+ */
 double BalanceController::DampingControl(){
     float tempControlAngle[2];
     float limitAngle = 20.0f;
@@ -374,15 +395,6 @@ double BalanceController::DampingControl(){
     double oldDampingAngle[4];
 
     double alpha = 0.0314159;        //2.0f*PI*controlDampCutoff*INT_TIME/1000.0f
-
-    // without case(pitch   roll)
-//  gain[0] = 0.2f;     gain[3] = 0.2f;
-//  gain[1] = 1.0f;     gain[4] = 1.0f;
-//  gain[2] = 0.4f;     gain[5] = 0.5f;
-    // with case
-//  gain[0] = 0.3f;     gain[3] = 0.3f;
-//  gain[1] = 1.0f;     gain[4] = 1.0f;
-//  gain[2] = 0.4f;     gain[5] = 0.5f;
 
     unsigned char i;
     for(i=0 ; i<6 ; i++) gain[i] = dampingGain[i];

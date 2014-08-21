@@ -1,12 +1,12 @@
-/*
- * CommandChannel.cpp
- *
- *  Created on: Oct 15, 2013
- *      Author: Solis Knight
+/**
+ * The hubo-ach command Ach channel. Used for sending commands to the robot. 
  */
 
 #include "CommandChannel.h"
 
+/**
+ * List of all the joints
+ */
 const char *CommandChannel::urdf_joint_names[] = {
     "WST", "NKY", "NK1", "NK2",
     "LSP", "LSR", "LSY", "LEP", "LWY", "LWR", "LWP",
@@ -19,12 +19,18 @@ const char *CommandChannel::urdf_joint_names[] = {
     "LF1", "LF2", "LF3", "LF4", "LF5",
     "unknown1", "unknown2", "unknown3", "unknown4", "unknown5", "unknown6", "unknown7", "unknown8"};
 
+/**
+ * Create the command channel 
+ */
 CommandChannel::CommandChannel(){
     int r = ach_open(&huboBoardCommandChannel, HUBO_CHAN_BOARD_CMD_NAME, NULL);
     if (ACH_OK != r)
         cerr << "Error! Command Channel failed with state " << r << endl;
 }
 
+/**
+ * Destructor
+ */
 CommandChannel::~CommandChannel() {}
 
 int CommandChannel::indexLookup(string &joint) {
@@ -39,6 +45,11 @@ int CommandChannel::indexLookup(string &joint) {
     return best_match;
 }
 
+/**
+ * Enable a joint
+ * @param  joint The joint to enable
+ * @return       True on success
+ */
 bool CommandChannel::enable(string joint){
     BoardCommand command;
     memset(&command, 0, sizeof(command));
@@ -64,6 +75,11 @@ bool CommandChannel::enable(string joint){
     return true;
 }
 
+/**
+ * Disable a joint
+ * @param  joint The joint you want to disable 
+ * @return       True on success
+ */
 bool CommandChannel::disable(string joint){
     BoardCommand command;
     memset(&command, 0, sizeof(command));
@@ -89,6 +105,11 @@ bool CommandChannel::disable(string joint){
     return true;
 }
 
+/**
+ * Home a joint
+ * @param  joint The joint to home
+ * @return       True on success
+ */
 bool CommandChannel::home(string joint){
     BoardCommand command;
     memset(&command, 0, sizeof(command));
@@ -112,6 +133,11 @@ bool CommandChannel::home(string joint){
     return true;
 }
 
+/**
+ * Reset a joint
+ * @param  joint The joint to reset
+ * @return       True on successs
+ */
 bool CommandChannel::reset(string &joint){
     BoardCommand command;
     memset(&command, 0, sizeof(command));
@@ -133,6 +159,10 @@ bool CommandChannel::reset(string &joint){
     return true;
 }
 
+/**
+ * Initialize all sensors
+ * @return True on success
+ */
 bool CommandChannel::initializeSensors(){
     BoardCommand command;
     memset(&command, 0, sizeof(command));
