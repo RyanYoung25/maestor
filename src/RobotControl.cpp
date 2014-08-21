@@ -684,5 +684,5 @@ bool RobotControl::requiresMotion(string name){
         return false;
     }
 
-    return fabs(step - goal) > .001;
+    return fabs(step - goal) > .01;
 }
