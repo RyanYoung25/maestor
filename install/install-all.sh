@@ -39,15 +39,35 @@ check blacklist file "$BLACKLISTED_FILES"
 if [[ $? != 0 ]]; then exit $BLACKLIST_VIOLATED; fi
 
 echo "Dependencies satisfied."
-if [[ $? != 0 ]]; then exit $?; fi
+if [[ $? != 0 ]]; then 
+    exit $?; 
+fi
 echo "Installing Hubo-ACH..."
-sudo bash install-hubo-ach.sh
+sudo bash install-hubo-ach.sh -y
+if [[ $? != 0 ]]; then 
+    echo "hubo-ach did not install. Try running install-hubo-ach.sh"
+    exit $? 
+fi
 echo "Installing ROS-Orocos-Maestro..."
 sudo bash install-ros-fuerte.sh -y
+if [[ $? != 0 ]]; then 
+    echo "ros-fuerte did not install. Try running install-ros-fuerte.sh"
+    exit $?
+fi
 sudo bash install-openrave.sh -y
+if [[ $? != 0 ]]; then 
+    echo "openrave did not install. Try running install-openrave.sh"
+    exit $?
+fi
 bash install-maestor.sh -y
-if [[ $? != 0 ]]; then exit $?; fi
+if [[ $? != 0 ]]; then 
+    echo "maestor did not install. Try running install-maestor.sh"
+    exit $?
+fi
 echo "Installing OpenHUBO..."
 bash install-openHubo.sh -y
-if [[ $? != 0 ]]; then exit $?; fi
+if [[ $? != 0 ]]; then 
+    echo "openHubo did not install. Try running install-openHubo.sh"
+    exit $? 
+fi
 echo "Install Complete. Exiting..."
