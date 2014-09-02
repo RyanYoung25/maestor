@@ -29,8 +29,8 @@ echo "Hubo-ACH - Maestor installation script"
 echo "Version $VERSION"
 echo ""
 
-DEPENDENCY_DIRS="/opt /opt/ros /opt/ros/fuerte /opt/ros/fuerte/stacks"
-DEPENDENCY_FILES="/opt/ros/fuerte/setup.bash"
+DEPENDENCY_DIRS=""
+DEPENDENCY_FILES=""
 BLACKLISTED_DIRS=""
 BLACKLISTED_FILES=""
 
