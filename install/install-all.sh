@@ -1,13 +1,14 @@
 #!/bin/bash
 #
-# Comprehensive install script for Maestro, and all dependencies.
+# Comprehensive install script for Maestor, and all dependencies.
 # Installs Ros Fuerte, Orocos, OpenRAVE, Maestro, Hubo-Ach, OpenHubo.
 #
 # Options: None
 # Dependencies:
-#	<Maestro Install Dir>/utils.sh
-#	install-fuerte.sh
+#	<Maestor Install Dir>/utils.sh
+#	install-ros-fuerte.sh
 #	install-hubo-ach.sh
+#   install-openrave.sh
 #	install-openHubo.sh
 #
 #
@@ -25,7 +26,7 @@ echo "Version $VERSION"
 echo ""
 
 DEPENDENCY_DIRS=""
-DEPENDENCY_FILES="install-maestor.sh install-ros-fuerte.sh install-hubo-ach.sh install-openHubo.sh"
+DEPENDENCY_FILES="install-maestor.sh install-ros-fuerte.sh install-hubo-ach.sh install-openHubo.sh install-openrave.sh"
 BLACKLISTED_DIRS=""
 BLACKLISTED_FILES=""
 
@@ -42,23 +43,25 @@ echo "Dependencies satisfied."
 if [[ $? != 0 ]]; then 
     exit $?; 
 fi
+echo "Installing ros-fuerte..."
+sudo bash install-ros-fuerte.sh -y
+if [[ $? != 0 ]]; then 
+    echo "ros-fuerte did not install. Try running install-ros-fuerte.sh"
+    exit $?
+fi
+echo "Installing openrave..."
+sudo bash install-openrave.sh -y
+if [[ $? != 0 ]]; then 
+    echo "openrave did not install. Try running install-openrave.sh"
+    exit $?
+fi
 echo "Installing Hubo-ACH..."
 sudo bash install-hubo-ach.sh -y
 if [[ $? != 0 ]]; then 
     echo "hubo-ach did not install. Try running install-hubo-ach.sh"
     exit $? 
 fi
-echo "Installing ROS-Orocos-Maestro..."
-sudo bash install-ros-fuerte.sh -y
-if [[ $? != 0 ]]; then 
-    echo "ros-fuerte did not install. Try running install-ros-fuerte.sh"
-    exit $?
-fi
-sudo bash install-openrave.sh -y
-if [[ $? != 0 ]]; then 
-    echo "openrave did not install. Try running install-openrave.sh"
-    exit $?
-fi
+echo "Installing MAESTOR..."
 bash install-maestor.sh -y
 if [[ $? != 0 ]]; then 
     echo "maestor did not install. Try running install-maestor.sh"
