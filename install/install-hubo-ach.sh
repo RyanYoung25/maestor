@@ -85,6 +85,8 @@ make
 
 make install
 
+sudo ./first-time-install-hubo-ach.sh
+
 #Hubo-Ach
 
 source /opt/ros/fuerte/setup.bash

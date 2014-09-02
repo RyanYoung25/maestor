@@ -48,6 +48,6 @@ sudo bash install-openrave.sh -y
 bash install-maestor.sh -y
 if [[ $? != 0 ]]; then exit $?; fi
 echo "Installing OpenHUBO..."
-bash install-openHubo.sh
+bash install-openHubo.sh -y
 if [[ $? != 0 ]]; then exit $?; fi
 echo "Install Complete. Exiting..."
