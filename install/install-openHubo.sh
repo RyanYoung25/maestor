@@ -53,25 +53,25 @@ source /opt/ros/fuerte/stacks/openrave_planning/openrave/openrave.bash
 
 sh -c './setup'
 
-if [[ -z $(grep "source $installDir/openHubo/env.sh" ~/.bashrc)  ]]; then
-	if [[ -z "$QUIET" ]]; then
-		echo ""
-		echo "Would you like to add a source line to your bashrc file?"
-		select yn in "Yes" "No"; do
-        		case $yn in
-                	Yes )
-				echo "Adding source command to bashrc..."; 
-				echo "source $installDir/env.sh" >> ~/.bashrc; 
-				break;;
-                	No ) 
-				echo "Skipping modification of bashrc..."; 
-				break;;
-        		esac
-		done
-	else
-		echo "source $installDir/env.sh" >> ~/.bashrc;
-	fi
-fi
+# if [[ -z $(grep "source $installDir/openHubo/env.sh" ~/.bashrc)  ]]; then
+# 	if [[ -z "$QUIET" ]]; then
+# 		echo ""
+# 		echo "Would you like to add a source line to your bashrc file?"
+# 		select yn in "Yes" "No"; do
+#         		case $yn in
+#                 	Yes )
+# 				echo "Adding source command to bashrc..."; 
+# 				echo "source $installDir/env.sh" >> ~/.bashrc; 
+# 				break;;
+#                 	No ) 
+# 				echo "Skipping modification of bashrc..."; 
+# 				break;;
+#         		esac
+# 		done
+# 	else
+# 		echo "source $installDir/env.sh" >> ~/.bashrc;
+# 	fi
+# fi
 source $installDir/openHubo/env.sh
 
 # Ach Python Bindings

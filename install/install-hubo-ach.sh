@@ -29,8 +29,8 @@ echo "Hubo-ACH - Maestor installation script"
 echo "Version $VERSION"
 echo ""
 
-DEPENDENCY_DIRS="/opt /opt/ros /opt/ros/fuerte /opt/ros/fuerte/stacks"
-DEPENDENCY_FILES="/opt/ros/fuerte/setup.bash"
+DEPENDENCY_DIRS=""
+DEPENDENCY_FILES=""
 BLACKLISTED_DIRS=""
 BLACKLISTED_FILES=""
 
@@ -50,7 +50,7 @@ fi
 if [[ -z "$QUIET" ]]; then
 	read -p "Please enter installation directory (No trailing '/' Please): " installDir
 else
-	installDir=~/
+	installDir=~/hubo-ach
 fi
 
 if [[ ! -d "$installDir" ]]; then
@@ -67,7 +67,7 @@ add-apt-repository "deb http://code.golems.org/ubuntu precise golems.org"
 #add-apt-repository "deb http://www.repo.danlofaro.com/release precise main"
 apt-get update
 apt-get install -y --force-yes --no-remove libach1 libach-dev ach-utils
-apt-get install libreadline-dev
+apt-get install -y --force-yes libreadline-dev
 
 git clone https://github.com/isaacgaretmia/hubo-ach
 
@@ -75,7 +75,7 @@ cd hubo-ach
 
 git checkout power
 
-apt-get install autoconf automake libtool autoconf-archive
+apt-get install -y --force-yes --no-remove autoconf automake libtool autoconf-archive
 
 autoreconf -i
 
@@ -85,7 +85,9 @@ make
 
 make install
 
-./first-time-install-hubo-ach.sh
+
+sudo ./first-time-install-hubo-ach.sh
+
 #Hubo-Ach
 
 source /opt/ros/fuerte/setup.bash
