@@ -13,9 +13,9 @@
     <component type="HuboMotor" name="LSP" boardNum="4" vel="1.0"/>
     <component type="HuboMotor" name="LSR" boardNum="5" vel="1.0"/>
     <component type="HuboMotor" name="LSY" boardNum="6" vel="1.0"/>
-    <component type="HuboMotor" name="LEB" boardNum="7" vel="1.0">
+    <component type="HuboMotor" name="LEP" boardNum="7" vel="1.0">
         <aliases>
-            <value>LEP</value>
+            <value>LEB</value>
         </aliases>
     </component>
     <component type="HuboMotor" name="LWY" boardNum="8" vel="1.0"/>
@@ -29,14 +29,14 @@
         <controlled name="LSY"/>
         <controlled name="LSP"/>
         <controlled name="LSR"/>
-        <controlled name="LEB"/>
+        <controlled name="LEP"/>
     </component>
     <component type="HuboMotor" name="RSP" boardNum="11" vel="1.0"/>
     <component type="HuboMotor" name="RSR" boardNum="12" vel="1.0"/>
     <component type="HuboMotor" name="RSY" boardNum="13" vel="1.0"/>
-    <component type="HuboMotor" name="REB" boardNum="14" vel="1.0">
+    <component type="HuboMotor" name="REP" boardNum="14" vel="1.0">
         <aliases>
-            <value>REP</value>
+            <value>REB</value>
         </aliases>
     </component>
     <component type="HuboMotor" name="RWY" boardNum="15" vel="1.0"/>
@@ -49,14 +49,14 @@
         <controlled name="RSY"/>
         <controlled name="RSP"/>
         <controlled name="RSR"/>
-        <controlled name="REB"/>
+        <controlled name="REP"/>
     </component>
     <component type="HuboMotor" name="LHY" boardNum="19" vel="1.0"/>
     <component type="HuboMotor" name="LHR" boardNum="20" vel="1.0"/>
     <component type="HuboMotor" name="LHP" boardNum="21" vel="1.0"/>
-    <component type="HuboMotor" name="LKN" boardNum="22" vel="1.0">
+    <component type="HuboMotor" name="LKP" boardNum="22" vel="1.0">
         <aliases>
-            <value>LKP</value>
+            <value>LKN</value>
         </aliases>
     </component>
     <component type="HuboMotor" name="LAP" boardNum="23" vel="1.0"/>
@@ -64,9 +64,9 @@
     <component type="HuboMotor" name="RHY" boardNum="26" vel="1.0"/>
     <component type="HuboMotor" name="RHR" boardNum="27" vel="1.0"/>
     <component type="HuboMotor" name="RHP" boardNum="28" vel="1.0"/>
-    <component type="HuboMotor" name="RKN" boardNum="29" vel="1.0">
+    <component type="HuboMotor" name="RKP" boardNum="29" vel="1.0">
         <aliases>
-            <value>RKP</value>
+            <value>RKN</value>
         </aliases>
     </component>
     <component type="HuboMotor" name="RAP" boardNum="30" vel="1.0"/>
@@ -81,7 +81,7 @@
         <controlled name="LHY"/>
         <controlled name="LHR"/>
         <controlled name="LHP"/>
-        <controlled name="LKN"/>
+        <controlled name="LKP"/>
         <controlled name="LAP"/>
         <controlled name="LAR"/>
     </component>
@@ -111,7 +111,7 @@
         <controlled name="RHY"/>
         <controlled name="RHR"/>
         <controlled name="RHP"/>
-        <controlled name="RKN"/>
+        <controlled name="RKP"/>
         <controlled name="RAP"/>
         <controlled name="RAR"/>
     </component>
