@@ -24,8 +24,8 @@ def bendDown():
     robot.waitForJoint("RHP")
 
 def doTheRobot():
-    robot.setProperty("NKY", "position", -.65)
-    robot.waitForJoint("NKY")
+#    robot.setProperty("NKY", "position", -.65)
+ #   robot.waitForJoint("NKY")
     robot.setProperties("RSY RSR", "position position", "1.57 -1.35")
     robot.waitForJoint("RSR")
     robot.waitForJoint("RSY")
@@ -37,7 +37,7 @@ def doTheRobot():
     robot.setProperties("RSY RSR NKY", "position position position", "0 0 0")
     robot.waitForJoint("RSR")
     robot.waitForJoint("RSY")
-    robot.waitForJoint("NKY")
+  #  robot.waitForJoint("NKY")
 
 
 def standUp():

@@ -62,7 +62,9 @@ bool HuboMotor::set(PROPERTY property, double value){
             currStepCount = 0;
             totalStepCount = totalTime(interStep, value, currVel/frequency, interVel) * frequency;
             if (totalStepCount > 1 && fabs(value - interStep) < (interVel/frequency)){
-                cout << "Anomaly detected! " << totalStepCount << endl;
+                if(totalStepCount > 50){
+                    cout << "Anomaly detected! " << totalStepCount << endl;
+                }
             }
 
             if (totalStepCount > 0) {
