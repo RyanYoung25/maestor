@@ -32,52 +32,58 @@ private:
 
     std::ofstream logfile;
     enum SupportPhase {LEFT_FOOT, RIGHT_FOOT, BOTH_FEET};
-    bool initialized;
-    double InitZmp[2]; // initial ZMP
     double BaseDSP[2][2]; //offset baseline
     // Balance Information
     SupportPhase phase; 
     double zmp[6];
     double filteredZMP[6];
     double dampingGain[6]; 
-    double InitRefAngles[2][3]; // Right:0 Left:1 / X:0 Y:1 Z:2
-    double hipPitchOffsets[2];  // Right:0 Left:1 
     double ControlDSP[2][2];    // Right:0 Left:1 / X:0 Y:1
     double Damping[4];   // RAP:0 RAR:1 LAP:2 LAR:3
-    // The hubo state which has all of the metajoints and sensors
-    HuboState* state; 
+    //double Landing[4];   // RAP:0 RAR:1 LAP:2 LAR:3
 
-    // The metajoints for balancing and calculating
-    string balanceComponents[9];
-    // Initialization check
-    bool allComponentsFound();
-    // Calculation methods
+    //Landing information 
+    
+    double lReference;
+    double oldRError;
+    double oldPError;
+    double timeStep;
+
+    // The robot which has all of the metajoints and sensors and runs the show
+    HuboState* state;
+    
+    // CALCULATION METHODS:
+        
+    // Tells you if you are standing on the Left foot, Right foot, or Both feet
+    void getCurrentSupportPhase();
+    
+    // I think it stands for Digital Signal Processing, none the less it generates the offsets for the X, Y, and Z coordinates.
+    // this is the key player in balancing 
+    void DSPControl(); 
+
     // Carried over from Robot Control. Get the property on joint named "name"
     double get(string name, string property);
     // Carried over from Robot Control. Set the property on the joint named "name" as the value
     void set(string name, string property, double value);
-    // sets the interpolation offset for a joint. This value is added at each interpolation step, essentially changing the speed of the joint. 
-    // It is only used on meta joints not physical joints meaning that the physical joints will never interpolate too fast. This is a good thing
-    void setOffset(string name, double offset);
-    // Tells you if you are standing on the Left foot, Right foot, or Both feet
-    void getCurrentSupportPhase();
-    // I think it stands for Digital Signal Processing, none the less it generates the offsets for the X, Y, and Z coordinates.
-    // this is the key player in balancing 
-    void DSPControl(); 
-    // Not really used, controls the damping of the foot. Was used for gait generation but not anymore.
-    double DampingControl(); 
-    // Initialize the ZMP values and potentially some initial offsets for the ankle rolls. But we aren't there yet
-    void ZMPInitialization(); 
+
     // Calculates the ZMP positions. These are then used in the DSP controller to calculate offsets
     void ZMPcalculation();
-    // Carried over from Robot Control. Checks to see if the is at it's goal position. If it isn't it requires motion
+
+    // The landing controller, This will be filled in with data from the force torque sensors and handle the foot landing on
+    // uneven surfaces. This should create offsets for the ankle rolls and pitches.
+    // This will set the  
+    
+    double runPD(double P, double D, double PastError, double Error);
+    //Carried over from Robot Control. Checks to see if a joint needs to move
     bool requiresMotion(string name);
+
 public:
     BalanceController();
     virtual ~BalanceController();
 
     // Retrive all of the components that we need to monitor and control inorder to keep balanced. 
-    void initBalanceController(HuboState& theState);
+    void initBalanceController(HuboState& theRobot);
+    void landingControl();
     double getZMP(int value); // 0:X 1:Y  Filtered
     void setBaseline();// Take the current values from the DSP control function and set those as the baseline zero. Future values are modified by this. 
     void Balance();    // move joints to balance the robot, stablize the zmp over the support polygon. 

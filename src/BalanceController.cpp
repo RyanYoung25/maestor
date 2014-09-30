@@ -14,18 +14,8 @@ BalanceController::BalanceController(){
     dampingGain[1] = 1.0f;      dampingGain[4] = 1.0f;
     dampingGain[2] = 0.4f;      dampingGain[5] = 0.5f;
 
-    initialized = false;
-
-    balanceComponents[0] = "RFX"; 
-    balanceComponents[2] = "RFY"; 
-    balanceComponents[1] = "RFZ"; 
-    balanceComponents[3] = "LFX"; 
-    balanceComponents[4] = "LFY"; 
-    balanceComponents[5] = "LFZ"; 
-    balanceComponents[6] = "RAT"; 
-    balanceComponents[7] = "LAT"; 
-    balanceComponents[8] = "IMU"; 
-
+    oldRError = 0.0;
+    oldPError = 0.0;
 }
 
 /**
@@ -41,12 +31,13 @@ void BalanceController::Balance(){
     getCurrentSupportPhase();
     ZMPcalculation();
     DSPControl();
-    DampingControl();
+    //DampingControl();
 
-    setOffset("RFX", ControlDSP[0][0]);
-    setOffset("RFY", ControlDSP[0][1]);
-    setOffset("LFX", ControlDSP[1][0]);
-    setOffset("LFY", ControlDSP[1][1]);
+    // setOffset("RFX", ControlDSP[0][0]);
+    // setOffset("RFY", ControlDSP[0][1]);
+    // setOffset("LFX", ControlDSP[1][0]);
+    // setOffset("LFY", ControlDSP[1][1]);
+    
     //Active balance attempt
     //If the joint does not require motion then we can set it's new goal as the current position plus 
     //the offset. 
@@ -102,6 +93,10 @@ void BalanceController::setBaseline(){
     getCurrentSupportPhase();
     ZMPcalculation();
     DSPControl();
+    /*
+        Can expand this section to include a calibration routine 
+     */
+    
 
     BaseDSP[0][0] = -1 * floor(ControlDSP[0][0]*1000) / 1000; 
     BaseDSP[0][1] = -1 * floor(ControlDSP[0][1]*1000) / 1000;
@@ -112,7 +107,7 @@ void BalanceController::setBaseline(){
 /**
  * initialize the Balance controller. This needs a copy of the 
  * state instance. 
- * @param theState The state of the robot. 
+ * @param theState a pointer to the state object 
  */
 void BalanceController::initBalanceController(HuboState& theState){
 
@@ -122,31 +117,10 @@ void BalanceController::initBalanceController(HuboState& theState){
         cout << "Error initializing the Balance Controller, the state was never initalized." << endl;
         return; 
     }
-    initialized = allComponentsFound(); // Check to see if the hubo state has all of the needed components
-
-    if(!initialized){
-        cout << "Error initializing the Balance Controller, Not all of the components needed to balance were found." << endl;
-        return;
-    }
-
     getCurrentSupportPhase(); //Find the initial support phase
-    ZMPInitialization(); //Initialize the zmp
+    //ZMPInitialization(); //Initialize the zmp
 }
 
-/**
- * Look to see if all the needed balancing components are in the robot.
- * @return True if all names existed. 
- */
-bool BalanceController::allComponentsFound(){
-    for(int i = 0; i < 9; i++)
-    {
-        if(!state->nameExists(balanceComponents[i])) //If the name does not exist
-        {
-            return false;
-        }
-    }
-    return true; // All names existed
-}
 
 /**
  * Return the Zero Moment point in either the X or Y direction. 
@@ -170,10 +144,9 @@ void BalanceController::ZMPcalculation(){
 
     // RAx: Right ankle x position 
     // RAy: Right ankle y position
-    // RAz: Right ankle z position
     // LAx: Left ankle x position
     // LAy: Left ankle y position
-    // LAz: Left ankle z position
+    // 
     double filteredZMPOld[6];
     double pelvis_width = 0.177;
     double alpha = 0.1570796; //alpha  2.0*PI*5.0f*5/1000.0
@@ -186,10 +159,8 @@ void BalanceController::ZMPcalculation(){
     double Lz = BalanceController::get("LAT", "f_z");
     double RAx = -1 * BalanceController::get("RFX", "position"); 
     double RAy = -1 * BalanceController::get("RFY", "position");
-    double RAz = BalanceController::get("RFZ", "position");
     double LAx = -1 * BalanceController::get("LFX", "position");
     double LAy = -1 * BalanceController::get("LFY", "position");
-    double LAz = BalanceController::get("LFZ", "position");
 
     double totalMX;    // total moment in the x
     double totalMY;    // total moment in the y
@@ -259,23 +230,55 @@ void BalanceController::getCurrentSupportPhase(){
     }
 }
 
-/**
- * Set the offset of a joint to a value
- * @param name   The joint to set the offset on
- * @param offset The offset to set
- */
-void BalanceController::setOffset(string name, double offset){
-    if (!state->nameExists(name)){
-        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
-        return;
+double BalanceController::runPD(double P, double D, double PastError, double Error){
+    double dEdT = (Error - PastError) / 1; //Constant time of one. TODO: fix this
+    double Pterm = P * Error;  //Calculate the Proportional term
+    double Dterm = D * dEdT;   //Calculate the derivitive term
+    return Pterm + Dterm;      //Return the sum of the terms
+}
+
+void BalanceController::landingControl(){
+    //TODO: make constants
+    double KPR= 1.0;       //Constants for the PD loop P for the Roll
+    double KPP= 1.0;       //Constants for the PD loop P for the Pitch
+    double KDR= 1.0;       //Constants for the PD loop D for the Roll
+    double KDP= 1.0;       //Constants for the PD loop P for the Pitch
+
+
+
+    //Get error from moment in x
+    double errorX = BalanceController::get("LAT", "m_x") - 0; //Subtract the reference
+    //Get error from moment in y
+    double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
+    //Calculate the Roll offset
+    double rollOff = runPD(KPR, KDR, oldRError, errorY);
+    //Set the old error to current error
+    oldRError = errorY;
+    //Calculate the Pitch offset
+    double pitchOff = runPD(KPP, KDP, oldPError, errorX);
+    //Set the old error to current error
+    oldPError = errorX;
+    //Set the Roll and pitch to their new values
+    
+    //Get the current R and P positions
+    double LARpos = BalanceController::get("LAR", "position"); 
+    double LAPpos = BalanceController::get("LAP", "position");
+
+    //Calculate the new R and P positions
+    // New position
+    double Rpos = LARpos + rollOff;   
+    double Ppos = LAPpos + pitchOff;
+
+
+    //Set the new R and P positions
+
+    if(!requiresMotion("LAR") && fabs(rollOff) > .005){
+        BalanceController::set("LAR", "position", Rpos);
     }
-
-
-
-    if (!static_cast<MetaJoint*>(state->getComponent(name))->setOffset(offset)){
-        cout << "Error setting offset of component " << name << endl;
-        return;
+    if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
+        BalanceController::set("LAP", "position", Ppos);
     }
+    
 }
 
 /* Code duplication. I know. I should really fix it */
@@ -346,10 +349,10 @@ bool BalanceController::requiresMotion(string name){
 void BalanceController::DSPControl(){
 
     unsigned char i;
-    unsigned char Command = 1;
+    //unsigned char Command = 1;
     static float x1new[2] = {0.0f, 0.0f}, x2new[2] = {0.0f, 0.0f};
     static float x1[2] = {0.0f, 0.0f}, x2[2] = {0.0f, 0.0f};
-    float delZMP[2] = {zmp[0]+InitZmp[0], zmp[1]+InitZmp[1]};
+    float delZMP[2] = {zmp[0], zmp[1]};
     static float gainOveriding = 0.0f;
     float controlOutput[2];
     float dspLimit = 100.0f;
@@ -376,156 +379,4 @@ void BalanceController::DSPControl(){
     }
     gainOveriding += 0.05;
     if(gainOveriding > 1.0) gainOveriding = 1.0;
-}
-
-/**
- * Damping control from rainbow. This isn't used. 
- * @return nothing. Oops! 
- */
-double BalanceController::DampingControl(){
-    float tempControlAngle[2];
-    float limitAngle = 20.0f;
-    float gain[6];
-    float controlDampCutoff = 1.0f;
-
-    double roll         = get("IMU", "x_rot");  
-    double pitch        = get("IMU", "y_rot");
-    double roll_vel     = get("IMU", "x_acc"); 
-    double pitch_vel    = get("IMU", "y_acc");
-    double oldDampingAngle[4];
-
-    double alpha = 0.0314159;        //2.0f*PI*controlDampCutoff*INT_TIME/1000.0f
-
-    unsigned char i;
-    for(i=0 ; i<6 ; i++) gain[i] = dampingGain[i];
-
-    for(int i=0; i < 4; i ++)
-    {
-        oldDampingAngle[i] = Damping[i];
-    }
-    
-    tempControlAngle[0] = gain[0]*(-gain[1]*pitch + gain[2]*pitch_vel);
-    tempControlAngle[1] = gain[3]*(-gain[4]*roll + gain[5]*roll_vel);
-
-    switch(phase)
-    {
-    case RIGHT_FOOT:
-        Damping[0] = (float)((1.0f-alpha)*oldDampingAngle[0]+alpha*tempControlAngle[0]);
-        oldDampingAngle[0] = Damping[0];
-        Damping[1] = (float)((1.0f-alpha)*oldDampingAngle[1]+alpha*tempControlAngle[1]);
-        oldDampingAngle[1] = Damping[1];
-        break;
-    case LEFT_FOOT:
-        Damping[2] = (float)((1.0f-alpha)*oldDampingAngle[2]+alpha*tempControlAngle[0]);
-        oldDampingAngle[2] = Damping[2];
-        Damping[3] = (float)((1.0f-alpha)*oldDampingAngle[3]+alpha*tempControlAngle[1]);
-        oldDampingAngle[3] = Damping[3];
-        break;
-    case BOTH_FEET:
-    default:
-        tempControlAngle[0] = 0.0f;
-        tempControlAngle[1] = 0.0f;
-        Damping[0] = (float)((1.0f-alpha)*oldDampingAngle[0]+alpha*tempControlAngle[0]);
-        oldDampingAngle[0] = Damping[0];
-        Damping[1] = (float)((1.0f-alpha)*oldDampingAngle[1]+alpha*tempControlAngle[1]);
-        oldDampingAngle[1] = Damping[1];
-        Damping[2] = (float)((1.0f-alpha)*oldDampingAngle[2]+alpha*tempControlAngle[0]);
-        oldDampingAngle[2] = Damping[2];
-        Damping[3] = (float)((1.0f-alpha)*oldDampingAngle[3]+alpha*tempControlAngle[1]);
-        oldDampingAngle[3] = Damping[3];
-        break;
-    }
-
-    if(Damping[0] > limitAngle) Damping[0] = limitAngle;
-    else if(Damping[0] < -limitAngle) Damping[0] = -limitAngle;
-    if(Damping[2] > limitAngle) Damping[2] = limitAngle;
-    else if(Damping[2] < -limitAngle) Damping[2] = -limitAngle;
-    
-    if(Damping[1] > limitAngle) Damping[1] = limitAngle;
-    else if(Damping[1] < -limitAngle) Damping[1] = -limitAngle;
-    if(Damping[3] > limitAngle) Damping[3] = limitAngle;
-    else if(Damping[3] < -limitAngle) Damping[3] = -limitAngle;
-}
-
-// doesn't really do anything :( 
-void BalanceController::ZMPInitialization(){
-    unsigned char i;
-    float KI;
-    float zmpTemp[2], heightTemp, pitchHipTemp;
-    double roll = get("IMU", "x_rot");
-    double pitch = get("IMU", "y_rot");
-
-    // _zmpInit[]
-    // 0: torso x-direction
-    // 1: torso y-direction
-    // 2: z-direction of the foot
-    // 3: hip pitch angle
-    // 4: ankle pitch angle
-    // 5: right ankle roll angle
-    // 6: left ankle roll angle
-
-    // 0:Right 1:Left
-    // 0:X 1:Y 2:Z
-    // [Right/Left][X/Y/Z]
-    
-
-    // ZMP initialization using the torso center position // Adjusts the X and Y offsets 
-    KI = 0.005/5;
-    
-    for(i=0 ; i<2 ; i++) // For X and Y 
-    {
-        zmpTemp[i] = (InitZmp[i] - zmp[i])/1000.0; // Create the average zmp 
-        
-        if(zmpTemp[i] > 0.05) zmpTemp[i] = 0.05;
-        else if(zmpTemp[i] < -0.05) zmpTemp[i] = -0.05;
-        InitRefAngles[0][i] -= KI*zmpTemp[i];
-        InitRefAngles[1][i] -= KI*zmpTemp[i];
-    }
-
-    // body roll angle initialization using the foot position(z-direction) // Changes the height
-    KI = 0.004/5;
-
-    heightTemp = roll/1000.0;
-    
-    if(heightTemp > 0.001) heightTemp = 0.001;
-    else if(heightTemp < -0.001) heightTemp = -0.001;
-
-    InitRefAngles[0][2] -= KI*heightTemp;
-    InitRefAngles[1][2] += KI*heightTemp;
-    
-    // body pitch angle initialization using the hip pitch angles
-    KI = 0.01;
-    pitchHipTemp = pitch;///1000.0f;
-        
-    if(pitchHipTemp > 0.01) pitchHipTemp = 0.01;
-    else if(pitchHipTemp < -0.01) pitchHipTemp = -0.01;
-    
-    //_joint[RAP].RefAngleFF += KI*pitchHipTemp;
-    //_joint[LAP].RefAngleFF += KI*pitchHipTemp;
-    double RHP_ref = get("RHP", "position");
-    double LHP_ref = get("LHP", "position");
-    double RAP_ref = get("RAP", "position");
-    double LAP_ref = get("LAP", "position");
-    double RAR_ref = get("RAR", "position");
-    double LAR_ref = get("LAR", "position");
-    double Lmy = get("LAT", "m_y");
-    double Rmy = get("RAT", "m_y");
-    double Lmx = get("LAT", "m_x");
-    double Rmx = get("RAT", "m_x");
-
-    RHP_ref += KI*pitchHipTemp;
-    LHP_ref += KI*pitchHipTemp;
-    
-    // moment at ankle(My) initialization using ankle pitch angles
-    //KI=0.0001f;
-    KI = 0.0002;
-    RAP_ref += KI*(Rmy-Lmy);
-
-    // moment at ankle(Mx) initialization using ankle roll angles
-    KI = 0.02/5; 
-    RAR_ref += KI*Rmx;
-    LAR_ref += KI*Lmx;
-
-     // Initial joint off sets 
-    // Nothing happens because I don't quite trust it yet... 
 }
