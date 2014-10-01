@@ -97,7 +97,7 @@ void RobotControl::updateHook(){
 
     if (!components.empty()) {
         if(balanceOn){
-            balancer->Balance();
+            balancer->landingControl();
         }
         for (int i = 0; i < components.size(); i++){
             component = components[i];
