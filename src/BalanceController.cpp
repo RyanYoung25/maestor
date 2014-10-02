@@ -239,10 +239,10 @@ double BalanceController::runPD(double P, double D, double PastError, double Err
 
 void BalanceController::landingControl(){
     //TODO: make constants
-    double KPR= 1.0;       //Constants for the PD loop P for the Roll
-    double KPP= 1.0;       //Constants for the PD loop P for the Pitch
-    double KDR= 1.0;       //Constants for the PD loop D for the Roll
-    double KDP= 1.0;       //Constants for the PD loop P for the Pitch
+    double KPR= 0.01;       //Constants for the PD loop P for the Roll
+    double KPP= 0.01;       //Constants for the PD loop P for the Pitch
+    double KDR= 0.01;       //Constants for the PD loop D for the Roll
+    double KDP= 0.01;       //Constants for the PD loop P for the Pitch
 
 
 
@@ -251,13 +251,13 @@ void BalanceController::landingControl(){
     //Get error from moment in y
     double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
     //Calculate the Roll offset
-    double rollOff = runPD(KPR, KDR, oldRError, errorY);
+    double rollOff = runPD(KPR, KDR, oldRError, errorX);
     //Set the old error to current error
-    oldRError = errorY;
+    oldRError = errorX;
     //Calculate the Pitch offset
-    double pitchOff = runPD(KPP, KDP, oldPError, errorX);
+    double pitchOff = runPD(KPP, KDP, oldPError, errorY);
     //Set the old error to current error
-    oldPError = errorX;
+    oldPError = errorY;
     //Set the Roll and pitch to their new values
     
     //Get the current R and P positions
@@ -274,9 +274,11 @@ void BalanceController::landingControl(){
 
     if(!requiresMotion("LAR") && fabs(rollOff) > .005){
         BalanceController::set("LAR", "position", Rpos);
+        cout << "Roll: " << Rpos << endl;
     }
     if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
         BalanceController::set("LAP", "position", Ppos);
+        cout << "Pitch: " << Ppos << endl;
     }
     
 }

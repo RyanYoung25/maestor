@@ -21,3 +21,6 @@ def main():
         robot.setProperty("LSP", "position", Lsppos)
         robot.setProperty("LEP", "position", Leppos)
         time.sleep(.05)
+
+if __name__ == "__main__":
+    main()
