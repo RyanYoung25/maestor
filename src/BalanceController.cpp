@@ -273,12 +273,17 @@ void BalanceController::landingControl(){
     //Set the new R and P positions
 
     if(!requiresMotion("LAR") && fabs(rollOff) > .005){
-        BalanceController::set("LAR", "position", Rpos);
-        cout << "Roll: " << Rpos << endl;
+        if(fabs(Rpos) <= ROLL_LIMIT){
+            BalanceController::set("LAR", "position", Rpos);
+            cout << "Roll: " << Rpos << endl;
+        }
     }
     if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
-        BalanceController::set("LAP", "position", Ppos);
-        cout << "Pitch: " << Ppos << endl;
+        if(fabs(Ppos) <= PITCH_LIMIT){
+            BalanceController::set("LAP", "position", Ppos);
+            cout << "Pitch: " << Ppos << endl;
+        }
+        
     }
     
 }

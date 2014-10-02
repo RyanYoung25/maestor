@@ -12,6 +12,9 @@
 #ifndef BALANCECONTROLLER_H_
 #define BALANCECONTROLLER_H_
 
+#define ROLL_LIMIT 0.18
+#define PITCH_LIMIT 0.50
+
 #include <map>
 #include <string>
 #include <queue>
