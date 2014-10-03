@@ -52,6 +52,12 @@ private:
     double oldPError;
     double timeStep;
 
+    double AlphaX;
+    double AlphaY;
+
+    double smoothMX;
+    double smoothMY;
+
     // The robot which has all of the metajoints and sensors and runs the show
     HuboState* state;
     

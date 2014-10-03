@@ -16,6 +16,14 @@ BalanceController::BalanceController(){
 
     oldRError = 0.0;
     oldPError = 0.0;
+
+    //Set the alpha constants for the moving average smoothing
+    AlphaX = 0.2;
+    AlphaY = 0.2;
+    //Start the moving average at 0
+    smoothMX = 0.0;
+    smoothMY = 0.0;
+
     //logfile.open("Controller.log");
 }
 
@@ -251,14 +259,22 @@ void BalanceController::landingControl(){
     double errorX = BalanceController::get("LAT", "m_x") - 0; //Subtract the reference
     //Get error from moment in y
     double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
+    
+    //Update the moving average
+    errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
+    errorY = AlphaY * errorY + (1 - AlphaY) * smoothMY;
+
+
     //Calculate the Roll offset
     double rollOff = runPD(KPR, KDR, oldRError, errorX);
     //Set the old error to current error
     oldRError = errorX;
+    smoothMX = errorX;
     //Calculate the Pitch offset
     double pitchOff = runPD(KPP, KDP, oldPError, errorY);
     //Set the old error to current error
     oldPError = errorY;
+    smoothMY = errorY;
     //Set the Roll and pitch to their new values
     
     //Get the current R and P positions
