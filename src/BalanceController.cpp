@@ -16,6 +16,7 @@ BalanceController::BalanceController(){
 
     oldRError = 0.0;
     oldPError = 0.0;
+    //logfile.open("Controller.log");
 }
 
 /**
@@ -268,20 +269,21 @@ void BalanceController::landingControl(){
     // New position
     double Rpos = LARpos + rollOff;   
     double Ppos = LAPpos + pitchOff;
-
-
+    
     //Set the new R and P positions
 
     if(!requiresMotion("LAR") && fabs(rollOff) > .005){
         if(fabs(Rpos) <= ROLL_LIMIT){
             BalanceController::set("LAR", "position", Rpos);
-            cout << "Roll: " << Rpos << endl;
+            //cout << "Roll: " << Rpos << endl;
+            //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
         }
     }
     if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
         if(fabs(Ppos) <= PITCH_LIMIT){
             BalanceController::set("LAP", "position", Ppos);
-            cout << "Pitch: " << Ppos << endl;
+            //cout << "Pitch: " << Ppos << endl;
+            //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
         }
         
     }
