@@ -51,6 +51,7 @@ RobotControl::RobotControl(){
     this->interpolation = true;    //Interpret all commands as a final destination with given velocity.
     this->override = true;        //Force homing before allowing enabling. (currently disabled)
     this->balanceOn = false;
+    this->landingOn = false;
     
     Names::initPropertyMap();
     Names::initCommandMap();
@@ -97,6 +98,9 @@ void RobotControl::updateHook(){
 
     if (!components.empty()) {
         if(balanceOn){
+            balancer->Balance();
+        }
+        if(landingOn){
             balancer->landingControl();
         }
         for (int i = 0; i < components.size(); i++){
@@ -644,6 +648,12 @@ void RobotControl::command(string name, string target){
         break;
     case BALANCEOFF:
         balanceOn = false;
+        break;
+    case LANDINGON:
+        landingOn = true;
+        break;
+    case LANDINGOFF:
+        landingOn = false;
         break;
 
     }

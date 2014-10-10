@@ -62,6 +62,8 @@ void Names::initCommandMap(){
     getCommands()["ZeroAll"] = ZEROALL;
     getCommands()["BalanceOn"] = BALANCEON;
     getCommands()["BalanceOff"] = BALANCEOFF;
+    getCommands()["LandingOn"] = LANDINGON;
+    getCommands()["LandingOff"] = LANDINGOFF;
 }
 
 /**

@@ -162,6 +162,7 @@ private:
     bool interpolation, override;
     bool RUN_TYPE;
     bool balanceOn;
+    bool landingOn;
 
     //ros::NodeHandle nh;
 	bool maestro_run_type;

@@ -248,60 +248,111 @@ double BalanceController::runPD(double P, double D, double PastError, double Err
 
 void BalanceController::landingControl(){
     //TODO: make constants
-    double KPR= 0.01;       //Constants for the PD loop P for the Roll
-    double KPP= 0.01;       //Constants for the PD loop P for the Pitch
-    double KDR= 0.01;       //Constants for the PD loop D for the Roll
-    double KDP= 0.01;       //Constants for the PD loop P for the Pitch
+    double KPR= 0.001;       //Constants for the PD loop P for the Roll
+    double KPP= 0.001;       //Constants for the PD loop P for the Pitch
+    double KDR= 0.001;       //Constants for the PD loop D for the Roll
+    double KDP= 0.001;       //Constants for the PD loop P for the Pitch
+
+    if (phase == RIGHT_FOOT)
+    {
+
+        //Get error from moment in x
+        double errorX = BalanceController::get("LAT", "m_x") - 0; //Subtract the reference
+        //Get error from moment in y
+        double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
+        
+        //Update the moving average
+        errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
+        errorY = AlphaY * errorY + (1 - AlphaY) * smoothMY;
 
 
+        //Calculate the Roll offset
+        double rollOff = runPD(KPR, KDR, oldRError, errorX);
+        //Set the old error to current error
+        oldRError = errorX;
+        smoothMX = errorX;
+        //Calculate the Pitch offset
+        double pitchOff = runPD(KPP, KDP, oldPError, errorY);
+        //Set the old error to current error
+        oldPError = errorY;
+        smoothMY = errorY;
+        //Set the Roll and pitch to their new values
+        
+        //Get the current R and P positions
+        double LARpos = BalanceController::get("LAR", "position"); 
+        double LAPpos = BalanceController::get("LAP", "position");
 
-    //Get error from moment in x
-    double errorX = BalanceController::get("LAT", "m_x") - 0; //Subtract the reference
-    //Get error from moment in y
-    double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
-    
-    //Update the moving average
-    errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
-    errorY = AlphaY * errorY + (1 - AlphaY) * smoothMY;
+        //Calculate the new R and P positions
+        // New position
+        double Rpos = LARpos + rollOff;   
+        double Ppos = LAPpos + pitchOff;
+        
+        //Set the new R and P positions
 
-
-    //Calculate the Roll offset
-    double rollOff = runPD(KPR, KDR, oldRError, errorX);
-    //Set the old error to current error
-    oldRError = errorX;
-    smoothMX = errorX;
-    //Calculate the Pitch offset
-    double pitchOff = runPD(KPP, KDP, oldPError, errorY);
-    //Set the old error to current error
-    oldPError = errorY;
-    smoothMY = errorY;
-    //Set the Roll and pitch to their new values
-    
-    //Get the current R and P positions
-    double LARpos = BalanceController::get("LAR", "position"); 
-    double LAPpos = BalanceController::get("LAP", "position");
-
-    //Calculate the new R and P positions
-    // New position
-    double Rpos = LARpos + rollOff;   
-    double Ppos = LAPpos + pitchOff;
-    
-    //Set the new R and P positions
-
-    if(!requiresMotion("LAR") && fabs(rollOff) > .005){
-        if(fabs(Rpos) <= ROLL_LIMIT){
-            BalanceController::set("LAR", "position", Rpos);
-            //cout << "Roll: " << Rpos << endl;
-            //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
+        if(!requiresMotion("LAR") && fabs(rollOff) > .005){
+            if(fabs(Rpos) <= ROLL_LIMIT){
+                BalanceController::set("LAR", "position", Rpos);
+                //cout << "Roll: " << Rpos << endl;
+                //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
+            }
         }
-    }
-    if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
-        if(fabs(Ppos) <= PITCH_LIMIT){
-            BalanceController::set("LAP", "position", Ppos);
-            //cout << "Pitch: " << Ppos << endl;
-            //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
+        if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
+            if(fabs(Ppos) <= PITCH_LIMIT){
+                BalanceController::set("LAP", "position", Ppos);
+                //cout << "Pitch: " << Ppos << endl;
+                //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
+            }
         }
         
+    }
+    else if (phase == LEFT_FOOT)
+    {
+        //Get error from moment in x
+        double errorX = BalanceController::get("RAT", "m_x") - 0; //Subtract the reference
+        //Get error from moment in y
+        double errorY = BalanceController::get("RAT", "m_y") - 0; //Subtract the reference
+        
+        //Update the moving average
+        errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
+        errorY = AlphaY * errorY + (1 - AlphaY) * smoothMY;
+
+        //Calculate the Roll offset
+        double rollOff = runPD(KPR, KDR, oldRError, errorX);
+        //Set the old error to current error
+        oldRError = errorX;
+        smoothMX = errorX;
+        //Calculate the Pitch offset
+        double pitchOff = runPD(KPP, KDP, oldPError, errorY);
+        //Set the old error to current error
+        oldPError = errorY;
+        smoothMY = errorY;
+        //Set the Roll and pitch to their new values
+        
+        //Get the current R and P positions
+        double RARpos = BalanceController::get("RAR", "position"); 
+        double RAPpos = BalanceController::get("RAP", "position");
+
+        //Calculate the new R and P positions
+        // New position
+        double Rpos = RARpos + rollOff;   
+        double Ppos = RAPpos + pitchOff;
+        
+        //Set the new R and P positions
+
+        if(!requiresMotion("RAR") && fabs(rollOff) > .005){
+            if(fabs(Rpos) <= ROLL_LIMIT){
+                BalanceController::set("RAR", "position", Rpos);
+                //cout << "Roll: " << Rpos << endl;
+                //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
+            }
+        }
+        if(!requiresMotion("RAP") && fabs(pitchOff) > .005){
+            if(fabs(Ppos) <= PITCH_LIMIT){
+                BalanceController::set("RAP", "position", Ppos);
+                //cout << "Pitch: " << Ppos << endl;
+                //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
+            }
+        }
     }
     
 }
