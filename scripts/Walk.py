@@ -118,6 +118,12 @@ def HipToCenter():
     waitForX()
     waitForY()
     waitForZ()
+    
+def standUp():
+    robot.setProperties("RFZ LFZ", "position position", "-.56 -.56")
+    waitForX()
+    waitForY()
+    waitForZ()
 
 
 def HipToLeft():
@@ -151,6 +157,7 @@ def main():
     LeftFootDown()
     RightFootUp()
     HipToCenter()
+    standUp()
     resetVelocities()
 
 if __name__ == '__main__':
