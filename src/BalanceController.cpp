@@ -253,7 +253,7 @@ void BalanceController::landingControl(){
     double KDR= 0.001;       //Constants for the PD loop D for the Roll
     double KDP= 0.001;       //Constants for the PD loop P for the Pitch
 
-    if (phase == RIGHT_FOOT)
+    if (1)//phase == RIGHT_FOOT)
     {
 
         //Get error from moment in x
@@ -289,14 +289,14 @@ void BalanceController::landingControl(){
         
         //Set the new R and P positions
 
-        if(!requiresMotion("LAR") && fabs(rollOff) > .005){
+        if(!requiresMotion("LAR") && fabs(rollOff) > .015){
             if(fabs(Rpos) <= ROLL_LIMIT){
                 BalanceController::set("LAR", "position", Rpos);
                 //cout << "Roll: " << Rpos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
             }
         }
-        if(!requiresMotion("LAP") && fabs(pitchOff) > .005){
+        if(!requiresMotion("LAP") && fabs(pitchOff) > .015){
             if(fabs(Ppos) <= PITCH_LIMIT){
                 BalanceController::set("LAP", "position", Ppos);
                 //cout << "Pitch: " << Ppos << endl;
@@ -305,7 +305,7 @@ void BalanceController::landingControl(){
         }
         
     }
-    else if (phase == LEFT_FOOT)
+    else if (0)//phase == LEFT_FOOT)
     {
         //Get error from moment in x
         double errorX = BalanceController::get("RAT", "m_x") - 0; //Subtract the reference
