@@ -9,7 +9,7 @@ def main():
     robot.command("Disable", "RSR")
     robot.command("Disable", "RSP")
     robot.command("Disable", "REP")
-    robot.setProperties("LSR LSP LEP", "velocity velocity velocity", ".2 .2 .2")
+    robot.setProperties("LSR LSP LEP", "velocity velocity velocity", ".5 .5 .5")
     while True:
         Rsrpos = float(robot.getProperties("RSR", "position"))
         Rsppos = float(robot.getProperties("RSP", "position"))
