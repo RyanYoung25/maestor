@@ -61,7 +61,7 @@ RobotControl::RobotControl(){
     tempOutput.open(logfile.str().c_str());
     power = new PowerControlBoard();
 
-    balancer = new BalanceController();
+    balancer = new BalanceController(*this);
     cout << "Made the balancer" << endl;
 
     frames = 0;

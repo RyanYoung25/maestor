@@ -23,9 +23,12 @@
 #include "Names.h"
 #include "HuboState.h"
 #include "RobotComponent.h"
+#include "RobotControl.h"
 #include "Interpolable.h"
 #include "MetaJointController.h"
 #include "MetaJoint.h"
+
+class RobotControl;
 
 class BalanceController{
 private:
@@ -60,6 +63,9 @@ private:
 
     // The robot which has all of the metajoints and sensors and runs the show
     HuboState* state;
+
+    // The robot control object 
+    RobotControl* robotController;
     
     // CALCULATION METHODS:
         
@@ -87,7 +93,7 @@ private:
     bool requiresMotion(string name);
 
 public:
-    BalanceController();
+    BalanceController(RobotControl& controller);
     virtual ~BalanceController();
 
     // Retrive all of the components that we need to monitor and control inorder to keep balanced. 

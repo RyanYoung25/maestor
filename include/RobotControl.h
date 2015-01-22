@@ -73,6 +73,9 @@ using std::istringstream;
 using std::cout;
 using std::endl;
 
+//Forward Declaration
+class BalanceController;
+
 class RobotControl {
 
 private:

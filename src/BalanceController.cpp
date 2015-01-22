@@ -9,7 +9,7 @@
 /**
  * Create a balance controller
  */
-BalanceController::BalanceController(){
+BalanceController::BalanceController(RobotControl& controller){
     dampingGain[0] = 0.2f;      dampingGain[3] = 0.2f;
     dampingGain[1] = 1.0f;      dampingGain[4] = 1.0f;
     dampingGain[2] = 0.4f;      dampingGain[5] = 0.5f;
@@ -24,6 +24,7 @@ BalanceController::BalanceController(){
     smoothMX = 0.0;
     smoothMY = 0.0;
 
+    robotController = &controller;
     //logfile.open("Controller.log");
 }
 
@@ -360,61 +361,68 @@ void BalanceController::landingControl(){
 /* Code duplication. I know. I should really fix it */
 double BalanceController::get(string name, string property){
 
-    if (!state->nameExists(name)){
-        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
-        return 0;
-    }
 
-    Properties properties = Names::getProps();
+    return robotController->get(name, property);
+    // if (!state->nameExists(name)){
+    //     cout << "Error. No component with name " << name << " registered. Aborting." << endl;
+    //     return 0;
+    // }
 
-    if (properties.count(property) == 0){
-        cout << "Error. No property with name " << property << " registered. Aborting." << endl;
-        return 0;
-    }
+    // Properties properties = Names::getProps();
 
-    double result = 0;
+    // if (properties.count(property) == 0){
+    //     cout << "Error. No property with name " << property << " registered. Aborting." << endl;
+    //     return 0;
+    // }
 
-    if (!state->getComponent(name)->get(properties[property], result)){
-        cout << "Error getting property " << property << " of component " << name << endl;
-        return 0;
-    }
+    // double result = 0;
 
-    return result;
+    // if (!state->getComponent(name)->get(properties[property], result)){
+    //     cout << "Error getting property " << property << " of component " << name << endl;
+    //     return 0;
+    // }
+
+    // return result;
 }
+
 /* More duplication. I know it's bad :( */
 void BalanceController::set(string name, string property, double value){
-    if (!state->nameExists(name)){
-        cout << "Error. No component with name " << name << " registered. Aborting." << endl;
-        return;
-    }
 
-    Properties properties = Names::getProps();
+    robotController->set(name, property, value);
+    // if (!state->nameExists(name)){
+    //     cout << "Error. No component with name " << name << " registered. Aborting." << endl;
+    //     return;
+    // }
 
-    if (properties.count(property) == 0){
-        cout << "Error. No property with name " << property << " registered. Aborting." << endl;
-        return;
-    }
+    // Properties properties = Names::getProps();
 
-    if (!state->getComponent(name)->set(properties[property], value)){
-        cout << "Error setting property " << property << " of component " << name << endl;
-        return;
-    }
+    // if (properties.count(property) == 0){
+    //     cout << "Error. No property with name " << property << " registered. Aborting." << endl;
+    //     return;
+    // }
+
+    // if (!state->getComponent(name)->set(properties[property], value)){
+    //     cout << "Error setting property " << property << " of component " << name << endl;
+    //     return;
+    // }
 }
 
 /* just a little more code duplication. I'll try to fix it when I get something to work */
 bool BalanceController::requiresMotion(string name){
-    RobotComponent* component = state->getComponent(name);
-    if (component == NULL){
-        cout << "Error retrieving component with name " << name << endl;
-        return false;
-    }
-    double step, goal;
-    if (!component->get(POSITION, step) || !component->get(GOAL, goal)){
-        cout << "Error retrieving data from component " << name << endl;
-        return false;
-    }
 
-    return fabs(step - goal) > .001;
+    robotController->requiresMotion(name);
+    // RobotComponent* component = state->getComponent(name);
+    // if (component == NULL){
+    //     cout << "Error retrieving component with name " << name << endl;
+    //     return false;
+    // }
+    // double step, goal;
+    // if (!component->get(POSITION, step) || !component->get(GOAL, goal)){
+    //     cout << "Error retrieving data from component " << name << endl;
+    //     return false;
+    // }
+
+    // return fabs(step - goal) > .001;
 }
 
 /**
