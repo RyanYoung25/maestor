@@ -259,7 +259,7 @@ void BalanceController::landingControl(){
     double KDR= 0.001;       //Constants for the PD loop D for the Roll
     double KDP= 0.001;       //Constants for the PD loop P for the Pitch
 
-    if (1)//phase == RIGHT_FOOT)
+    if (0)//phase == RIGHT_FOOT)
     {
 
         //Get error from moment in x
@@ -316,13 +316,16 @@ void BalanceController::landingControl(){
         }
         
     }
-    else if (0)//phase == LEFT_FOOT)
+    else if (1)//phase == LEFT_FOOT)
     {
         //Get error from moment in x
         double errorX = BalanceController::get("RAT", "m_x") - 0; //Subtract the reference
         //Get error from moment in y
         double errorY = BalanceController::get("RAT", "m_y") - 0; //Subtract the reference
         
+        std::cout << "RAT m_x: " << errorX << std::endl;
+        std::cout << "RAT m_y: " << errorY << std::endl;
+
         //Update the moving average
         errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
         errorY = AlphaY * errorY + (1 - AlphaY) * smoothMY;
@@ -352,6 +355,7 @@ void BalanceController::landingControl(){
 
         if(!requiresMotion("RAR") && fabs(rollOff) > .005){
             if(fabs(Rpos) <= ROLL_LIMIT){
+                std::cout << "Updating the Right ankle roll" << std::endl;
                 BalanceController::set("RAR", "position", Rpos);
                 //cout << "Roll: " << Rpos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
@@ -359,6 +363,7 @@ void BalanceController::landingControl(){
         }
         if(!requiresMotion("RAP") && fabs(pitchOff) > .005){
             if(fabs(Ppos) <= PITCH_LIMIT){
+                std::cout << "Updating the Right ankle pitch" << std::endl;
                 BalanceController::set("RAP", "position", Ppos);
                 //cout << "Pitch: " << Ppos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
