@@ -266,6 +266,9 @@ void BalanceController::landingControl(){
         double errorX = BalanceController::get("LAT", "m_x") - 0; //Subtract the reference
         //Get error from moment in y
         double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
+
+        std::cout << "LAT m_x: " << errorX << std::endl;
+        std::cout << "LAT m_y: " << errorY << std::endl;
         
         //Update the moving average
         errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
@@ -297,6 +300,7 @@ void BalanceController::landingControl(){
 
         if(!requiresMotion("LAR") && fabs(rollOff) > .015){
             if(fabs(Rpos) <= ROLL_LIMIT){
+                std::cout << "Updating the Left ankle roll" << std::endl;
                 BalanceController::set("LAR", "position", Rpos);
                 //cout << "Roll: " << Rpos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
@@ -304,6 +308,7 @@ void BalanceController::landingControl(){
         }
         if(!requiresMotion("LAP") && fabs(pitchOff) > .015){
             if(fabs(Ppos) <= PITCH_LIMIT){
+                std::cout << "Updating the Left ankle pitch" << std::endl;
                 BalanceController::set("LAP", "position", Ppos);
                 //cout << "Pitch: " << Ppos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
