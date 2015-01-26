@@ -55,6 +55,11 @@ void BalanceController::Balance(){
     double RFy = BalanceController::get("RFY", "position");
     double LFx = BalanceController::get("LFX", "position");
     double LFy = BalanceController::get("LFY", "position");
+
+    std::cout << "RFX: " << RFx << std::endl;
+    std::cout << "RFY: " << RFy << std::endl;
+    std::cout << "LFX: " << LFx << std::endl;
+    std::cout << "LFY: " << LFy << std::endl;
     //rounded offsets and adjusted 
     double Rx = (-1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
     double Ry = (-1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
@@ -387,6 +392,8 @@ double BalanceController::get(string name, string property){
 
 /* More duplication. I know it's bad :( */
 void BalanceController::set(string name, string property, double value){
+
+    std::cout << "Setting: " << name << " " << property << " to: " << value << std::endl;
 
     robotController->set(name, property, value);
     // if (!state->nameExists(name)){
