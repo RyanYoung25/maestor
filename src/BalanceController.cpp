@@ -91,16 +91,16 @@ void BalanceController::Balance(){
     std::cout << "Lx: " << Lx << std::endl;
     std::cout << "Ly: " << Ly << std::endl;
 
-    if(!requiresMotion("RFX") && fabs(Rx) > .005){
+    if(!BalanceController::requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
     }
-    if(!requiresMotion("RFY") && fabs(Ry) > .005){
+    if(!BalanceController::requiresMotion("RFY") && fabs(Ry) > .005){
         BalanceController::set("RFY", "position", Rypos);
     }
-    if(!requiresMotion("LFX") && fabs(Lx) > .005){
+    if(!BalanceController::requiresMotion("LFX") && fabs(Lx) > .005){
         BalanceController::set("LFX", "position", Lxpos);
     }
-    if(!requiresMotion("LFY") && fabs(Ly) > .005){
+    if(!BalanceController::requiresMotion("LFY") && fabs(Ly) > .005){
         BalanceController::set("LFY", "position", Lypos);
     }
 }
@@ -309,7 +309,7 @@ void BalanceController::landingControl(){
         
         //Set the new R and P positions
 
-        if(!requiresMotion("LAR") && fabs(rollOff) > .015){
+        if(!BalanceController::requiresMotion("LAR") && fabs(rollOff) > .015){
             if(fabs(Rpos) <= ROLL_LIMIT){
                 std::cout << "Updating the Left ankle roll" << std::endl;
                 BalanceController::set("LAR", "position", Rpos);
@@ -317,7 +317,7 @@ void BalanceController::landingControl(){
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
             }
         }
-        if(!requiresMotion("LAP") && fabs(pitchOff) > .015){
+        if(!BalanceController::requiresMotion("LAP") && fabs(pitchOff) > .015){
             if(fabs(Ppos) <= PITCH_LIMIT){
                 std::cout << "Updating the Left ankle pitch" << std::endl;
                 BalanceController::set("LAP", "position", Ppos);
@@ -367,7 +367,7 @@ void BalanceController::landingControl(){
         
         //Set the new R and P positions
 
-        if(!requiresMotion("RAR") && fabs(rollOff) > .005){
+        if(!BalanceController::requiresMotion("RAR") && fabs(rollOff) > .005){
             if(fabs(Rpos) <= ROLL_LIMIT){
                 std::cout << "Updating the Right ankle roll" << std::endl;
                 BalanceController::set("RAR", "position", Rpos);
@@ -375,13 +375,17 @@ void BalanceController::landingControl(){
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
             }
         }
-        if(!requiresMotion("RAP") && fabs(pitchOff) > .005){
+        if(!BalanceController::requiresMotion("RAP") && fabs(pitchOff) > .005){
             if(fabs(Ppos) <= PITCH_LIMIT){
                 std::cout << "Updating the Right ankle pitch" << std::endl;
                 BalanceController::set("RAP", "position", Ppos);
                 //cout << "Pitch: " << Ppos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
             }
+        }
+        else
+        {
+            std::cout << "Rap either requires motion or pitch off is > than .005" << std::endl;
         }
     }
     
