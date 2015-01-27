@@ -61,10 +61,10 @@ void BalanceController::Balance(){
     std::cout << "LFX: " << LFx << std::endl;
     std::cout << "LFY: " << LFy << std::endl;
     //rounded offsets and adjusted 
-    double Rx = (-1 * floor(ControlDSP[0][0]*1000) / 100) - BaseDSP[0][0]; 
-    double Ry = (-1 * floor(ControlDSP[0][1]*1000) / 100) - BaseDSP[0][1];
-    double Lx = (-1 * floor(ControlDSP[1][0]*1000) / 100) - BaseDSP[1][0];
-    double Ly = (-1 * floor(ControlDSP[1][1]*1000) / 100) - BaseDSP[1][1]; 
+    double Rx = (-1 * floor(ControlDSP[0][0]*1000) / 1000) - BaseDSP[0][0]; 
+    double Ry = (-1 * floor(ControlDSP[0][1]*1000) / 1000) - BaseDSP[0][1];
+    double Lx = (-1 * floor(ControlDSP[1][0]*1000) / 1000) - BaseDSP[1][0];
+    double Ly = (-1 * floor(ControlDSP[1][1]*1000) / 1000) - BaseDSP[1][1]; 
     // If too big go back
     if(fabs(Rx) > .015){
         Rx = ((Rx > 0)-(Rx < 0)) * 0.015; // check the sign and cap it
@@ -118,10 +118,10 @@ void BalanceController::setBaseline(){
      */
     
 
-    BaseDSP[0][0] = -1 * floor(ControlDSP[0][0]*100) / 1000; 
-    BaseDSP[0][1] = -1 * floor(ControlDSP[0][1]*100) / 1000;
-    BaseDSP[1][0] = -1 * floor(ControlDSP[1][0]*100) / 1000;
-    BaseDSP[1][1] = -1 * floor(ControlDSP[1][1]*100) / 1000;
+    BaseDSP[0][0] = -1 * floor(ControlDSP[0][0]*1000) / 1000; 
+    BaseDSP[0][1] = -1 * floor(ControlDSP[0][1]*1000) / 1000;
+    BaseDSP[1][0] = -1 * floor(ControlDSP[1][0]*1000) / 1000;
+    BaseDSP[1][1] = -1 * floor(ControlDSP[1][1]*1000) / 1000;
 }
 
 /**
@@ -262,10 +262,10 @@ double BalanceController::runPD(double P, double D, double PastError, double Err
 
 void BalanceController::landingControl(){
     //TODO: make constants
-    double KPR= 0.01;       //Constants for the PD loop P for the Roll
-    double KPP= 0.01;       //Constants for the PD loop P for the Pitch
-    double KDR= 0.01;       //Constants for the PD loop D for the Roll
-    double KDP= 0.01;       //Constants for the PD loop P for the Pitch
+    double KPR= 0.001;       //Constants for the PD loop P for the Roll
+    double KPP= 0.001;       //Constants for the PD loop P for the Pitch
+    double KDR= 0.001;       //Constants for the PD loop D for the Roll
+    double KDP= 0.001;       //Constants for the PD loop P for the Pitch
 
     if (0)//phase == RIGHT_FOOT)
     {
@@ -451,7 +451,7 @@ void BalanceController::set(string name, string property, double value){
 /* just a little more code duplication. I'll try to fix it when I get something to work */
 bool BalanceController::requiresMotion(string name){
 
-    robotController->requiresMotion(name);
+    return robotController->requiresMotion(name);
     // RobotComponent* component = state->getComponent(name);
     // if (component == NULL){
     //     cout << "Error retrieving component with name " << name << endl;
