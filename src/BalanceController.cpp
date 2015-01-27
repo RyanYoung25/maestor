@@ -299,8 +299,8 @@ void BalanceController::landingControl(){
         double Rpos = LARpos + rollOff;   
         double Ppos = LAPpos + pitchOff;
 
-        std::cout << "Rolloff: " + rollOff << std::endl;
-        std::cout << "Pitchoff: " + pitchOff << std::endl;
+        std::cout << "Rolloff: " << rollOff << std::endl;
+        std::cout << "Pitchoff: " << pitchOff << std::endl;
         
         //Set the new R and P positions
 
