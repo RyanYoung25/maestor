@@ -180,6 +180,9 @@ void BalanceController::ZMPcalculation(){
     double totalMX;    // total moment in the x
     double totalMY;    // total moment in the y
 
+    std::cout << "Rz: " << Rz << std::endl;
+    std::cout << "Lz: " << Lz << std::endl; 
+
     // All calculations are from RAINBOW code
     if(Rz > 30 && Lz > 30)
     {
@@ -295,6 +298,9 @@ void BalanceController::landingControl(){
         // New position
         double Rpos = LARpos + rollOff;   
         double Ppos = LAPpos + pitchOff;
+
+        std::cout << "Rolloff: " + rollOff << std::endl;
+        std::cout << "Pitchoff: " + pitchOff << std::endl;
         
         //Set the new R and P positions
 
