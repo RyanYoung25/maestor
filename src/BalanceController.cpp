@@ -364,10 +364,16 @@ void BalanceController::landingControl(){
 
         std::cout << "Rolloff: " << rollOff << std::endl;
         std::cout << "Pitchoff: " << pitchOff << std::endl;
+
+        //Booleans to say if the joint needs to move
+        bool rollFreeToMove = !BalanceController::requiresMotion("RAR");
+        bool pitchFreeToMove = !BalanceController::requiresMotion("RAP");
         
+        std::cout << "Roll free to move: " << rollFreeToMove << std::endl;
+        std::cout << "Pitch free to move: " << pitchFreeToMove << std::endl;
         //Set the new R and P positions
 
-        if(!BalanceController::requiresMotion("RAR") && fabs(rollOff) > .005){
+        if( rollFreeToMove && fabs(rollOff) > .005){
             if(fabs(Rpos) <= ROLL_LIMIT){
                 std::cout << "Updating the Right ankle roll" << std::endl;
                 BalanceController::set("RAR", "position", Rpos);
@@ -375,7 +381,7 @@ void BalanceController::landingControl(){
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
             }
         }
-        if(!BalanceController::requiresMotion("RAP") && fabs(pitchOff) > .005){
+        if(pitchFreeToMove && (fabs(pitchOff) > .005)){
             if(fabs(Ppos) <= PITCH_LIMIT){
                 std::cout << "Updating the Right ankle pitch" << std::endl;
                 BalanceController::set("RAP", "position", Ppos);
