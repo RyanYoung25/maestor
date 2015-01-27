@@ -86,6 +86,11 @@ void BalanceController::Balance(){
     double Lxpos = LFx + Lx;
     double Lypos = LFy + Ly;
 
+    std::cout << "Rx: " << Rx << std::endl;
+    std::cout << "Ry: " << Ry << std::endl;
+    std::cout << "Lx: " << Lx << std::endl;
+    std::cout << "Ly: " << Ly << std::endl;
+
     if(!requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
     }
@@ -356,6 +361,9 @@ void BalanceController::landingControl(){
         // New position
         double Rpos = RARpos + rollOff;   
         double Ppos = RAPpos + pitchOff;
+
+        std::cout << "Rolloff: " << rollOff << std::endl;
+        std::cout << "Pitchoff: " << pitchOff << std::endl;
         
         //Set the new R and P positions
 
