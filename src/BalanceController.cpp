@@ -111,6 +111,22 @@ void BalanceController::Balance(){
  */
 void BalanceController::setBaseline(){
     getCurrentSupportPhase();
+
+    double Rz = BalanceController::get("RAT", "f_z");
+    double Lz = BalanceController::get("LAT", "f_z");
+
+    double offset = Rz -Lz;
+
+    if(offset > 0)
+    {
+        RightZAdj = offset;
+        LeftZAdj = 0;
+    }
+    else
+    {
+        LeftZAdj = -1 * offset;
+        RightZAdj = 0;
+    }
     ZMPcalculation();
     DSPControl();
     /*
@@ -173,10 +189,10 @@ void BalanceController::ZMPcalculation(){
     
     double Rx = BalanceController::get("RAT", "m_x");
     double Ry = BalanceController::get("RAT", "m_y");
-    double Rz = BalanceController::get("RAT", "f_z");
+    double Rz = BalanceController::get("RAT", "f_z") - RightZAdj;
     double Lx = BalanceController::get("LAT", "m_x");
     double Ly = BalanceController::get("LAT", "m_y");
-    double Lz = BalanceController::get("LAT", "f_z");
+    double Lz = BalanceController::get("LAT", "f_z") - LeftZAdj;
     double RAx = -1 * BalanceController::get("RFX", "position"); 
     double RAy = -1 * BalanceController::get("RFY", "position");
     double LAx = -1 * BalanceController::get("LFX", "position");
