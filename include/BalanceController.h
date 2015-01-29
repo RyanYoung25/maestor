@@ -47,6 +47,11 @@ private:
     double ControlDSP[2][2];    // Right:0 Left:1 / X:0 Y:1
     double Damping[4];   // RAP:0 RAR:1 LAP:2 LAR:3
     //double Landing[4];   // RAP:0 RAR:1 LAP:2 LAR:3
+    
+    //Force Torque adjustments 
+    double RightZAdj;
+    double LeftZAdj;
+    
 
     //Landing information 
     
