@@ -107,6 +107,8 @@ public:
     double getZMP(int value); // 0:X 1:Y  Filtered
     void setBaseline();// Take the current values from the DSP control function and set those as the baseline zero. Future values are modified by this. 
     void Balance();    // move joints to balance the robot, stablize the zmp over the support polygon. 
+    void calibrate();
+    void WalkControl();
     // Balance has two differnt ways of controlling the joints, if the joint is in motion because someone else set it's position then the function will only
     // alter the interpolation steps using the offsets it generates. If the joint is not moving then it attempts to balance it's self 
     // by setting new positions based off of offsets and the current joint position.  

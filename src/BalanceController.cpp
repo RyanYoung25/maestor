@@ -33,6 +33,11 @@ BalanceController::BalanceController(RobotControl& controller){
  */
 BalanceController::~BalanceController(){}
 
+void BalanceController::WalkControl(){
+    Balance();          //Call the balancer to balance the robot
+    landingControl();   //Call the landing controller
+}
+
 /**
  * Turn try to Balance the robot. It calcluates the correct offsets 
  * for standing on two feet and balancing the robot on uneven surfaces. 
@@ -91,6 +96,8 @@ void BalanceController::Balance(){
     std::cout << "Lx: " << Lx << std::endl;
     std::cout << "Ly: " << Ly << std::endl;
 
+    //TODO: add support phase dependent balancing
+
     if(!BalanceController::requiresMotion("RFX") && fabs(Rx) > .005){
         BalanceController::set("RFX", "position", Rxpos);
     }
@@ -105,28 +112,30 @@ void BalanceController::Balance(){
     }
 }
 
+
+void BalanceController::calibrate()
+{
+    //Zero the force torque sensors 
+    
+    //This might belong in the initialize sensors part. But we'll see
+    //if it works first.
+
+    double Rz = BalanceController::get("RAT", "f_z");
+    double Lz = BalanceController::get("LAT", "f_z");
+
+    RightZAdj = Rz;
+    LeftZAdj = Lz;
+
+}
+
+
+
 /**
  * Set a balance base line to get rid of the noise. This assumes
  * you start balancing when the robot is balanced. 
  */
 void BalanceController::setBaseline(){
     getCurrentSupportPhase();
-
-    double Rz = BalanceController::get("RAT", "f_z");
-    double Lz = BalanceController::get("LAT", "f_z");
-
-    double offset = Rz -Lz;
-
-    if(offset > 0)
-    {
-        RightZAdj = offset;
-        LeftZAdj = 0;
-    }
-    else
-    {
-        LeftZAdj = -1 * offset;
-        RightZAdj = 0;
-    }
     ZMPcalculation();
     DSPControl();
     /*
@@ -277,22 +286,20 @@ double BalanceController::runPD(double P, double D, double PastError, double Err
 }
 
 void BalanceController::landingControl(){
-    //TODO: make constants
+    //TODO: make constants, and tweak these
     double KPR= 0.001;       //Constants for the PD loop P for the Roll
     double KPP= 0.001;       //Constants for the PD loop P for the Pitch
     double KDR= 0.001;       //Constants for the PD loop D for the Roll
     double KDP= 0.001;       //Constants for the PD loop P for the Pitch
 
-    if (0)//phase == RIGHT_FOOT)
+    //Do landing for the left foot if we are supported by the right foot
+    if (phase == RIGHT_FOOT)
     {
 
         //Get error from moment in x
         double errorX = BalanceController::get("LAT", "m_x") - 0; //Subtract the reference
         //Get error from moment in y
         double errorY = BalanceController::get("LAT", "m_y") - 0; //Subtract the reference
-
-        std::cout << "LAT m_x: " << errorX << std::endl;
-        std::cout << "LAT m_y: " << errorY << std::endl;
         
         //Update the moving average
         errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
@@ -319,15 +326,11 @@ void BalanceController::landingControl(){
         // New position
         double Rpos = LARpos + rollOff;   
         double Ppos = LAPpos + pitchOff;
-
-        std::cout << "Rolloff: " << rollOff << std::endl;
-        std::cout << "Pitchoff: " << pitchOff << std::endl;
         
         //Set the new R and P positions
 
         if(!BalanceController::requiresMotion("LAR") && fabs(rollOff) > .015){
             if(fabs(Rpos) <= ROLL_LIMIT){
-                std::cout << "Updating the Left ankle roll" << std::endl;
                 BalanceController::set("LAR", "position", Rpos);
                 //cout << "Roll: " << Rpos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
@@ -335,7 +338,6 @@ void BalanceController::landingControl(){
         }
         if(!BalanceController::requiresMotion("LAP") && fabs(pitchOff) > .015){
             if(fabs(Ppos) <= PITCH_LIMIT){
-                std::cout << "Updating the Left ankle pitch" << std::endl;
                 BalanceController::set("LAP", "position", Ppos);
                 //cout << "Pitch: " << Ppos << endl;
                 //logfile << "ErrorX: " << errorX << " ErrorY: " << errorY << " RollOff:  " << rollOff << " PitchOff: " << pitchOff << std::endl;
@@ -343,16 +345,14 @@ void BalanceController::landingControl(){
         }
         
     }
-    else if (1)//phase == LEFT_FOOT)
+    //Do landing on the right foot if we are supported by the left foot
+    else if (phase == LEFT_FOOT)
     {
         //Get error from moment in x
         double errorX = BalanceController::get("RAT", "m_x") - 0; //Subtract the reference
         //Get error from moment in y
         double errorY = BalanceController::get("RAT", "m_y") - 0; //Subtract the reference
         
-        std::cout << "RAT m_x: " << errorX << std::endl;
-        std::cout << "RAT m_y: " << errorY << std::endl;
-
         //Update the moving average
         errorX = AlphaX * errorX + (1 - AlphaX) * smoothMX;
         errorY = AlphaY * errorY + (1 - AlphaY) * smoothMY;
@@ -378,17 +378,11 @@ void BalanceController::landingControl(){
         double Rpos = RARpos + rollOff;   
         double Ppos = RAPpos + pitchOff;
 
-        std::cout << "Rolloff: " << rollOff << std::endl;
-        std::cout << "Pitchoff: " << pitchOff << std::endl;
-
         //Booleans to say if the joint needs to move
         bool rollFreeToMove = !BalanceController::requiresMotion("RAR");
         bool pitchFreeToMove = !BalanceController::requiresMotion("RAP");
         
-        std::cout << "Roll free to move: " << rollFreeToMove << std::endl;
-        std::cout << "Pitch free to move: " << pitchFreeToMove << std::endl;
         //Set the new R and P positions
-
         if( rollFreeToMove && fabs(rollOff) > .005){
             if(fabs(Rpos) <= ROLL_LIMIT){
                 std::cout << "Updating the Right ankle roll" << std::endl;
@@ -413,73 +407,19 @@ void BalanceController::landingControl(){
     
 }
 
-/* Code duplication. I know. I should really fix it */
+/* Wrapper for get from robot control */
 double BalanceController::get(string name, string property){
-
-
     return robotController->get(name, property);
-    // if (!state->nameExists(name)){
-    //     cout << "Error. No component with name " << name << " registered. Aborting." << endl;
-    //     return 0;
-    // }
-
-    // Properties properties = Names::getProps();
-
-    // if (properties.count(property) == 0){
-    //     cout << "Error. No property with name " << property << " registered. Aborting." << endl;
-    //     return 0;
-    // }
-
-    // double result = 0;
-
-    // if (!state->getComponent(name)->get(properties[property], result)){
-    //     cout << "Error getting property " << property << " of component " << name << endl;
-    //     return 0;
-    // }
-
-    // return result;
 }
 
-/* More duplication. I know it's bad :( */
+/* Wrapper for set from robot control*/
 void BalanceController::set(string name, string property, double value){
-
-    std::cout << "Setting: " << name << " " << property << " to: " << value << std::endl;
-
     robotController->set(name, property, value);
-    // if (!state->nameExists(name)){
-    //     cout << "Error. No component with name " << name << " registered. Aborting." << endl;
-    //     return;
-    // }
-
-    // Properties properties = Names::getProps();
-
-    // if (properties.count(property) == 0){
-    //     cout << "Error. No property with name " << property << " registered. Aborting." << endl;
-    //     return;
-    // }
-
-    // if (!state->getComponent(name)->set(properties[property], value)){
-    //     cout << "Error setting property " << property << " of component " << name << endl;
-    //     return;
-    // }
 }
 
-/* just a little more code duplication. I'll try to fix it when I get something to work */
+/* Wrapper for requiresmotion from robot control */
 bool BalanceController::requiresMotion(string name){
-
     return robotController->requiresMotion(name);
-    // RobotComponent* component = state->getComponent(name);
-    // if (component == NULL){
-    //     cout << "Error retrieving component with name " << name << endl;
-    //     return false;
-    // }
-    // double step, goal;
-    // if (!component->get(POSITION, step) || !component->get(GOAL, goal)){
-    //     cout << "Error retrieving data from component " << name << endl;
-    //     return false;
-    // }
-
-    // return fabs(step - goal) > .001;
 }
 
 /**

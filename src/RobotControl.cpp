@@ -623,6 +623,8 @@ void RobotControl::command(string name, string target){
             cout << "Initialize Sensors command failed. Aborting." << endl;
             return;
         }
+
+        balancer->calibrate();
         break;
     case ZERO:
         component = state->getComponent(target);
