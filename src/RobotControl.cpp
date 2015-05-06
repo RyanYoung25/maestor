@@ -55,9 +55,9 @@ RobotControl::RobotControl(){
     Names::initPropertyMap();
     Names::initCommandMap();
 
-    ostringstream logfile;
-    logfile << "RobotControl.log";
-    tempOutput.open(logfile.str().c_str());
+    //ostringstream logfile;
+    //logfile << "RobotControl.log";
+    //tempOutput.open(logfile.str().c_str());
     power = new PowerControlBoard();
 
     balancer = new BalanceController();
@@ -137,7 +137,7 @@ void RobotControl::updateHook(){
                     component->get(GOAL, pos);
                 }
                 component->get(MOTION_TYPE, mode);
-                tempOutput << component->getName() << ": " << pos << endl;
+                //tempOutput << component->getName() << ": " << pos << endl;
                 referenceChannel->setReference(component->getName(), pos, (hubo_mode_type_t)mode);
                 string key(WRITE_KEY);
                 traj = trajectories.get(key);
