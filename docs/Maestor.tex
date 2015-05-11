@@ -158,9 +158,9 @@ $<$Command$>$:
 \noindent The differences between each mode of operation are as follows:
 	\begin{description}
 		\item[sim] \hfill \\
-		-Hubo-Ach runs in simulation mode, and opens the openHubo simulation. Physics is enabled and the positions of motors can be retrieved. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran MAESTOR from will also require elevated privileges after you give them to OpenRave.
+		-Hubo-Ach runs in simulation mode, and opens the openHubo simulation. Physics is enabled and the positions of motors can be retrieved. Simulation mode with physics enables will run slightly slower than real time. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran MAESTOR from will also require elevated privileges after you give them to OpenRave.
 		\item[sim-real] \hfill \\
-		-Hubo-Ach runs in simulation mode without physics. This option is meant for previewing intended robot motion, and should be much faster. You can not retrieve the positions of the motors with physics off. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran MAESTOR from will also require elevated privileges after you give them to OpenRave.
+		-Hubo-Ach runs in simulation mode without physics. This option is meant for previewing intended robot motion, and should be much faster than simulation with physics. You can not retrieve the positions of the motors with physics off. Two terminals will open, one that is running OpenRave and another that is running roscore. The terminal running OpenRave will require elevated privileges. The terminal that you ran MAESTOR from will also require elevated privileges after you give them to OpenRave.
 		\item[real] \hfill \\ 
 		-Hubo-Ach runs in hardware mode. This option is meant for running MAESTOR on the actual robot. No simulation is opened and a hardware CAN interface is expected. Your terminal will immediately ask for your password then a bunch of text will appear over the password prompt. You can still type your password even though the text is appearing on screen and you need to. 
 	\end{description}
@@ -207,7 +207,7 @@ To create a script you can run directly, the script must be executable which can
 This command is not a part of MAESTOR but it gives all users on a system the permission to execute that file. For both running scripts directly and running them with the maestor command you need to have the proper shebang. An example of the Python shebang is:
 
 \begin{center}
-	\#! usr/bin/env Python
+	\#!usr/bin/env python
 \end{center} 
 
 To import the maestor object from the MAESTOR module add this line to your script:
@@ -225,11 +225,13 @@ This will allow you to create the maestor object. You can create the maestor obj
 Where robot is any variable name you want. From there you can make all of the calls by calling the functions on robot as an example:
 
 \begin{center}
-	\textit{robot.initRobot("")}
+	\textit{robot.setProperty("RSP", "position", -1)}
 \end{center}
 
 \noindent \textbf{*NOTE*}\\
 \noindent Make sure that your script knows where the Maestor.py module file is. This can be done by either adding it to the Python path or having a copy in the directory where your script is. If your script does not know where the Maestor.py module is it will return a lot of error messages.  
+
+Most scripts will require that you run the start up sequence that is described in Section \ref{quickStart}
 
 \subsubsection{Running Your Scripts}
 
@@ -294,7 +296,7 @@ MAESTOR provides different functions through ROS services that can be called thr
 		& Ignore all of the joint columns in the trajectory named $<$Traj$>$  \\ \hline
 		
 		initRobot($<$Path$>$) 
-		& Initialize the robot with the init file specified by $<$Path$>$. The empty string "" denotes the default path.  \\ \hline
+		& Initialize the robot with the init file specified by $<$Path$>$. The empty string "" denotes the default path. Do not run this function more than once in a session.  \\ \hline
 		
 		startTrajectory($<$Traj$>$) 
 		& Starts the trajectory with the name $<$Traj$>$  \\ \hline
@@ -543,6 +545,11 @@ To move A Single Joint:
 	\begin{center}
 		\textit{setProperty($<$Joint$>$, "position", $<$value$>$)}
 	\end{center}
+	
+A grounded example of this command could be:
+	\begin{center}
+		\textit{setProperty("RSP", "position", -1)}
+	\end{center}
 
 When you set the position of a joint to a value MAESTOR moves the joints at the current speed that it is set at to that position. The value should be in radians. A good check for safe positions for HUBO is to use Hubo-in-the-browser written by William Hilton. 
 
@@ -657,7 +664,7 @@ Once MAESTOR is started it will run continuously in the back ground as will all 
 	\end{center}
 
 	
-\section{Quick Start}
+\section{Quick Start} \label{quickStart}
 
 If you want to get started immediately and read about the details of what you can do later, follow these steps:
 
