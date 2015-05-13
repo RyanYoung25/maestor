@@ -31,7 +31,7 @@
         <controlled name="LSR"/>
         <controlled name="LEP"/>
     </component>
-    <component type="HuboMotor" name="RSP" boardNum="11" vel="1.0" upperLim="3" lowerLim="-3.14">
+    <component type="HuboMotor" name="RSP" boardNum="11" vel="1.0" upperLim="3" lowerLim="-3.14"/>
     <component type="HuboMotor" name="RSR" boardNum="12" vel="1.0" upperLim="2.8" lowerLim="0"/>
     <component type="HuboMotor" name="RSY" boardNum="13" vel="1.0" upperLim="1.58" lowerLim="-1.57"/>
     <component type="HuboMotor" name="REP" boardNum="14" vel="1.0" upperLim="0.00" lowerLim="-2.50">
