@@ -56,6 +56,10 @@ private:
     bool enabled;                    //Whether the motor has motion enabled
     int boardNum;                   //Board number as referenced in Hubo-ach
 
+    //Soft limits for the motors
+    double lowerLim;
+    double upperLim;
+
 
 public:
 
@@ -66,6 +70,8 @@ public:
     bool set(PROPERTY property, double value);
 
     void setBoardNum(int boardNum);
+    void setLowerLim(double value);
+    void setUpperLim(double value);
 
     bool requiresMotion();   
 };

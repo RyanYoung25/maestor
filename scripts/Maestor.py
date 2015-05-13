@@ -24,6 +24,7 @@ class maestor:
         rospy.wait_for_service("startTrajectory")
         rospy.wait_for_service("stopTrajectory")
         rospy.wait_for_service("setProperty")
+        self.shouldWait = False
         print "All services are available"
     
     def initRobot(self, path):
@@ -37,6 +38,12 @@ class maestor:
         try:
             service = rospy.ServiceProxy("setProperties", setProperties)
             service(names, properties, values)
+
+            #If should wait for the joints
+            if self.shouldWait:
+                jointList = names.split(" ")
+                self.waitForJointList(jointList)
+
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
@@ -44,6 +51,10 @@ class maestor:
         try:
             service = rospy.ServiceProxy("setProperty", setProperty)
             service(name, prop, value)
+
+            if self.shouldWait:
+                self.waitForJoint(name)
+
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
     
@@ -142,3 +153,18 @@ class maestor:
     def waitForJoint(self, name):
         while self.requiresMotion(name):
             pass
+
+    def waitForJointList(self, jointList):
+        #Wait for a list of joints, each element of the list 
+        # must be a string
+        for joint in jointList:
+            waitForJoint(joint)
+
+    def defaultWaitForJoint(self, shouldWait=False):
+        #If should wait becomes true, make it so that 
+        # every time you move a joint you block until 
+        # it stops
+        self.shouldWait = shouldWait
+
+    #robot.waitForJointList(["RSP", "LSP", "RSR", "LSR"])
+

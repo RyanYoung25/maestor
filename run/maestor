@@ -35,7 +35,7 @@ case "$1" in
 		echo 'sim-real      : Starts maestor with hubo-ach in sim-real mode'
 		echo 'sim           : Starts maestor with hubo-ach in sim mode'
 		echo 'real          : Starts maestor with hubo-ach in real mode'
-		echo 'kill			: Kills maestor, roscore, and runs hubo-ach killall'
+		echo 'kill          : Kills maestor, roscore, and runs hubo-ach killall'
 		echo
 		exit 1
 	;;

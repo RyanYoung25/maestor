@@ -35,6 +35,10 @@ HuboMotor::HuboMotor(){
 
     enabled = false;
     boardNum = -1;
+
+    //Default limits, 
+    upperLim = 3.14;
+    lowerLim = -3.14;
 }
 
 /**
@@ -55,6 +59,16 @@ bool HuboMotor::set(PROPERTY property, double value){
     case GOAL:
         if (value == interStep)
             break;
+
+        //Soft limits for joint position values
+        if (value > upperLim)
+        {
+            value = upperLim;
+        }
+        else if(value < lowerLim)
+        {
+            value = lowerLim;
+        }
 
         double currVel;
         get(VELOCITY, currVel);
@@ -189,4 +203,26 @@ bool HuboMotor::requiresMotion(){
  */
 void HuboMotor::setBoardNum(int boardNum){
     this->boardNum = boardNum;
+}
+
+/**
+ * Set the upper limit for this joint, the limit is set at 
+ * configuration time from the hubo model xml file. 
+ * @param value The value that the upper limit should be set to
+ */
+void HuboMotor::setUpperLim(double value)
+{
+    //There is no upper limit error check. 
+    upperLim = value;
+}
+
+/**
+ * Set the lower limit for this joint, the limit is set at 
+ * configuration time from the hubo model xml file. 
+ * @param value The value that the upper limit should be set to
+ */
+void HuboMotor::setLowerLim(double value)
+{
+    //There is no lower limit error check. 
+    lowerLim = value;
 }

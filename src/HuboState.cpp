@@ -191,6 +191,20 @@ RobotComponent* HuboState::HuboMotorFromXML(xml_node node, HuboMotor* component,
         return NULL;
     }
 
+    //Add the softlimits into the software.
+
+    if (!node.attribute("upperLim").empty())
+    {
+        component->setUpperLim(node.attribute("upperLim").as_double());
+    }
+
+    if (!node.attribute("lowerLim").empty())
+    {
+        component->setLowerLim(node.attribute("lowerLim").as_double());
+    }
+
+
+
     component->setFrequency(frequency);
     component->setName(node.attribute("name").as_string());
 
