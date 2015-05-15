@@ -13,13 +13,13 @@ def setVelocities():
     robot.setProperties("RSP RSR RSY REP NKY", "velocity velocity velocity velocity velocity", "1 1 1 1 .5")
 
 def resetVelocities():
-    robot.setProperties("RSP RSR RSY REP NKY", "velocity velocity velocity velocity velocity", ".3 .3 .3 .3 .3")
+    robot.setProperties("RSP RSR RSY REP NKY", "velocity velocity velocity velocity velocity", "1 1 1 1 1")
 
 def wave():
     robot.setProperties("RSY RSR", "position position", "-1.57 -1.35")
     robot.waitForJoint("RSR")
     robot.waitForJoint("RSY")
-    for i in range(0, 3):
+    for i in range(0, 1):
         robot.setProperty("REP", "position", -1.7)
         robot.waitForJoint("REP")
         robot.setProperty("REP", "position", -.7)
