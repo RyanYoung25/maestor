@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Comprehensive install script for Maestor, and all dependencies.
-# Installs Ros Fuerte, Orocos, OpenRAVE, Maestro, Hubo-Ach, OpenHubo.
+# Installs Ros Fuerte, OpenRAVE, Maestor, Hubo-Ach, OpenHubo.
 #
 # Options: None
 # Dependencies:
@@ -65,6 +65,12 @@ echo "Installing MAESTOR..."
 bash install-maestor.sh -y
 if [[ $? != 0 ]]; then 
     echo "maestor did not install. Try running install-maestor.sh"
+    exit $?
+fi
+echo "Updating PYTHONPATH..."
+bash update-pythonpath.sh -y
+if [[ $? != 0 ]]; then 
+    echo "The PYTHONPATH was not updated. Try running update-pythonpath.sh"
     exit $?
 fi
 echo "Installing OpenHUBO..."

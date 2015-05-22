@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script installs ROS Fuerte with the Orocos Toolchain and
+# This script installs ROS Fuerte with the
 # openRAVE stacks.
 #
 # Options:
