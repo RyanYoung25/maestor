@@ -90,7 +90,7 @@ sudo ./first-time-install-hubo-ach.sh
 
 #Hubo-Ach
 
-source /opt/ros/fuerte/setup.bash
+source /opt/ros/indigo/setup.bash
 
 
 
