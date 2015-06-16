@@ -1,0 +1,44 @@
+#! /bin/bash
+
+case "$1" in
+# Start the maestor console
+	'console' )
+		/opt/ros/fuerte/stacks/maestor/run/console.sh
+	;;
+
+# Start in simulation without physics, real time
+	'sim-real' )
+		/opt/ros/fuerte/stacks/maestor/run/sim-real.sh 
+	;;
+
+# Start in simulation mode with physics
+	'sim' )
+		/opt/ros/fuerte/stacks/maestor/run/sim.sh 
+	;;
+
+# Start in hardware mode
+	'real' )
+		/opt/ros/fuerte/stacks/maestor/run/real.sh 
+	;;
+# Kill maestor
+	'kill' )
+		/opt/ros/fuerte/stacks/maestor/run/kill-maestor.sh
+	;;
+# Run a script found in the maestor scripts directory
+	'script' )
+		/opt/ros/fuerte/stacks/maestor/scripts/$2.py
+	;;
+
+	*) 
+		echo
+		echo 'console       : Starts the maestor console'
+		echo 'sim-real      : Starts maestor with hubo-ach in sim-real mode'
+		echo 'sim           : Starts maestor with hubo-ach in sim mode'
+		echo 'real          : Starts maestor with hubo-ach in real mode'
+		echo 'kill          : Kills maestor, roscore, and runs hubo-ach killall'
+		echo
+		exit 1
+	;;
+esac
+
+exit 0

@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<robot name="testrig">
+    <component type="HuboMotor" name="WST" boardNum="0" vel="1.0" upperLim="1" lowerLim="-1"/>
+    <component type="HuboMotor" name="NKY" boardNum="1" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="NK1" boardNum="2" vel="5.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="NK2" boardNum="3" vel="5.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="NeckRollPitch">
+        <parameter name="NKR" vel=".1"/>
+        <parameter name="NKP" vel=".1"/>
+        <controlled name="NK1"/>
+        <controlled name="NK2"/>
+    </component>
+    <component type="HuboMotor" name="LSP" boardNum="4" vel="1.0" upperLim="3" lowerLim="-2.95"/>
+    <component type="HuboMotor" name="LSR" boardNum="5" vel="1.0" upperLim="2.8" lowerLim="0"/>
+    <component type="HuboMotor" name="LSY" boardNum="6" vel="1.0" upperLim="1.57" lowerLim="-1.58"/>
+    <component type="HuboMotor" name="LEP" boardNum="7" vel="1.0" upperLim="0" lowerLim="-2.5">
+        <aliases>
+            <value>LEB</value>
+        </aliases>
+    </component>
+    <component type="HuboMotor" name="LWY" boardNum="8" vel="1.0" upperLim="1.6" lowerLim="-2.85"/>
+    <!-- <component type="HuboMotor" name="LWR" boardNum="9" vel="1.0"/> -->
+    <component type="HuboMotor" name="LWP" boardNum="10" vel="1.0" upperLim="1.3" lowerLim="-1.1"/> 
+
+    <component type="LeftArmWristXYZ">
+        <parameter type="ARM" name="LAX" default="0.0"/>
+        <parameter type="ARM" name="LAY" default="0.2"/>
+        <parameter type="ARM" name="LAZ" default="-0.3"/>
+        <controlled name="LSY"/>
+        <controlled name="LSP"/>
+        <controlled name="LSR"/>
+        <controlled name="LEP"/>
+    </component>
+    <component type="HuboMotor" name="RSP" boardNum="11" vel="1.0" upperLim="3" lowerLim="-2.95"/>
+    <component type="HuboMotor" name="RSR" boardNum="12" vel="1.0" upperLim="0" lowerLim="-2.8"/>
+    <component type="HuboMotor" name="RSY" boardNum="13" vel="1.0" upperLim="1.58" lowerLim="-1.57"/>
+    <component type="HuboMotor" name="REP" boardNum="14" vel="1.0" upperLim="0.00" lowerLim="-2.50">
+        <aliases>
+            <value>REB</value>
+        </aliases>
+    </component>
+    <component type="HuboMotor" name="RWY" boardNum="15" vel="1.0" upperLim="2.85" lowerLim="-1.60"/>
+    <!-- <component type="HuboMotor" name="RWR" boardNum="16" vel="1.0"/> -->
+    <component type="HuboMotor" name="RWP" boardNum="17" vel="1.0" upperLim="1.30" lowerLim="-1.10"/>
+    <component type="RightArmWristXYZ">
+        <parameter type="ARM" name="RAX" default="0.0"/>
+        <parameter type="ARM" name="RAY" default="-0.2"/>
+        <parameter type="ARM" name="RAZ" default="-0.3"/>
+        <controlled name="RSY"/>
+        <controlled name="RSP"/>
+        <controlled name="RSR"/>
+        <controlled name="REP"/>
+    </component>
+    <component type="HuboMotor" name="LHY" boardNum="19" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="LHR" boardNum="20" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="LHP" boardNum="21" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="LKP" boardNum="22" vel="1.0" upperLim="3.14" lowerLim="-3.14">
+        <aliases>
+            <value>LKN</value>
+        </aliases>
+    </component>
+    <component type="HuboMotor" name="LAP" boardNum="23" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="LAR" boardNum="24" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="RHY" boardNum="26" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="RHR" boardNum="27" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="RHP" boardNum="28" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="RKP" boardNum="29" vel="1.0" upperLim="3.14" lowerLim="-3.14">
+        <aliases>
+            <value>RKN</value>
+        </aliases>
+    </component>
+    <component type="HuboMotor" name="RAP" boardNum="30" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="HuboMotor" name="RAR" boardNum="31" vel="1.0" upperLim="3.14" lowerLim="-3.14"/>
+    <component type="LowerBodyLeg">
+        <parameter name="LFX" vel=".02"/>
+        <parameter name="LFY" vel=".02"/>
+        <parameter name="LFZ" default="-.56" vel=".02"/>
+        <parameter name="LFYAW" vel=".02"/>
+        <parameter name="LFROLL" vel=".02"/>
+        <parameter name="LFPITCH" vel=".02"/>
+        <controlled name="LHY"/>
+        <controlled name="LHR"/>
+        <controlled name="LHP"/>
+        <controlled name="LKP"/>
+        <controlled name="LAP"/>
+        <controlled name="LAR"/>
+    </component>
+    <!--
+    <component type="GlobalLeg">
+        <parameter name="LFGX" vel=".02"/>
+        <parameter name="LFGY" vel=".02"/>
+        <parameter name="LFGZ" default="-.56" vel=".02"/>
+        <parameter name="LFGYAW" vel=".02"/>
+        <parameter name="LFGROLL" vel=".02"/>
+        <parameter name="LFGPITCH" vel=".02"/>
+        <controlled name="LHY"/>
+        <controlled name="LHR"/>
+        <controlled name="LHP"/>
+        <controlled name="LKP"/>
+        <controlled name="LAP"/>
+        <controlled name="LAR"/>
+    </component>
+    -->
+    <component type="LowerBodyLeg">
+        <parameter name="RFX" vel=".02"/>
+        <parameter name="RFY" vel=".02"/>
+        <parameter name="RFZ" default="-.56" vel=".02"/>
+        <parameter name="RFYAW" vel=".02"/>
+        <parameter name="RFROLL" vel=".02"/>
+        <parameter name="RFPITCH" vel=".02"/>
+        <controlled name="RHY"/>
+        <controlled name="RHR"/>
+        <controlled name="RHP"/>
+        <controlled name="RKP"/>
+        <controlled name="RAP"/>
+        <controlled name="RAR"/>
+    </component>
+    <!--
+    <component type="GlobalLeg">
+        <parameter name="RFGX" vel=".02"/>
+        <parameter name="RFGY" vel=".02"/>
+        <parameter name="RFGZ" default="-.56" vel=".02"/>
+        <parameter name="RFGYAW" vel=".02"/>
+        <parameter name="RFGROLL" vel=".02"/>
+        <parameter name="RFGPITCH" vel=".02"/>
+        <controlled name="RHY"/>
+        <controlled name="RHR"/>
+        <controlled name="RHP"/>
+        <controlled name="RKP"/>
+        <controlled name="RAP"/>
+        <controlled name="RAR"/>
+    </component>
+    -->
+    <component type="HuboMotor" name="RF1" boardNum="32"/>
+    <component type="HuboMotor" name="RF2" boardNum="33"/>
+    <component type="HuboMotor" name="RF3" boardNum="34"/>
+    <component type="HuboMotor" name="RF4" boardNum="35"/>
+    <component type="HuboMotor" name="RF5" boardNum="36"/>
+    <component type="HuboMotor" name="LF1" boardNum="37"/>
+    <component type="HuboMotor" name="LF2" boardNum="38"/>
+    <component type="HuboMotor" name="LF3" boardNum="39"/>
+    <component type="HuboMotor" name="LF4" boardNum="40"/>
+    <component type="HuboMotor" name="LF5" boardNum="41"/>
+    <component type="FTSensor" name="RWT" boardNum="0"/>
+    <component type="FTSensor" name="LWT" boardNum="1"/>
+    <component type="FTSensor" name="RAT" boardNum="2"/>
+    <component type="FTSensor" name="LAT" boardNum="3"/>
+    <component type="IMUSensor" name="LAI" boardNum="0"/>
+    <component type="IMUSensor" name="RAI" boardNum="1"/>
+    <component type="IMUSensor" name="IMU" boardNum="2"/>
+</robot>
+
