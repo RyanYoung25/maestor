@@ -158,7 +158,7 @@ class maestor:
         #Wait for a list of joints, each element of the list 
         # must be a string
         for joint in jointList:
-            waitForJoint(joint)
+            self.waitForJoint(joint)
 
     def defaultWaitForJoint(self, shouldWait=False):
         #If should wait becomes true, make it so that 
