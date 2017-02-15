@@ -1,0 +1,5 @@
+string name
+string path 
+bool read
+---
+bool success

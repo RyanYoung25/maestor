@@ -1,0 +1,4 @@
+RunType:
+Simulation
+Init File:
+/opt/maestor/models/hubo_default.xml

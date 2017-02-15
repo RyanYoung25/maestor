@@ -1,0 +1,57 @@
+How to Install All Components of MAESTOR
+========================================
+
+MAESTOR depends on a few major components:
+
+- Ros Indigo
+- Openrave 
+- Ach
+- Hubo-ach
+- OpenHubo
+
+It is reccomended that you install the dependencies in the 
+order listed. 
+
+ROS Indigo
+==========
+
+http://wiki.ros.org/indigo/Installation/Ubuntu
+
+Follow the steps on the site. They're pretty straight forward.
+
+Openrave
+========
+
+http://fsuarez6.github.io/blog/openrave-trusty/
+
+This blog post actually gets everything installed correctly. 
+
+Ach
+======
+
+Build from source using the repo found:
+
+https://github.com/golems/ach
+
+Master branch should be fine.
+
+Hubo-Ach
+========
+
+Use Eric Rock's fork:
+
+https://github.com/isaacgaretmia/hubo-ach
+
+Checkout the 'power' branch
+
+OpenHubo
+========
+
+I need to make a fork and host the changes that I made to make everything work. 
+
+https://github.com/RyanYoung25/openHubo
+
+Try that repo.
+
+
+

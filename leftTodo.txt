@@ -1,0 +1,13 @@
+Write scripts to set up a user environment
+Write scripts to launch all components of Maestor
+    - Hubo ach
+    - Roscore
+    - Maestor node
+
+Write console script
+Write download and install scripts. 
+    - Maybe write just a guide
+
+
+Fork the openhubo repo and push the changes to my fork.
+    - Trickier than it should be because they use submodules :(
