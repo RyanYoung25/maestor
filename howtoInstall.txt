@@ -35,6 +35,21 @@ https://github.com/golems/ach
 
 Master branch should be fine.
 
+./configure
+
+make
+
+sudo make install
+
+Steps to build the python bindings:
+	- Go to ach directory
+	- Go into python directory
+	- Run the command: python setup.py sdist
+	- Go into the dist directory
+	- Run the command: sudo pip install <tarball>
+
+Check that it installed correctly by running the python interpreter and running 'import ach'
+
 Hubo-Ach
 ========
 
