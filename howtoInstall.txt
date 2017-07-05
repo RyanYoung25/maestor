@@ -9,7 +9,7 @@ MAESTOR depends on a few major components:
 - Hubo-ach
 - OpenHubo
 
-It is reccomended that you install the dependencies in the 
+It is recommended that you install the dependencies in the 
 order listed. 
 
 ROS Indigo
@@ -35,10 +35,15 @@ https://github.com/golems/ach
 
 Master branch should be fine.
 
+Run: 
+
+sudo apt-get install autoconf automake libtool autoconf-archive
+git clone https://github.com/golems/ach
+cd ach
+autoreconf -i
+sudo apt-get install linux-headers-generic dkms openbsd-inetd help2man man2html docbook-utils avahi-utils
 ./configure
-
 make
-
 sudo make install
 
 Steps to build the python bindings:
@@ -47,6 +52,8 @@ Steps to build the python bindings:
 	- Run the command: python setup.py sdist
 	- Go into the dist directory
 	- Run the command: sudo pip install <tarball>
+
+** MAKE SURE PIP3 IS INSTALLED BEFORE CHECKING INSTALLATION (sudo apt-get install python3-pip) **
 
 Check that it installed correctly by running the python interpreter and running 'import ach'
 
@@ -59,6 +66,11 @@ https://github.com/isaacgaretmia/hubo-ach
 
 Checkout the 'power' branch
 
+autoreconf -i
+./configure
+sudo make
+sudo make install
+
 OpenHubo
 ========
 
@@ -69,4 +81,29 @@ https://github.com/RyanYoung25/openHubo
 Try that repo.
 
 
+========================================
 
+
+Installing and configuring MAESTOR
+========================================
+
+Create a catkin workspace
+git clone https://github.com/RyanYoung25/maestor 
+git checkout ros_indigo
+source ./setupMaestor.sh
+go to catkin workspace root
+catkin_make
+ ========================================
+
+Test that MAESTOR is running
+ ========================================
+go into maestor
+cd run
+./maestor sim-real
+./maestor console
+initRobot(‘’)
+command(‘EnableAll’, ‘’)
+ctrl+d
+cd ../scripts
+./wave.py
+ ========================================
